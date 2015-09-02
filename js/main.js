@@ -3,6 +3,8 @@
 var random;
 var stage;
 var bounds;
+var bg;
+var info;
 var agents;
 var tree;
 
@@ -74,6 +76,12 @@ function tick (event) {
 	// update quadtree
 	updateTree();
 
+	// update background
+	bg.update();
+	
+	// update info
+	info.update();
+
 	// update the stage
 	stage.update(event);
 }
@@ -91,7 +99,14 @@ function main () {
 	// give it the bounds, false means shapes not points, and a depth of 7
 	tree = new QuadTree(bounds, false, 7);
 
+	bg = new Environment(bounds);
+	stage.addChild(bg);
+
 	initAgents(100);
+
+	info = new Info(bounds, 1);
+	stage.addChild(info);
+
 	//createjs.Ticker.setFPS(24);
 	createjs.Ticker.timingMode = createjs.Ticker.RAF;
 	createjs.Ticker.on("tick", tick);

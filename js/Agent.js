@@ -24,6 +24,11 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.posDiff = vec2.create();
 	this.velDiff = vec2.create();
 	this.subResult = vec2.create();
+
+	// add listener to process click events
+	this.on('mousedown', function (e) {
+		info.setTarget(this);
+	});
 }
 
 var agentPrototype = createjs.extend(Agent, createjs.Shape);
