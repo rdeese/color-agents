@@ -1,5 +1,8 @@
 "use strict";
 
+var AGENT_RADIUS = 20;
+var NUM_AGENTS = 100;
+
 var random;
 var stage;
 var bounds;
@@ -20,7 +23,7 @@ function handleMouseDown (event) {
 	if (!event.primary) { return; }
 	// TODO check quadtree and remove agent if click
 	// is on an agent
-	createjs.Ticker.paused = !createjs.Ticker.paused;
+	//createjs.Ticker.paused = !createjs.Ticker.paused;
 }
 
 function initAgents(num) {
@@ -29,11 +32,11 @@ function initAgents(num) {
 	var radius;
 	var a;
 	for (var i = 0; i < num; i++) {
-		radius = 20;
+		radius = AGENT_RADIUS;
 		a = new Agent(bounds, radius,
 									vec2.fromValues(random.number() * (bounds.width-2*radius) + radius,
 																	random.number() * (bounds.height-2*radius) + radius),
-									vec2.fromValues(random.number(), random.number()),
+									vec2.create(),
 									[[random.number()*180], [random.number()*180]]);
 		stage.addChild(a);
 		agents.push(a);
@@ -49,38 +52,35 @@ function updateTree() {
 // our update function, which gets called by Ticker and then
 // calls the stage's update in turn, which draws things
 function tick (event) {
-	// do nothing if we're paused
-	if (event.paused) { return; }
-
-	// check for collisions
-	var items;
-	var a;
-	var len;
-	var item;
-	for (var i = 0; i < agents.length; i++) {
-		a = agents[i];
-		items = tree.retrieve(a);
-		len = items.length;
-		for (var j = 0; j < len; j++) {
-			item = items[j];
-			if (a == item) { continue; }
-			a.collide(item);
+	// if we're not paused, we have to deal with 
+	// collisions
+	if (!event.paused) {
+		// check for collisions
+		var items;
+		var a;
+		var len;
+		var item;
+		for (var i = 0; i < agents.length; i++) {
+			a = agents[i];
+			items = tree.retrieve(a);
+			len = items.length;
+			for (var j = 0; j < len; j++) {
+				item = items[j];
+				if (a == item) { continue; }
+				a.collide(item);
+			}
 		}
+
+		// iterate kinematics
+		// (we can't let a tick listener do this because it
+		// needs to happen before the quadtree update)
+		for (var i = 0; i < agents.length; i++) {
+			agents[i].update(event);
+		}
+
+		// update quadtree
+		updateTree();
 	}
-
-	// iterate kinematics
-	for (var i = 0; i < agents.length; i++) {
-		agents[i].update();
-	}
-
-	// update quadtree
-	updateTree();
-
-	// update background
-	bg.update();
-	
-	// update info
-	info.update();
 
 	// update the stage
 	stage.update(event);
@@ -92,7 +92,7 @@ function main () {
 	canvas.width = window.innerWidth - 16;
 	canvas.height = window.innerHeight - 16;
 	stage = new createjs.Stage(canvas);
-	stage.addEventListener("stagemousedown", handleMouseDown);
+	// stage.addEventListener("stagemousedown", handleMouseDown);
 
 	// QuadTree setup
 	bounds = new createjs.Rectangle(0, 0, canvas.width, canvas.height);
@@ -102,7 +102,7 @@ function main () {
 	bg = new Environment(bounds);
 	stage.addChild(bg);
 
-	initAgents(100);
+	initAgents(NUM_AGENTS);
 
 	info = new Info(bounds, 1);
 	stage.addChild(info);

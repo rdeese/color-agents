@@ -37,15 +37,21 @@ var agentPrototype = createjs.extend(Agent, createjs.Shape);
 agentPrototype.expressPhenotype = function () {
 	// Assumes a diploid organism with one gene, and calculates the phenotypic
 	// hue as the sum of the genes from each parent.
-	this.color = chroma.hcl(this.genome[0][0] + this.genome[1][0], 100, 100);
-	console.log("hue", this.genome[0][0], this.genome[1][0]);
+	// color spectrum tuned using the HCL gradient selector here:
+	// https://vis4.net/blog/posts/avoid-equidistant-hsv-colors/
+	// because there is NO INTUITIVE way to understand what the 'percentage'
+	// HCL scale is for chroma and lightness. the goal of these settings
+	// is to stay within a safe range, where the spectrum of hues is continuous
+	// and has consistent lightness
+	//this.color = chroma.hcl(this.genome[0][0] + this.genome[1][0], 55, 70);
+	this.color = chroma.hcl(2*this.genome[0][0], 55, 70);
 }
 
 agentPrototype.wander = function () {
 	vec2.scale(this.acc, this.acc, 0.8);
 	// randomly change the acceleration
 	if (random.number() < 0.05) {
-		vec2.add(this.acc, this.acc, vec2.fromValues(random.number()-0.5,random.number()-0.5));
+		vec2.add(this.acc, this.acc, vec2.fromValues(60*(random.number()-0.5),60*(random.number()-0.5)));
 	}
 }
 
@@ -97,7 +103,7 @@ agentPrototype.drawAgent = function () {
 	g.setStrokeStyle(1); // first param is stroke width
 	g.beginStroke(this.color.darken().hex());
 	if (this.isColliding) {
-		g.beginFill(this.color.brighten().hex());
+		g.beginFill(this.color.brighten(0.1).hex());
 	} else {
 		g.beginFill(this.color.hex());
 	}
@@ -114,7 +120,7 @@ agentPrototype.drawAgent = function () {
 }
 
 // update the kinematics of the agent
-agentPrototype.update = function () {
+agentPrototype.update = function (e) {
 	// get older
 	this.age += 1;
 
@@ -124,7 +130,8 @@ agentPrototype.update = function () {
 	// Iterate internal kinematics
 	vec2.scale(this.vel, this.vel, 0.99);
 	vec2.add(this.vel, this.vel, this.acc);
-	vec2.add(this.pos, this.pos, this.vel);
+	vec2.scale(this.subResult, this.vel, e.delta/1000);
+	vec2.add(this.pos, this.pos, this.subResult);
 	this.x = this.pos[0];
 	this.y = this.pos[1];
 	
