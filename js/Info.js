@@ -103,7 +103,11 @@ infoPrototype.drawInfo = function () {
 infoPrototype.update = function () {
 	// update the age
 	if (this.target) {
-		this.ageLabel.text = "Age: " + this.target.age;
+		var age = Math.floor((createjs.Ticker.getTime(true)-this.target.birthTime)/1000);
+		var ageStr = ('0' + Math.floor((age%3600)/60)).slice(-1) + ":" +
+								 ('00' + Math.floor(age%60)).slice(-2);
+
+		this.ageLabel.text = "Age: " + ageStr;
 	}
 
 	// update the play/pause character

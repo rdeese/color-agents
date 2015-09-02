@@ -89,8 +89,8 @@ function tick (event) {
 function main () {
 	configureDefaults();
 	var canvas = document.querySelector("#world");
-	canvas.width = window.innerWidth - 16;
-	canvas.height = window.innerHeight - 16;
+	canvas.width = window.innerWidth - 20;
+	canvas.height = window.innerHeight - 20;
 	stage = new createjs.Stage(canvas);
 	// stage.addEventListener("stagemousedown", handleMouseDown);
 

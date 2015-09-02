@@ -12,7 +12,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.x = this.pos[0];
 	this.y = this.pos[1];
 	this.genome = genome;
-	this.age = 0;
+	this.birthTime = createjs.Ticker.getTime(true);
 	this.expressPhenotype();
 	this.height = this.width = this.radius * 2;
 	this.cached = false;
@@ -33,6 +33,8 @@ function Agent(bounds, radius, position, velocity, genome) {
 
 var agentPrototype = createjs.extend(Agent, createjs.Shape);
 
+agentPrototype.maxAcc = 50;
+
 // turns genotype into phenotype
 agentPrototype.expressPhenotype = function () {
 	// Assumes a diploid organism with one gene, and calculates the phenotypic
@@ -51,7 +53,7 @@ agentPrototype.wander = function () {
 	vec2.scale(this.acc, this.acc, 0.8);
 	// randomly change the acceleration
 	if (random.number() < 0.05) {
-		vec2.add(this.acc, this.acc, vec2.fromValues(60*(random.number()-0.5),60*(random.number()-0.5)));
+		vec2.add(this.acc, this.acc, vec2.fromValues(this.maxAcc*(random.number()-0.5),this.maxAcc*(random.number()-0.5)));
 	}
 }
 
