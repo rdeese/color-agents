@@ -20,6 +20,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 
 	this.birthTime = createjs.Ticker.getTime(true);
 	this.isAdult = false;
+	this.collisionCount = 0;
 	this.expressPhenotype();
 	this.height = this.width = this.radius * 2;
 	this.cached = false;
@@ -112,6 +113,8 @@ agentPrototype.collide = function (other) {
 				other.matingTime = matingTime;
 				other.childGenome = [[(this.genome[0][0]+other.genome[0][0])/2], [0]];
 			}
+		} else {
+			this.collisionCount += 1;
 		}
 	}
 }
@@ -233,7 +236,8 @@ agentPrototype.update = function (e) {
 	this.isColliding = false;
 
 	// FIXME calculate probability of death
-	if (true) {
+	// var (createjs.Ticker.getTime(true)-this.birthTime)
+	if () {
 		result.push(this);
 	}
 
