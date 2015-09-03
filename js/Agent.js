@@ -21,7 +21,6 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.birthTime = createjs.Ticker.getTime(true);
 	this.isAdult = false;
 	this.collisionCount = 0;
-	this.expressPhenotype();
 	this.height = this.width = this.radius * 2;
 	this.cached = false;
 	this.wasColliding = false;
@@ -30,6 +29,10 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.isPregnant = false;
 	this.isDead = false;
 	this.collisionStart = null;
+	
+	this.expressPhenotype();
+	this.grow(this.birthTime);
+
 	this.drawAgent();
 
 	// create temp vectors we'll need later
@@ -88,6 +91,7 @@ agentPrototype.wander = function () {
 
 agentPrototype.collide = function (other) {
 	var radii = this.radius*this.scaleX + other.radius*other.scaleX;
+	var totalMass = this.mass + other.mass;
 	var collisionDepth = radii - vec2.distance(this.pos, other.pos);
 	if (collisionDepth > 0) {
 		vec2.subtract(this.velDiff, this.vel, other.vel);
@@ -103,6 +107,7 @@ agentPrototype.collide = function (other) {
 		var sqrDist = vec2.sqrDist(this.pos, other.pos);
 		if (sqrDist == 0) { sqrDist += 1; }
 		dotProd /= sqrDist;
+		dotProd *= (2*other.mass/totalMass);
 		vec2.scale(this.subResult, this.posDiff, dotProd);
 		vec2.subtract(this.vel, this.vel, this.subResult);
 
@@ -114,6 +119,7 @@ agentPrototype.collide = function (other) {
 		sqrDist = vec2.sqrDist(this.pos, other.pos);
 		if (sqrDist == 0) { sqrDist += 1; }
 		dotProd /= sqrDist;
+		dotProd *= (2*this.mass/totalMass);
 		vec2.scale(this.subResult, this.posDiff, dotProd);
 		vec2.subtract(other.vel, other.vel, this.subResult);
 
@@ -167,18 +173,36 @@ agentPrototype.drawAgent = function () {
 	g.clear();
 	var strokeWidth = 1;
 	g.setStrokeStyle(strokeWidth);
-	//g.beginStroke(this.color.darken().hex());
-	if (this.isColliding) {
+
+	if (false) { //this.isColliding) {
 		g.beginFill(this.color.brighten(0.1).hex());
 	} else {
 		g.beginFill(this.color.hex());
 	}
+
+	// draw body
 	g.drawCircle(0, 0, this.radius);
+
+	// draw eyes
+	// whites
+	g.beginFill(this.color.brighten(0.2).hex());
+	g.beginStroke(this.color.darken(0.2).hex());
+	g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.3);
+	g.endStroke();
+	g.beginStroke(this.color.darken(0.2).hex());
+	g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.3);
+	g.endStroke();
+	// pupils
+	g.beginFill(this.color.darken(0.2).hex());
+	g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.12);
+	g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.12);
+	g.endFill();
+
+	//draw baby
 	if (this.isPregnant) {
-		g.endStroke();
-		g.endFill();
-		g.beginFill(this.color.darken().hex());
-		g.drawCircle(0, 0, this.radius/4);
+		g.setStrokeStyle(3);
+		g.beginStroke(this.color.brighten(0.1).hex());
+		g.drawCircle(0,0,this.radius);
 	}
 
 	
@@ -196,20 +220,28 @@ agentPrototype.drawAgent = function () {
 	}
 }
 
+agentPrototype.grow = function (currentTime) {
+	if (this.isAdult) {
+		this.scaleX = this.scaleY = 1;
+		this.height = this.width = 2*this.radius;
+	} else {
+		var newScale = BABY_SCALE + (currentTime-this.birthTime)*YOUTH_SCALE_STEP;
+		this.scaleX = this.scaleY = newScale;
+		this.height = this.width = 2*this.radius*newScale;
+	}
+	this.mass = Math.PI*this.height*this.height/4; // comes out to pi*r^2
+}
+
 // update the kinematics of the agent
 agentPrototype.update = function (e) {
 	var result = [];
 	var currentTime = createjs.Ticker.getTime(true);
 
 	if (!this.isAdult) {
-		var newScale = BABY_SCALE + (currentTime-this.birthTime)*YOUTH_SCALE_STEP;
-		this.scaleX = this.scaleY = newScale;
-		this.height = this.width = 2*this.radius*newScale;
 		if (currentTime-this.birthTime > YOUTH_DURATION) {
 			this.isAdult = true;
-			this.scaleX = this.scaleY = 1;
-			this.height = this.width = 2*this.radius;
 		}
+		this.grow(currentTime);
 	}
 
 	// exercise free will (acceleration)
@@ -241,6 +273,7 @@ agentPrototype.update = function (e) {
 	vec2.add(this.pos, this.pos, this.subResult);
 	this.x = this.pos[0];
 	this.y = this.pos[1];
+	this.rotation = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
 	
 	// elastically collide with walls
 	if (this.x + this.scaleX*this.radius > this.bounds.width) {
