@@ -25,6 +25,8 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.cached = false;
 	this.wasColliding = false;
 	this.isColliding = false;
+	this.wasPregnant = false;
+	this.isPregnant = false;
 	this.collisionStart = null;
 	this.drawAgent();
 
@@ -135,7 +137,13 @@ agentPrototype.drawAgent = function () {
 
 	var g = this.graphics;
 	g.clear();
-	g.setStrokeStyle(1); // first param is stroke width
+	var strokeWidth;
+	if (this.isPregnant) {
+		strokeWidth = 3;
+	} else {
+		strokeWidth = 1;
+	}
+	g.setStrokeStyle(strokeWidth);
 	g.beginStroke(this.color.darken().hex());
 	if (this.isColliding) {
 		g.beginFill(this.color.brighten(0.1).hex());
@@ -143,21 +151,18 @@ agentPrototype.drawAgent = function () {
 		g.beginFill(this.color.hex());
 	}
 	g.drawCircle(this.radius, this.radius, this.radius);
-	g.endFill();
-	g.endStroke();
-
-	g.beginStroke(this.color.darken().hex());
-	if (this.isPregnant) {
-		g.drawCircle(this.radius, this.radius, this.radius/2);
-	}
 	
 	this.uncache();
 	this.cache(-1, -1, this.width+2, this.height+2);
 
-	if (this.isColliding) {
-		this.collidingCacheCanvas = this.cacheCanvas;
-	} else {
-		this.normalCacheCanvas = this.cacheCanvas;
+	if (this.isColliding && this.isPregnant) {
+		this.cpCacheCanvas = this.cacheCanvas;
+	} else if (!this.isColliding && this.isPregnant) {
+		this.npCacheCanvas = this.cacheCanvas;
+	} else if (this.isColliding && !this.isPregnant) {
+		this.cnCacheCanvas = this.cacheCanvas;
+	} else if (!this.isColliding && !this.isPregnant) {
+		this.nnCacheCanvas = this.cacheCanvas;
 	}
 }
 

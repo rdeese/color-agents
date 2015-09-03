@@ -88,9 +88,9 @@ function tick (event) {
 			} else if (result.length == 1) {
 				newAgents.push(result[0]);
 			} else if (result.length == 2) {
+				stage.addChild(result[0]);
 				newAgents.push(result[0]);
 				newAgents.push(result[1]);
-				stage.addChild(result[1]);
 			}
 		}
 
