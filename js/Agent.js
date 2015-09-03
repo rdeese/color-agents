@@ -39,7 +39,11 @@ function Agent(bounds, radius, position, velocity, genome) {
 
 	// add listener to process click events
 	this.on('mousedown', function (e) {
-		info.setTarget(this);
+		if (predatorMode) {
+			this.isDead = true;
+		} else {
+			info.setTarget(this);
+		}
 	});
 }
 
@@ -108,15 +112,16 @@ agentPrototype.collide = function (other) {
 				this.isPregnant = true;
 				this.matingTime = matingTime;
 				this.childGenome = [[(this.genome[0][0]+other.genome[0][0])/2], [0]];
-				this.childGenome[0][0] += (random.number()-0.5)*10;
+				this.childGenome[0][0] += (random.number()-0.5)*50;
 			} else {
 				other.isPregnant = true;
 				other.matingTime = matingTime;
 				other.childGenome = [[(this.genome[0][0]+other.genome[0][0])/2], [0]];
-				other.childGenome[0][0] += (random.number()-0.5)*10;
+				other.childGenome[0][0] += (random.number()-0.5)*50;
 			}
-		} else {
+		} else if (!this.wasColliding || !other.wasColliding) {
 			this.collisionCount += 1;
+			other.collisionCount += 1;
 		}
 	}
 }
@@ -142,20 +147,22 @@ agentPrototype.drawAgent = function () {
 
 	var g = this.graphics;
 	g.clear();
-	var strokeWidth;
-	if (this.isPregnant) {
-		strokeWidth = 3;
-	} else {
-		strokeWidth = 1;
-	}
+	var strokeWidth = 1;
 	g.setStrokeStyle(strokeWidth);
-	g.beginStroke(this.color.darken().hex());
+	//g.beginStroke(this.color.darken().hex());
 	if (this.isColliding) {
 		g.beginFill(this.color.brighten(0.1).hex());
 	} else {
 		g.beginFill(this.color.hex());
 	}
 	g.drawCircle(this.radius, this.radius, this.radius);
+	if (this.isPregnant) {
+		g.endStroke();
+		g.endFill();
+		g.beginFill(this.color.darken().hex());
+		g.drawCircle(this.radius, this.radius, this.radius/4);
+	}
+
 	
 	this.uncache();
 	this.cache(-1, -1, this.width+2, this.height+2);
@@ -238,12 +245,13 @@ agentPrototype.update = function (e) {
 	// calculate probability of death
 	var score = (createjs.Ticker.getTime(true)-this.birthTime)/1000 +
 							this.collisionCount;
-	if (score < 50) {
-		result.push(this);
-	} else {
+	if (this.isDead || score > DEATH_THRESHHOLD) {
 		this.isDead = true;
 		this.graphics.clear();
+	} else {
+		result.push(this);
 	}
+
 
 	return result;
 }

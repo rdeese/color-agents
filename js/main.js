@@ -1,11 +1,12 @@
 "use strict";
 
-var AGENT_RADIUS = 20;
-var BABY_AGENT_RADIUS = 20; // TODO change this once scaling is introduced
-var NUM_AGENTS = 10;
-var MATING_PROB = 0.1;
-var GESTATION_PD = 1000; // milliseconds
-var YOUTH_DURATION = 1000; // milliseconds TODO change this after mating works
+var AGENT_RADIUS = 10;
+var BABY_AGENT_RADIUS = 10; // TODO change this once scaling is introduced
+var NUM_AGENTS = 100;
+var MATING_PROB = 0.05;
+var GESTATION_PD = 5000; // milliseconds
+var YOUTH_DURATION = 10000; // milliseconds TODO change this after mating works
+var DEATH_THRESHHOLD = 200;
 
 var random;
 var stage;
@@ -13,8 +14,11 @@ var bounds;
 var bg;
 var info;
 var agents;
+var agentContainer;
 var newAgents;
 var tree;
+
+var predatorMode = false;
 
 function configureDefaults () {
 	// dunno if static typed arrays will play nice so let's keep
@@ -44,7 +48,7 @@ function initAgents(num) {
 																	random.number() * (bounds.height-2*radius) + radius),
 									vec2.create(),
 									[[random.number()*180], [random.number()*180]]);
-		stage.addChild(a);
+		agentContainer.addChild(a);
 		agents.push(a);
 		tree.insert(a);
 	}
@@ -84,11 +88,11 @@ function tick (event) {
 		for (var i = 0; i < agents.length; i++) {
 			result = agents[i].update(event);
 			if (result.length == 0) {
-				stage.removeChild(agents[i]);
+				agentContainer.removeChild(agents[i]);
 			} else if (result.length == 1) {
 				newAgents.push(result[0]);
 			} else if (result.length == 2) {
-				stage.addChild(result[0]);
+				agentContainer.addChild(result[0]);
 				newAgents.push(result[0]);
 				newAgents.push(result[1]);
 			}
@@ -108,6 +112,18 @@ function tick (event) {
 	stage.update(event);
 }
 
+window.addEventListener('keydown', function (e) {
+	if (e.keyCode == 65) { // 'a' key
+		predatorMode = !predatorMode;
+	}
+});
+
+window.addEventListener('keyup', function (e) {
+	if (e.keyCode == 65) { // 'a' key
+		//predatorMode = false;
+	}
+});
+
 function main () {
 	configureDefaults();
 	var canvas = document.querySelector("#world");
@@ -124,6 +140,8 @@ function main () {
 	bg = new Environment(bounds);
 	stage.addChild(bg);
 
+	agentContainer = new createjs.Container();
+	stage.addChild(agentContainer);
 	initAgents(NUM_AGENTS);
 
 	info = new Info(bounds, 1);
