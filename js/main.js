@@ -7,7 +7,7 @@ var MATING_PROB = 0.05;
 var GESTATION_PD = 5000; // milliseconds
 var YOUTH_DURATION = 10000; // milliseconds
 
-var AGENT_RADIUS = 10;
+var AGENT_RADIUS = 30;
 var BABY_AGENT_RADIUS = 10; // TODO change this once scaling is introduced
 var BABY_SCALE = BABY_AGENT_RADIUS/AGENT_RADIUS;
 var YOUTH_SCALE_STEP = (1-BABY_SCALE)/YOUTH_DURATION;

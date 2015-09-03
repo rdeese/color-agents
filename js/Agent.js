@@ -122,7 +122,9 @@ agentPrototype.collide = function (other) {
 
 		// determine if this is a normal collision or if mating will occur
 		var r = random.number();
-		if (this.isAdult && !this.isPregnant && r < MATING_PROB) {
+		if (this.isAdult && !this.isPregnant &&
+				other.isAdult && !other.isPregnant &&
+				r < MATING_PROB) {
 			var matingTime = createjs.Ticker.getTime(true);
 			if (r < MATING_PROB / 2) {
 				this.isPregnant = true;
@@ -181,7 +183,7 @@ agentPrototype.drawAgent = function () {
 
 	
 	this.uncache();
-	this.cache(-this.radius-1, -this.radius-1, this.width+2, this.height+2);
+	this.cache(-this.radius-1, -this.radius-1, 2*this.radius+2, 2*this.radius+2);
 
 	if (this.isColliding && this.isPregnant) {
 		this.cpCacheCanvas = this.cacheCanvas;
@@ -200,8 +202,13 @@ agentPrototype.update = function (e) {
 	var currentTime = createjs.Ticker.getTime(true);
 
 	if (!this.isAdult) {
+		var newScale = BABY_SCALE + (currentTime-this.birthTime)*YOUTH_SCALE_STEP;
+		this.scaleX = this.scaleY = newScale;
+		this.height = this.width = 2*this.radius*newScale;
 		if (currentTime-this.birthTime > YOUTH_DURATION) {
 			this.isAdult = true;
+			this.scaleX = this.scaleY = 1;
+			this.height = this.width = 2*this.radius;
 		}
 	}
 
