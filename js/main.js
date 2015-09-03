@@ -1,7 +1,11 @@
 "use strict";
 
 var AGENT_RADIUS = 20;
-var NUM_AGENTS = 100;
+var BABY_AGENT_RADIUS = 20; // TODO change this once scaling is introduced
+var NUM_AGENTS = 2;
+var MATING_PROB = 1;
+var GESTATION_PD = 1000; // milliseconds
+var YOUTH_DURATION = 1000; // milliseconds TODO change this after mating works
 
 var random;
 var stage;
@@ -9,6 +13,7 @@ var bounds;
 var bg;
 var info;
 var agents;
+var newAgents;
 var tree;
 
 function configureDefaults () {
@@ -28,6 +33,7 @@ function handleMouseDown (event) {
 
 function initAgents(num) {
 	agents = [];
+	newAgents = [];
 
 	var radius;
 	var a;
@@ -74,9 +80,25 @@ function tick (event) {
 		// iterate kinematics
 		// (we can't let a tick listener do this because it
 		// needs to happen before the quadtree update)
+		var result;
 		for (var i = 0; i < agents.length; i++) {
-			agents[i].update(event);
+			result = agents[i].update(event);
+			if (result.length == 0) {
+				stage.removeChild(agents[i]);
+			} else if (result.length == 1) {
+				newAgents.push(result[0]);
+			} else if (result.length == 2) {
+				newAgents.push(result[0]);
+				newAgents.push(result[1]);
+				stage.addChild(result[1]);
+			}
 		}
+
+		// swap agents and newAgents;
+		var temp = agents;
+		agents = newAgents;
+		newAgents = temp;
+		newAgents.length = 0;
 
 		// update quadtree
 		updateTree();

@@ -6,18 +6,26 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.snapToPixel = true;
 	this.bounds = bounds;
 	this.radius = radius;
-	this.vel = velocity;
-	this.pos = position;
+	this.vel = vec2.clone(velocity);
+	this.pos = vec2.clone(position);
 	this.acc = vec2.fromValues(0,0);
 	this.x = this.pos[0];
 	this.y = this.pos[1];
-	this.genome = genome;
+	
+	// copy the genome, don't just get a reference to the array
+	// which will be deleted by the parent
+	this.genome = [[0], [0]];
+	this.genome[0][0] = genome[0][0];
+	this.genome[1][0] = genome[1][0];
+
 	this.birthTime = createjs.Ticker.getTime(true);
+	this.isAdult = false;
 	this.expressPhenotype();
 	this.height = this.width = this.radius * 2;
 	this.cached = false;
 	this.wasColliding = false;
 	this.isColliding = false;
+	this.collisionStart = null;
 	this.drawAgent();
 
 	// create temp vectors we'll need later
@@ -53,7 +61,8 @@ agentPrototype.wander = function () {
 	vec2.scale(this.acc, this.acc, 0.8);
 	// randomly change the acceleration
 	if (random.number() < 0.05) {
-		vec2.add(this.acc, this.acc, vec2.fromValues(this.maxAcc*(random.number()-0.5),this.maxAcc*(random.number()-0.5)));
+		vec2.add(this.acc, this.acc, vec2.fromValues(this.maxAcc*(random.number()-0.5),
+																 								 this.maxAcc*(random.number()-0.5)));
 	}
 }
 
@@ -86,17 +95,41 @@ agentPrototype.collide = function (other) {
 
 		this.isColliding = true;
 		other.isColliding = true;
+
+		// determine if this is a normal collision or if mating will occur
+		var r = random.number();
+		if (this.isAdult && !this.isPregnant && r < MATING_PROB) {
+			var matingTime = createjs.Ticker.getTime(true);
+			console.log("child happening");
+			if (r < MATING_PROB / 2) {
+				this.isPregnant = true;
+				this.matingTime = matingTime;
+				this.childGenome = [[(this.genome[0][0]+other.genome[0][0])/2], [0]];
+			} else {
+				other.isPregnant = true;
+				other.matingTime = matingTime;
+				other.childGenome = [[(this.genome[0][0]+other.genome[0][0])/2], [0]];
+			}
+		}
 	}
 }
 	
 // draw the graphical representation of the agent
 agentPrototype.drawAgent = function () {
-	if (this.isColliding && this.collidingCacheCanvas) {
-		this.cacheCanvas = this.collidingCacheCanvas;
+	if (this.isColliding && this.isPregnant && this.cpCacheCanvas) {
+		this.cacheCanvas = this.cpCacheCanvas;
 		return;
 	}
-	if (!this.isColliding && this.normalCacheCanvas) {
-		this.cacheCanvas = this.normalCacheCanvas;
+	if (!this.isColliding && this.isPregnant && this.npCacheCanvas) {
+		this.cacheCanvas = this.npCacheCanvas;
+		return;
+	}
+	if (this.isColliding && !this.isPregnant && this.cnCacheCanvas) {
+		this.cacheCanvas = this.cnCacheCanvas;
+		return;
+	}
+	if (!this.isColliding && !this.isPregnant && this.nnCacheCanvas) {
+		this.cacheCanvas = this.nnCacheCanvas;
 		return;
 	}
 
@@ -110,6 +143,13 @@ agentPrototype.drawAgent = function () {
 		g.beginFill(this.color.hex());
 	}
 	g.drawCircle(this.radius, this.radius, this.radius);
+	g.endFill();
+	g.endStroke();
+
+	g.beginStroke(this.color.darken().hex());
+	if (this.isPregnant) {
+		g.drawCircle(this.radius, this.radius, this.radius/2);
+	}
 	
 	this.uncache();
 	this.cache(-1, -1, this.width+2, this.height+2);
@@ -123,11 +163,36 @@ agentPrototype.drawAgent = function () {
 
 // update the kinematics of the agent
 agentPrototype.update = function (e) {
-	// get older
-	this.age += 1;
+	var result = [];
+
+	if (!this.isAdult &&
+			createjs.Ticker.getTime(true)-this.birthTime > YOUTH_DURATION) {
+		this.isAdult = true;
+	}
 
 	// exercise free will (acceleration)
 	this.wander();
+
+	// birth if necessary
+	if (this.isPregnant &&
+			createjs.Ticker.getTime(true)-this.matingTime > GESTATION_PD) {
+		console.log("birthing!");
+		// put the baby behind the mama 
+		var newPos = vec2.clone(this.pos);
+		vec2.normalize(this.subResult, this.vel);
+		vec2.scale(this.subResult, this.subResult, -(this.radius+BABY_AGENT_RADIUS));
+		vec2.add(newPos, this.pos, this.subResult);
+		// with the same speed
+		var newVel = vec2.clone(this.vel);
+
+		result.push(new Agent(this.bounds, this.radius, newPos, newVel, this.childGenome));
+		console.log("new agent", result[0]);
+		this.isPregnant = false;
+		this.childGenome = null;
+		this.matingTime = null;
+		this.cpCacheCanvas = null;
+		this.npCacheCanvas = null;
+	}
 
 	// Iterate internal kinematics
 	vec2.scale(this.vel, this.vel, 0.99);
@@ -153,11 +218,21 @@ agentPrototype.update = function (e) {
 	}
 
 	// handle redraws and collision logic
-	if (this.wasColliding != this.isColliding) {
+	if ((this.wasColliding != this.isColliding) ||
+			(this.isPregnant != this.wasPregnant)) {
 		this.drawAgent();
 	}
+
+	this.wasPregnant = this.isPregnant;
 	this.wasColliding = this.isColliding;
 	this.isColliding = false;
+
+	// FIXME calculate probability of death
+	if (true) {
+		result.push(this);
+	}
+
+	return result;
 }
 
 window.Agent = createjs.promote(Agent, "Shape");
