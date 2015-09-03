@@ -88,7 +88,9 @@ agentPrototype.collide = function (other) {
 
 		// update this agent's velocity
 		var dotProd = vec2.dot(this.velDiff, this.posDiff);
-		dotProd /= vec2.sqrDist(this.pos, other.pos);
+		var sqrDist = vec2.sqrDist(this.pos, other.pos);
+		if (sqrDist == 0) { sqrDist += 1; }
+		dotProd /= sqrDist;
 		vec2.scale(this.subResult, this.posDiff, dotProd);
 		vec2.subtract(this.vel, this.vel, this.subResult);
 
@@ -97,7 +99,9 @@ agentPrototype.collide = function (other) {
 
 		// update other agent's velocity
 		var dotProd = vec2.dot(this.velDiff, this.posDiff);
-		dotProd /= vec2.sqrDist(this.pos, other.pos);
+		sqrDist = vec2.sqrDist(this.pos, other.pos);
+		if (sqrDist == 0) { sqrDist += 1; }
+		dotProd /= sqrDist;
 		vec2.scale(this.subResult, this.posDiff, dotProd);
 		vec2.subtract(other.vel, other.vel, this.subResult);
 
