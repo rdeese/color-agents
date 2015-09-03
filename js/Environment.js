@@ -21,9 +21,9 @@ function Environment (bounds) {
 	});
 
 	this.on('tick', function (e) {
-		if (!e.paused) {
+		//if (!e.paused) {
 			this.update();
-		}
+		//}
 	});
 }
 

@@ -101,6 +101,10 @@ infoPrototype.drawInfo = function () {
 }
 
 infoPrototype.update = function () {
+	if (this.target && this.target.isDead) {
+		this.setTarget(null);
+	}
+
 	// update the age
 	if (this.target) {
 		var age = Math.floor((createjs.Ticker.getTime(true)-this.target.birthTime)/1000);

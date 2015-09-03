@@ -28,6 +28,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.isColliding = false;
 	this.wasPregnant = false;
 	this.isPregnant = false;
+	this.isDead = false;
 	this.collisionStart = null;
 	this.drawAgent();
 
@@ -103,15 +104,16 @@ agentPrototype.collide = function (other) {
 		var r = random.number();
 		if (this.isAdult && !this.isPregnant && r < MATING_PROB) {
 			var matingTime = createjs.Ticker.getTime(true);
-			console.log("child happening");
 			if (r < MATING_PROB / 2) {
 				this.isPregnant = true;
 				this.matingTime = matingTime;
 				this.childGenome = [[(this.genome[0][0]+other.genome[0][0])/2], [0]];
+				this.childGenome[0][0] += (random.number()-0.5)*10;
 			} else {
 				other.isPregnant = true;
 				other.matingTime = matingTime;
 				other.childGenome = [[(this.genome[0][0]+other.genome[0][0])/2], [0]];
+				other.childGenome[0][0] += (random.number()-0.5)*10;
 			}
 		} else {
 			this.collisionCount += 1;
@@ -184,7 +186,6 @@ agentPrototype.update = function (e) {
 	// birth if necessary
 	if (this.isPregnant &&
 			createjs.Ticker.getTime(true)-this.matingTime > GESTATION_PD) {
-		console.log("birthing!");
 		// put the baby behind the mama 
 		var newPos = vec2.clone(this.pos);
 		vec2.normalize(this.subResult, this.vel);
@@ -194,7 +195,6 @@ agentPrototype.update = function (e) {
 		var newVel = vec2.clone(this.vel);
 
 		result.push(new Agent(this.bounds, this.radius, newPos, newVel, this.childGenome));
-		console.log("new agent", result[0]);
 		this.isPregnant = false;
 		this.childGenome = null;
 		this.matingTime = null;
@@ -235,10 +235,14 @@ agentPrototype.update = function (e) {
 	this.wasColliding = this.isColliding;
 	this.isColliding = false;
 
-	// FIXME calculate probability of death
-	// var (createjs.Ticker.getTime(true)-this.birthTime)
-	if () {
+	// calculate probability of death
+	var score = (createjs.Ticker.getTime(true)-this.birthTime)/1000 +
+							this.collisionCount;
+	if (score < 50) {
 		result.push(this);
+	} else {
+		this.isDead = true;
+		this.graphics.clear();
 	}
 
 	return result;

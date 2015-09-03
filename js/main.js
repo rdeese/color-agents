@@ -2,8 +2,8 @@
 
 var AGENT_RADIUS = 20;
 var BABY_AGENT_RADIUS = 20; // TODO change this once scaling is introduced
-var NUM_AGENTS = 2;
-var MATING_PROB = 1;
+var NUM_AGENTS = 10;
+var MATING_PROB = 0.1;
 var GESTATION_PD = 1000; // milliseconds
 var YOUTH_DURATION = 1000; // milliseconds TODO change this after mating works
 
