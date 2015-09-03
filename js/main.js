@@ -1,12 +1,16 @@
 "use strict";
 
-var AGENT_RADIUS = 10;
-var BABY_AGENT_RADIUS = 10; // TODO change this once scaling is introduced
 var NUM_AGENTS = 100;
+var DEATH_THRESHHOLD = 200;
+
 var MATING_PROB = 0.05;
 var GESTATION_PD = 5000; // milliseconds
-var YOUTH_DURATION = 10000; // milliseconds TODO change this after mating works
-var DEATH_THRESHHOLD = 200;
+var YOUTH_DURATION = 10000; // milliseconds
+
+var AGENT_RADIUS = 10;
+var BABY_AGENT_RADIUS = 10; // TODO change this once scaling is introduced
+var BABY_SCALE = BABY_AGENT_RADIUS/AGENT_RADIUS;
+var YOUTH_SCALE_STEP = (1-BABY_SCALE)/YOUTH_DURATION;
 
 var random;
 var stage;
@@ -28,13 +32,6 @@ function configureDefaults () {
 	random = new PcgRandom(Date.now());
 };
 
-function handleMouseDown (event) {
-	if (!event.primary) { return; }
-	// TODO check quadtree and remove agent if click
-	// is on an agent
-	//createjs.Ticker.paused = !createjs.Ticker.paused;
-}
-
 function initAgents(num) {
 	agents = [];
 	newAgents = [];
@@ -44,8 +41,8 @@ function initAgents(num) {
 	for (var i = 0; i < num; i++) {
 		radius = AGENT_RADIUS;
 		a = new Agent(bounds, radius,
-									vec2.fromValues(random.number() * (bounds.width-2*radius) + radius,
-																	random.number() * (bounds.height-2*radius) + radius),
+									vec2.fromValues(random.number() * (bounds.width-radius) + radius,
+																	random.number() * (bounds.height-radius) + radius),
 									vec2.create(),
 									[[random.number()*180], [random.number()*180]]);
 		agentContainer.addChild(a);
@@ -130,7 +127,6 @@ function main () {
 	canvas.width = window.innerWidth - 20;
 	canvas.height = window.innerHeight - 20;
 	stage = new createjs.Stage(canvas);
-	// stage.addEventListener("stagemousedown", handleMouseDown);
 
 	// QuadTree setup
 	bounds = new createjs.Rectangle(0, 0, canvas.width, canvas.height);

@@ -42,8 +42,8 @@ envPrototype.drawBg = function () {
 envPrototype.drawTargetHalo = function () {
 	var g = this.targetHalo.graphics;
 	g.clear();
-	g.beginFill("#FFFFFF").drawCircle(this.targetHaloRadius,
-																		this.targetHaloRadius,
+	g.beginFill("#FFFFFF").drawCircle(0,
+																		0,
 																		this.targetHaloRadius);
 }
 
@@ -53,8 +53,8 @@ envPrototype.update = function () {
 	}
 	if (info.target) {
 		this.targetHalo.alpha = 0.5;
-		this.targetHalo.x = info.target.x-this.targetToHaloDiff;
-		this.targetHalo.y = info.target.y-this.targetToHaloDiff;
+		this.targetHalo.x = info.target.x;
+		this.targetHalo.y = info.target.y;
 	} else { 
 		this.targetHalo.alpha = 0;
 	}
