@@ -56,6 +56,7 @@ function Info (bounds, hue) {
 		} else if (mode == 'autopredator') {
 			mode = 'observer';
 		}
+		allAgentsDirty = true;
 		this.drawToggleMode();
 	}, this); // callback executes in the scope of Info object
 

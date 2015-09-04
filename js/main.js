@@ -37,6 +37,7 @@ var newAgents;
 var tree;
 var envHue;
 var mode;
+var allAgentsDirty;
 
 function configureDefaults () {
 	// dunno if static typed arrays will play nice so let's keep
@@ -108,6 +109,7 @@ function tick (event) {
 				newAgents.push(result[1]);
 			}
 		}
+		allAgentsDirty = false;
 
 		// swap agents and newAgents;
 		var temp = agents;

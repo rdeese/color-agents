@@ -150,26 +150,56 @@ agentPrototype.collide = function (other) {
 		}
 	}
 }
+
+agentPrototype.selectCacheIfExists = function () {
+	if (this.isColliding && this.isPregnant &&
+			mode != 'predator' && this.cpeCacheCanvas) {
+		this.cacheCanvas = this.cpeCacheCanvas;
+		return true;
+	}
+	if (!this.isColliding && this.isPregnant &&
+			mode != 'predator' && this.npeCacheCanvas) {
+		this.cacheCanvas = this.npeCacheCanvas;
+		return true;
+	}
+	if (this.isColliding && !this.isPregnant &&
+			mode != 'predator' && this.cneCacheCanvas) {
+		this.cacheCanvas = this.cneCacheCanvas;
+		return true;
+	}
+	if (!this.isColliding && !this.isPregnant &&
+			mode != 'predator' && this.nneCacheCanvas) {
+		this.cacheCanvas = this.nneCacheCanvas;
+		return true;
+	}
+	if (this.isColliding && this.isPregnant &&
+			mode == 'predator' && this.cpnCacheCanvas) {
+		this.cacheCanvas = this.cpnCacheCanvas;
+		return true;
+	}
+	if (!this.isColliding && this.isPregnant &&
+			mode == 'predator' && this.npnCacheCanvas) {
+		this.cacheCanvas = this.npnCacheCanvas;
+		return true;
+	}
+	if (this.isColliding && !this.isPregnant &&
+			mode == 'predator' && this.cnnCacheCanvas) {
+		this.cacheCanvas = this.cnnCacheCanvas;
+		return true;
+	}
+	if (!this.isColliding && !this.isPregnant &&
+			mode == 'predator' && this.nnnCacheCanvas) {
+		this.cacheCanvas = this.nnnCacheCanvas;
+		return true;
+	}
+	return false;
+}
 	
 // draw the graphical representation of the agent
 agentPrototype.drawAgent = function () {
-	if (this.isColliding && this.isPregnant && this.cpCacheCanvas) {
-		this.cacheCanvas = this.cpCacheCanvas;
+	if (this.selectCacheIfExists()) {
 		return;
 	}
-	if (!this.isColliding && this.isPregnant && this.npCacheCanvas) {
-		this.cacheCanvas = this.npCacheCanvas;
-		return;
-	}
-	if (this.isColliding && !this.isPregnant && this.cnCacheCanvas) {
-		this.cacheCanvas = this.cnCacheCanvas;
-		return;
-	}
-	if (!this.isColliding && !this.isPregnant && this.nnCacheCanvas) {
-		this.cacheCanvas = this.nnCacheCanvas;
-		return;
-	}
-
 	var g = this.graphics;
 	g.clear();
 	var strokeWidth = 1;
@@ -184,26 +214,29 @@ agentPrototype.drawAgent = function () {
 	// draw body
 	g.drawCircle(0, 0, this.radius);
 	
-	// draw eyes
-	// whites
-	g.beginFill(this.color.brighten(0.2).hex());
-	g.beginStroke(this.color.darken(0.2).hex());
-	g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.3);
-	g.endStroke();
-	g.beginStroke(this.color.darken(0.2).hex());
-	g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.3);
-	g.endStroke();
-	// pupils
-	g.beginFill(this.color.darken(0.2).hex());
-	g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.12);
-	g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.12);
-	g.endFill();
+	if (mode != 'predator') {
+		// draw eyes
+		// whites
+		var eyeContrast = 0.4; //0.2;
+		g.beginFill(this.color.brighten(eyeContrast).hex());
+		g.beginStroke(this.color.darken(eyeContrast).hex());
+		g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.3);
+		g.endStroke();
+		g.beginStroke(this.color.darken(eyeContrast).hex());
+		g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.3);
+		g.endStroke();
+		// pupils
+		g.beginFill(this.color.darken(eyeContrast).hex());
+		g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.12);
+		g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.12);
+		g.endFill();
 
-	//draw baby
-	if (this.isPregnant) {
-		g.setStrokeStyle(3);
-		g.beginStroke(this.color.brighten(0.1).hex());
-		g.drawCircle(0,0,this.radius);
+		//draw baby
+		if (this.isPregnant) {
+			g.setStrokeStyle(3);
+			g.beginStroke(this.color.brighten(0.1).hex());
+			g.drawCircle(0,0,this.radius);
+		}
 	}
 	
 
@@ -303,7 +336,8 @@ agentPrototype.update = function (e) {
 	vec2.add(this.pos, this.pos, this.subResult);
 	this.x = this.pos[0];
 	this.y = this.pos[1];
-	this.rotation = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
+	var velDir = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
+	this.rotation = (this.rotation*4+velDir)/5;
 	
 	// elastically collide with walls
 	if (this.x + this.scaleX*this.radius > this.bounds.width) {
@@ -322,7 +356,8 @@ agentPrototype.update = function (e) {
 
 	// handle redraws and collision logic
 	if ((this.wasColliding != this.isColliding) ||
-			(this.isPregnant != this.wasPregnant)) {
+			(this.wasPregnant != this.isPregnant) ||
+			allAgentsDirty) {
 		this.drawAgent();
 	}
 
