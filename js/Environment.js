@@ -38,19 +38,45 @@ envPrototype.drawBg = function () {
 	var c;
 	var col;
 	var r;
+	
+	// body like things
 	for (var i = 0; i < NUM_BG_CIRCLES; i++) {
 		c = new createjs.Shape();
-		r = AGENT_RADIUS;
-		c.x = random.number() * (bounds.width-2*r) + r;
-		c.y = random.number() * (bounds.height-2*r) + r;
-		col = chroma.hcl(this.hue+30*(random.number()-0.5),
-										 GLOBAL_CHROMA,GLOBAL_LIGHTNESS);
-		c.graphics.beginFill(col.hex());
-		//c.graphics.beginStroke(col.brighten((random.number()-0.5)).hex());
-		c.graphics.drawCircle(0,0,r);
-		this.bg.addChild(c);
+		if (random.number() < 0.5) { // make a body-like thing
+			if (random.number() < 0.2) {
+				r = random.number()*(AGENT_RADIUS-BABY_AGENT_RADIUS)+BABY_AGENT_RADIUS;
+			} else {
+				r = AGENT_RADIUS;
+			}
+			c.x = random.number() * (bounds.width-2*r) + r;
+			c.y = random.number() * (bounds.height-2*r) + r;
+			col = chroma.hcl(this.hue+30*(random.number()-0.5),
+											 GLOBAL_CHROMA,GLOBAL_LIGHTNESS);
+			c.graphics.beginFill(col.hex());
+			c.graphics.drawCircle(0,0,r);
+			this.bg.addChild(c);
+		} else { // make an eye-like thing
+			r = AGENT_RADIUS;
+			g = c.graphics;
+			c.x = random.number() * (bounds.width-2*r) + r;
+			c.y = random.number() * (bounds.height-2*r) + r;
+			col = chroma.hcl(this.hue+30*(random.number()-0.5),
+											 GLOBAL_CHROMA,GLOBAL_LIGHTNESS);
+			// draw eyes
+			// whites
+			g.beginFill(col.brighten(0.2).hex());
+			g.beginStroke(col.darken(0.2).hex());
+			g.drawCircle(r*0.4, -r*0.4, r*0.3);
+			g.endStroke();
+			g.endFill();
+			// pupils
+			g.beginFill(col.darken(0.2).hex());
+			g.drawCircle(r*0.4, -r*0.4, r*0.12);
+			g.endFill();
+			this.bg.addChild(c);
+    }
 	}
-	
+
 	this.bg.uncache();
 	this.bg.cache(0,0,bounds.width,bounds.height);
 	this.colorHasChanged = false;

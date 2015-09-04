@@ -101,7 +101,7 @@ infoPrototype.drawInfo = function () {
 }
 
 infoPrototype.update = function () {
-	if (this.target && this.target.isDead) {
+	if (this.target && this.target.isDying) {
 		this.setTarget(null);
 	}
 

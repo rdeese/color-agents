@@ -27,7 +27,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.isColliding = false;
 	this.wasPregnant = false;
 	this.isPregnant = false;
-	this.isDead = false;
+	this.isDying = false;
 	this.collisionStart = null;
 	
 	this.expressPhenotype();
@@ -43,7 +43,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 	// add listener to process click events
 	this.on('mousedown', function (e) {
 		if (predatorMode) {
-			this.isDead = true;
+			this.isEaten = true;
 		} else {
 			info.setTarget(this);
 		}
@@ -79,7 +79,7 @@ agentPrototype.shiftXYToCenter = function () {
 
 
 agentPrototype.wander = function () {
-	vec2.scale(this.acc, this.acc, 0.8);
+	vec2.scale(this.acc, this.acc, 0.9);
 	// randomly change the acceleration
 	if (random.number() < MOVEMENT_PROB) {
 		vec2.add(this.acc, this.acc, vec2.fromValues(MAX_ACC*(random.number()-0.5),
@@ -92,6 +92,9 @@ agentPrototype.collide = function (other) {
 	var totalMass = this.mass + other.mass;
 	var collisionDepth = radii - vec2.distance(this.pos, other.pos);
 	if (collisionDepth > 0) {
+		//vec2.set(this.acc, 0, 0);
+		//vec2.set(other.acc, 0, 0);
+
 		vec2.subtract(this.velDiff, this.vel, other.vel);
 		vec2.subtract(this.posDiff, this.pos, other.pos);
 
@@ -180,8 +183,7 @@ agentPrototype.drawAgent = function () {
 
 	// draw body
 	g.drawCircle(0, 0, this.radius);
-
-	/*
+	
 	// draw eyes
 	// whites
 	g.beginFill(this.color.brighten(0.2).hex());
@@ -203,7 +205,7 @@ agentPrototype.drawAgent = function () {
 		g.beginStroke(this.color.brighten(0.1).hex());
 		g.drawCircle(0,0,this.radius);
 	}
-	*/
+	
 
 	
 	this.uncache();
@@ -231,6 +233,34 @@ agentPrototype.grow = function (currentTime) {
 	}
 	this.mass = Math.PI*this.height*this.height/4; // comes out to pi*r^2
 }
+
+agentPrototype.isDead = function (currentTime) {
+	// check if I got eaten
+	if (this.isEaten) {
+		this.isDying = true;
+		this.graphics.clear();
+		return true;
+	}
+	// calculate probability of death
+	if (!this.deathTime) {
+		var score = (currentTime-this.birthTime)/1000 +
+								2*this.collisionCount;
+		if (score > DEATH_THRESHHOLD) {
+			this.isDying = true;
+			this.deathTime = currentTime;
+		}
+		return false;
+	} else {
+		this.alpha = 1-(currentTime-this.deathTime)/DEATH_DURATION;
+		if (this.alpha <= 0) {
+			this.graphics.clear();
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+
 
 // update the kinematics of the agent
 agentPrototype.update = function (e) {
@@ -300,13 +330,7 @@ agentPrototype.update = function (e) {
 	this.wasColliding = this.isColliding;
 	this.isColliding = false;
 
-	// calculate probability of death
-	var score = (currentTime-this.birthTime)/1000 +
-							5*this.collisionCount;
-	if (this.isDead || score > DEATH_THRESHHOLD) {
-		this.isDead = true;
-		this.graphics.clear();
-	} else {
+	if (!this.isDead(currentTime)) {
 		result.push(this);
 	}
 

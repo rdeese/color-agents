@@ -2,22 +2,23 @@
 
 var NUM_AGENTS = 100;
 var DEATH_THRESHHOLD = 300;
+var DEATH_DURATION = 2000; // milliseconds
 
 var MATING_PROB = 0.05;
 var MUTATION_RATE = 20;
 var GESTATION_PD = 5000; // milliseconds
 var YOUTH_DURATION = 10000; // milliseconds
 var MAX_ACC = 50;
-var MOVEMENT_PROB = 0.003;
+var MOVEMENT_PROB = 0.01;
 
 var AGENT_RADIUS = 30;
-var BABY_AGENT_RADIUS = 5; // TODO change this once scaling is introduced
+var BABY_AGENT_RADIUS = 1; // TODO change this once scaling is introduced
 var BABY_SCALE = BABY_AGENT_RADIUS/AGENT_RADIUS;
 var YOUTH_SCALE_STEP = (1-BABY_SCALE)/YOUTH_DURATION;
 
 var GLOBAL_CHROMA = 55;
 var GLOBAL_LIGHTNESS = 70;
-var NUM_BG_CIRCLES = 200;
+var NUM_BG_CIRCLES = 500;
 
 var random;
 var stage;
