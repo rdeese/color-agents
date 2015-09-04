@@ -52,8 +52,6 @@ function Agent(bounds, radius, position, velocity, genome) {
 
 var agentPrototype = createjs.extend(Agent, createjs.Shape);
 
-agentPrototype.maxAcc = 50;
-
 // turns genotype into phenotype
 agentPrototype.expressPhenotype = function () {
 	// Assumes a diploid organism with one gene, and calculates the phenotypic
@@ -64,8 +62,8 @@ agentPrototype.expressPhenotype = function () {
 	// HCL scale is for chroma and lightness. the goal of these settings
 	// is to stay within a safe range, where the spectrum of hues is continuous
 	// and has consistent lightness
-	//this.color = chroma.hcl(this.genome[0][0] + this.genome[1][0], 55, 70);
-	this.color = chroma.hcl(2*this.genome[0][0], 55, 70);
+	//this.color = chroma.hcl(this.genome[0][0] + this.genome[1][0], GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
+	this.color = chroma.hcl(2*this.genome[0][0], GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
 }
 
 // Two functions to move X & Y to play nice with the QUADTREE library
@@ -83,9 +81,9 @@ agentPrototype.shiftXYToCenter = function () {
 agentPrototype.wander = function () {
 	vec2.scale(this.acc, this.acc, 0.8);
 	// randomly change the acceleration
-	if (random.number() < 0.05) {
-		vec2.add(this.acc, this.acc, vec2.fromValues(this.maxAcc*(random.number()-0.5),
-																 								 this.maxAcc*(random.number()-0.5)));
+	if (random.number() < MOVEMENT_PROB) {
+		vec2.add(this.acc, this.acc, vec2.fromValues(MAX_ACC*(random.number()-0.5),
+																 								 MAX_ACC*(random.number()-0.5)));
 	}
 }
 
@@ -136,7 +134,7 @@ agentPrototype.collide = function (other) {
 				this.isPregnant = true;
 				this.matingTime = matingTime;
 				this.childGenome = [[(this.genome[0][0]+other.genome[0][0])/2], [0]];
-				this.childGenome[0][0] += (random.number()-0.5)*50;
+				this.childGenome[0][0] += (random.number()-0.5)*MUTATION_RATE;
 			} else {
 				other.isPregnant = true;
 				other.matingTime = matingTime;
@@ -183,6 +181,7 @@ agentPrototype.drawAgent = function () {
 	// draw body
 	g.drawCircle(0, 0, this.radius);
 
+	/*
 	// draw eyes
 	// whites
 	g.beginFill(this.color.brighten(0.2).hex());
@@ -204,6 +203,7 @@ agentPrototype.drawAgent = function () {
 		g.beginStroke(this.color.brighten(0.1).hex());
 		g.drawCircle(0,0,this.radius);
 	}
+	*/
 
 	
 	this.uncache();
@@ -267,7 +267,7 @@ agentPrototype.update = function (e) {
 	}
 
 	// Iterate internal kinematics
-	vec2.scale(this.vel, this.vel, 0.99);
+	vec2.scale(this.vel, this.vel, 0.97);
 	vec2.add(this.vel, this.vel, this.acc);
 	vec2.scale(this.subResult, this.vel, e.delta/1000);
 	vec2.add(this.pos, this.pos, this.subResult);
@@ -302,7 +302,7 @@ agentPrototype.update = function (e) {
 
 	// calculate probability of death
 	var score = (currentTime-this.birthTime)/1000 +
-							this.collisionCount;
+							5*this.collisionCount;
 	if (this.isDead || score > DEATH_THRESHHOLD) {
 		this.isDead = true;
 		this.graphics.clear();

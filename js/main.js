@@ -1,16 +1,23 @@
 "use strict";
 
 var NUM_AGENTS = 100;
-var DEATH_THRESHHOLD = 200;
+var DEATH_THRESHHOLD = 300;
 
 var MATING_PROB = 0.05;
+var MUTATION_RATE = 20;
 var GESTATION_PD = 5000; // milliseconds
 var YOUTH_DURATION = 10000; // milliseconds
+var MAX_ACC = 50;
+var MOVEMENT_PROB = 0.003;
 
 var AGENT_RADIUS = 30;
-var BABY_AGENT_RADIUS = 10; // TODO change this once scaling is introduced
+var BABY_AGENT_RADIUS = 5; // TODO change this once scaling is introduced
 var BABY_SCALE = BABY_AGENT_RADIUS/AGENT_RADIUS;
 var YOUTH_SCALE_STEP = (1-BABY_SCALE)/YOUTH_DURATION;
+
+var GLOBAL_CHROMA = 55;
+var GLOBAL_LIGHTNESS = 70;
+var NUM_BG_CIRCLES = 200;
 
 var random;
 var stage;
@@ -41,10 +48,10 @@ function initAgents(num) {
 	for (var i = 0; i < num; i++) {
 		radius = AGENT_RADIUS;
 		a = new Agent(bounds, radius,
-									vec2.fromValues(random.number() * (bounds.width-radius) + radius,
-																	random.number() * (bounds.height-radius) + radius),
+									vec2.fromValues(random.number() * (bounds.width-2*radius) + radius,
+																	random.number() * (bounds.height-2*radius) + radius),
 									vec2.create(),
-									[[random.number()*180], [random.number()*180]]);
+									[[random.number()*360], [random.number()*180]]);
 		agentContainer.addChild(a);
 		agents.push(a);
 		tree.insert(a);
