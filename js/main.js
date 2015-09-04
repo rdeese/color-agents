@@ -1,7 +1,7 @@
 "use strict";
 
 var NUM_AGENTS = 100;
-var NUM_PLANTS = 500;
+var NUM_PLANTS = 300;
 var DEATH_THRESHHOLD = 300;
 var DEATH_DURATION = 2000; // milliseconds
 
@@ -26,8 +26,6 @@ var stage;
 var bounds;
 var bg;
 var info;
-var plants;
-var plantContainer;
 var agents;
 var agentContainer;
 var newAgents;
@@ -44,24 +42,6 @@ function configureDefaults () {
 	random = new PcgRandom(Date.now());
 };
 
-function initPlants(num,envHue) {
-	plants = [];
-	var radius;
-	var p;
-	var r;
-	for (var i = 0; i < num; i++) {
-		r = random.number();
-		radius = AGENT_RADIUS-(AGENT_RADIUS*r*r);
-		p = new Plant(bounds, radius,
-									vec2.fromValues(random.number() * (bounds.width-2*radius) + radius,
-																	random.number() * (bounds.height-2*radius) + radius),
-									vec2.create(),
-									envHue);
-		plantContainer.addChild(p);
-		plants.push(p);
-	}
-}
-							
 function initAgents(num) {
 	agents = [];
 	newAgents = [];
@@ -167,10 +147,6 @@ function main () {
 
 	bg = new Environment(bounds, envHue);
 	stage.addChild(bg);
-
-	plantContainer = new createjs.Container();
-	stage.addChild(plantContainer);
-	initPlants(NUM_PLANTS, envHue);
 
 	agentContainer = new createjs.Container();
 	stage.addChild(agentContainer);

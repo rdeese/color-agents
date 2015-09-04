@@ -22,7 +22,7 @@ function Environment (bounds,envHue) {
 
 	this.on('tick', function (e) {
 		//if (!e.paused) {
-			this.update();
+			this.update(e);
 		//}
 	});
 }
@@ -35,9 +35,20 @@ envPrototype.drawBg = function () {
 	var g = colorFill.graphics;
 	g.clear();
 	g.beginFill(this.color.hex()).drawRoundRect(0,0,bounds.width, bounds.height,20);
-	var c;
-	var col;
+	
+	var radius;
+	var p;
 	var r;
+	for (var i = 0; i < NUM_BG_CIRCLES; i++) {
+		r = random.number();
+		radius = AGENT_RADIUS-(AGENT_RADIUS*r*r);
+		p = new Plant(bounds, radius,
+									vec2.fromValues(random.number() * (bounds.width-2*radius) + radius,
+																	random.number() * (bounds.height-2*radius) + radius),
+									vec2.create(),
+									envHue);
+		this.bg.addChild(p);
+	}
 	
 	/*
 	// body like things
@@ -79,8 +90,8 @@ envPrototype.drawBg = function () {
 	}
 	*/
 
-	this.bg.uncache();
-	this.bg.cache(0,0,bounds.width,bounds.height);
+	//this.bg.uncache();
+	//this.bg.cache(0,0,bounds.width,bounds.height);
 	this.colorHasChanged = false;
 }
 
@@ -92,7 +103,7 @@ envPrototype.drawTargetHalo = function () {
 																		this.targetHaloRadius);
 }
 
-envPrototype.update = function () {
+envPrototype.update = function (e) {
 	if (this.colorHasChanged) {
 		this.drawBg();
 	}
