@@ -244,7 +244,7 @@ agentPrototype.isDead = function (currentTime) {
 	// calculate probability of death
 	if (!this.deathTime) {
 		var score = (currentTime-this.birthTime)/1000 +
-								2*this.collisionCount;
+								1*this.collisionCount;
 		if (score > DEATH_THRESHHOLD) {
 			this.isDying = true;
 			this.deathTime = currentTime;
@@ -297,7 +297,7 @@ agentPrototype.update = function (e) {
 	}
 
 	// Iterate internal kinematics
-	vec2.scale(this.vel, this.vel, 0.97);
+	vec2.scale(this.vel, this.vel, 0.98);
 	vec2.add(this.vel, this.vel, this.acc);
 	vec2.scale(this.subResult, this.vel, e.delta/1000);
 	vec2.add(this.pos, this.pos, this.subResult);

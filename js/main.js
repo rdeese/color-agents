@@ -1,6 +1,7 @@
 "use strict";
 
 var NUM_AGENTS = 100;
+var NUM_PLANTS = 500;
 var DEATH_THRESHHOLD = 300;
 var DEATH_DURATION = 2000; // milliseconds
 
@@ -9,7 +10,7 @@ var MUTATION_RATE = 20;
 var GESTATION_PD = 5000; // milliseconds
 var YOUTH_DURATION = 10000; // milliseconds
 var MAX_ACC = 50;
-var MOVEMENT_PROB = 0.01;
+var MOVEMENT_PROB = 0.02;
 
 var AGENT_RADIUS = 30;
 var BABY_AGENT_RADIUS = 1; // TODO change this once scaling is introduced
@@ -25,10 +26,13 @@ var stage;
 var bounds;
 var bg;
 var info;
+var plants;
+var plantContainer;
 var agents;
 var agentContainer;
 var newAgents;
 var tree;
+var envHue;
 
 var predatorMode = false;
 
@@ -40,6 +44,24 @@ function configureDefaults () {
 	random = new PcgRandom(Date.now());
 };
 
+function initPlants(num,envHue) {
+	plants = [];
+	var radius;
+	var p;
+	var r;
+	for (var i = 0; i < num; i++) {
+		r = random.number();
+		radius = AGENT_RADIUS-(AGENT_RADIUS*r*r);
+		p = new Plant(bounds, radius,
+									vec2.fromValues(random.number() * (bounds.width-2*radius) + radius,
+																	random.number() * (bounds.height-2*radius) + radius),
+									vec2.create(),
+									envHue);
+		plantContainer.addChild(p);
+		plants.push(p);
+	}
+}
+							
 function initAgents(num) {
 	agents = [];
 	newAgents = [];
@@ -136,13 +158,19 @@ function main () {
 	canvas.height = window.innerHeight - 20;
 	stage = new createjs.Stage(canvas);
 
+	envHue = random.number()*360;
+
 	// QuadTree setup
 	bounds = new createjs.Rectangle(0, 0, canvas.width, canvas.height);
 	// give it the bounds, false means shapes not points, and a depth of 7
 	tree = new QuadTree(bounds, false, 7);
 
-	bg = new Environment(bounds);
+	bg = new Environment(bounds, envHue);
 	stage.addChild(bg);
+
+	plantContainer = new createjs.Container();
+	stage.addChild(plantContainer);
+	initPlants(NUM_PLANTS, envHue);
 
 	agentContainer = new createjs.Container();
 	stage.addChild(agentContainer);

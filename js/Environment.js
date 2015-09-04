@@ -1,6 +1,6 @@
-function Environment (bounds) {
+function Environment (bounds,envHue) {
 	this.Container_constructor();
-	this.hue = random.number()*360;
+	this.hue = envHue;
 	this.color = chroma.hcl(this.hue,GLOBAL_CHROMA,GLOBAL_LIGHTNESS);
 	this.colorHasChanged = false;
 	
@@ -39,6 +39,7 @@ envPrototype.drawBg = function () {
 	var col;
 	var r;
 	
+	/*
 	// body like things
 	for (var i = 0; i < NUM_BG_CIRCLES; i++) {
 		c = new createjs.Shape();
@@ -76,6 +77,7 @@ envPrototype.drawBg = function () {
 			this.bg.addChild(c);
     }
 	}
+	*/
 
 	this.bg.uncache();
 	this.bg.cache(0,0,bounds.width,bounds.height);
