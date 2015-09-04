@@ -157,19 +157,9 @@ agentPrototype.selectCacheIfExists = function () {
 		this.cacheCanvas = this.cpeCacheCanvas;
 		return true;
 	}
-	if (!this.isColliding && this.isPregnant &&
-			mode != 'predator' && this.npeCacheCanvas) {
-		this.cacheCanvas = this.npeCacheCanvas;
-		return true;
-	}
 	if (this.isColliding && !this.isPregnant &&
 			mode != 'predator' && this.cneCacheCanvas) {
 		this.cacheCanvas = this.cneCacheCanvas;
-		return true;
-	}
-	if (!this.isColliding && !this.isPregnant &&
-			mode != 'predator' && this.nneCacheCanvas) {
-		this.cacheCanvas = this.nneCacheCanvas;
 		return true;
 	}
 	if (this.isColliding && this.isPregnant &&
@@ -177,19 +167,9 @@ agentPrototype.selectCacheIfExists = function () {
 		this.cacheCanvas = this.cpnCacheCanvas;
 		return true;
 	}
-	if (!this.isColliding && this.isPregnant &&
-			mode == 'predator' && this.npnCacheCanvas) {
-		this.cacheCanvas = this.npnCacheCanvas;
-		return true;
-	}
 	if (this.isColliding && !this.isPregnant &&
 			mode == 'predator' && this.cnnCacheCanvas) {
 		this.cacheCanvas = this.cnnCacheCanvas;
-		return true;
-	}
-	if (!this.isColliding && !this.isPregnant &&
-			mode == 'predator' && this.nnnCacheCanvas) {
-		this.cacheCanvas = this.nnnCacheCanvas;
 		return true;
 	}
 	return false;
@@ -205,11 +185,7 @@ agentPrototype.drawAgent = function () {
 	var strokeWidth = 1;
 	g.setStrokeStyle(strokeWidth);
 
-	if (false) { //this.isColliding) {
-		g.beginFill(this.color.brighten(0.1).hex());
-	} else {
-		g.beginFill(this.color.hex());
-	}
+	g.beginFill(this.color.hex());
 
 	// draw body
 	g.drawCircle(0, 0, this.radius);
@@ -238,8 +214,6 @@ agentPrototype.drawAgent = function () {
 			g.drawCircle(0,0,this.radius);
 		}
 	}
-	
-
 	
 	this.uncache();
 	this.cache(-this.radius-1, -this.radius-1, 2*this.radius+2, 2*this.radius+2);
@@ -271,6 +245,7 @@ agentPrototype.isDead = function (currentTime) {
 	// check if I got eaten
 	if (this.isEaten) {
 		this.isDying = true;
+		this.uncache();
 		this.graphics.clear();
 		return true;
 	}
@@ -286,6 +261,7 @@ agentPrototype.isDead = function (currentTime) {
 	} else {
 		this.alpha = 1-(currentTime-this.deathTime)/DEATH_DURATION;
 		if (this.alpha <= 0) {
+			this.uncache();
 			this.graphics.clear();
 			return true;
 		} else {
