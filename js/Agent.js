@@ -152,24 +152,24 @@ agentPrototype.collide = function (other) {
 }
 
 agentPrototype.selectCacheIfExists = function () {
-	if (this.isColliding && this.isPregnant &&
-			mode != 'predator' && this.cpeCacheCanvas) {
-		this.cacheCanvas = this.cpeCacheCanvas;
+	if (this.isPregnant &&
+			mode != 'predator' && this.peCacheCanvas) {
+		this.cacheCanvas = this.peCacheCanvas;
 		return true;
 	}
-	if (this.isColliding && !this.isPregnant &&
-			mode != 'predator' && this.cneCacheCanvas) {
-		this.cacheCanvas = this.cneCacheCanvas;
+	if (!this.isPregnant &&
+			mode != 'predator' && this.neCacheCanvas) {
+		this.cacheCanvas = this.neCacheCanvas;
 		return true;
 	}
-	if (this.isColliding && this.isPregnant &&
-			mode == 'predator' && this.cpnCacheCanvas) {
-		this.cacheCanvas = this.cpnCacheCanvas;
+	if (this.isPregnant &&
+			mode == 'predator' && this.pnCacheCanvas) {
+		this.cacheCanvas = this.pnCacheCanvas;
 		return true;
 	}
-	if (this.isColliding && !this.isPregnant &&
-			mode == 'predator' && this.cnnCacheCanvas) {
-		this.cacheCanvas = this.cnnCacheCanvas;
+	if (!this.isPregnant &&
+			mode == 'predator' && this.nnCacheCanvas) {
+		this.cacheCanvas = this.nnCacheCanvas;
 		return true;
 	}
 	return false;
@@ -218,13 +218,13 @@ agentPrototype.drawAgent = function () {
 	this.uncache();
 	this.cache(-this.radius-1, -this.radius-1, 2*this.radius+2, 2*this.radius+2);
 
-	if (this.isColliding && this.isPregnant) {
-		this.cpCacheCanvas = this.cacheCanvas;
-	} else if (!this.isColliding && this.isPregnant) {
-		this.npCacheCanvas = this.cacheCanvas;
-	} else if (this.isColliding && !this.isPregnant) {
-		this.cnCacheCanvas = this.cacheCanvas;
-	} else if (!this.isColliding && !this.isPregnant) {
+	if (this.isPregnant && mode != 'predator') {
+		this.peCacheCanvas = this.cacheCanvas;
+	} else if (this.isPregnant && mode != 'predator') {
+		this.neCacheCanvas = this.cacheCanvas;
+	} else if (!this.isPregnant && mode == 'predator') {
+		this.pnCacheCanvas = this.cacheCanvas;
+	} else if (!this.isPregnant && mode == 'predator') {
 		this.nnCacheCanvas = this.cacheCanvas;
 	}
 }
@@ -312,8 +312,14 @@ agentPrototype.update = function (e) {
 	vec2.add(this.pos, this.pos, this.subResult);
 	this.x = this.pos[0];
 	this.y = this.pos[1];
+	
+	// update the rotation properly
+	// bounded by -180 to 180 
 	var velDir = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
-	this.rotation = (this.rotation*4+velDir)/5;
+	velDir = velDir - this.rotation;
+	if (velDir < -180) { velDir += 360; }
+	else if (velDir > 180) { velDir -= 360; }
+	this.rotation = this.rotation + velDir/5;
 	
 	// elastically collide with walls
 	if (this.x + this.scaleX*this.radius > this.bounds.width) {
