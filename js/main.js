@@ -1,5 +1,8 @@
 "use strict";
 
+var WORLD_OFFSET_Y = 58; // pixels
+var GLOBAL_COMPONENT_MARGIN = 8; // pixels
+
 var NUM_AGENTS = 100;
 var NUM_PLANTS = 300;
 var DEATH_THRESHHOLD = 300;
@@ -24,6 +27,8 @@ var NUM_BG_CIRCLES = 500;
 var random;
 var stage;
 var bounds;
+var infoBounds;
+var worldBounds;
 var bg;
 var info;
 var agents;
@@ -31,8 +36,7 @@ var agentContainer;
 var newAgents;
 var tree;
 var envHue;
-
-var predatorMode = false;
+var mode;
 
 function configureDefaults () {
 	// dunno if static typed arrays will play nice so let's keep
@@ -50,7 +54,7 @@ function initAgents(num) {
 	var a;
 	for (var i = 0; i < num; i++) {
 		radius = AGENT_RADIUS;
-		a = new Agent(bounds, radius,
+		a = new Agent(worldBounds, radius,
 									vec2.fromValues(random.number() * (bounds.width-2*radius) + radius,
 																	random.number() * (bounds.height-2*radius) + radius),
 									vec2.create(),
@@ -119,18 +123,6 @@ function tick (event) {
 	stage.update(event);
 }
 
-window.addEventListener('keydown', function (e) {
-	if (e.keyCode == 65) { // 'a' key
-		predatorMode = !predatorMode;
-	}
-});
-
-window.addEventListener('keyup', function (e) {
-	if (e.keyCode == 65) { // 'a' key
-		//predatorMode = false;
-	}
-});
-
 function main () {
 	configureDefaults();
 	var canvas = document.querySelector("#world");
@@ -139,20 +131,27 @@ function main () {
 	stage = new createjs.Stage(canvas);
 
 	envHue = random.number()*360;
+	
+	bounds = new createjs.Rectangle(0, 0, canvas.width, canvas.height);
+	infoBounds = new createjs.Rectangle(0, 0, canvas.width, WORLD_OFFSET_Y);
+	worldBounds = new createjs.Rectangle(0, 0, canvas.width, canvas.height-WORLD_OFFSET_Y);
 
 	// QuadTree setup
-	bounds = new createjs.Rectangle(0, 0, canvas.width, canvas.height);
-	// give it the bounds, false means shapes not points, and a depth of 7
-	tree = new QuadTree(bounds, false, 7);
+	// give it the world bounds, false means shapes not points, and a depth of 7
+	tree = new QuadTree(worldBounds, false, 7);
 
-	bg = new Environment(bounds, envHue);
+	bg = new Environment(worldBounds, envHue);
+	bg.y = WORLD_OFFSET_Y;
 	stage.addChild(bg);
 
 	agentContainer = new createjs.Container();
+	agentContainer.y = WORLD_OFFSET_Y;
 	stage.addChild(agentContainer);
 	initAgents(NUM_AGENTS);
 
-	info = new Info(bounds, 1);
+	mode = 'observer';
+	info = new Info(infoBounds, envHue);
+
 	stage.addChild(info);
 
 	//createjs.Ticker.setFPS(24);

@@ -1,5 +1,6 @@
 function Environment (bounds,envHue) {
 	this.Container_constructor();
+	this.bounds = bounds;
 	this.hue = envHue;
 	this.color = chroma.hcl(this.hue,GLOBAL_CHROMA,GLOBAL_LIGHTNESS);
 	this.colorHasChanged = false;
@@ -34,7 +35,7 @@ envPrototype.drawBg = function () {
 	this.bg.addChild(colorFill);
 	var g = colorFill.graphics;
 	g.clear();
-	g.beginFill(this.color.hex()).drawRoundRect(0,0,bounds.width, bounds.height,20);
+	g.beginFill(this.color.hex()).drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
 	
 	var radius;
 	var p;
@@ -42,9 +43,9 @@ envPrototype.drawBg = function () {
 	for (var i = 0; i < NUM_BG_CIRCLES; i++) {
 		r = random.number();
 		radius = AGENT_RADIUS-(AGENT_RADIUS*r*r);
-		p = new Plant(bounds, radius,
-									vec2.fromValues(random.number() * (bounds.width-2*radius) + radius,
-																	random.number() * (bounds.height-2*radius) + radius),
+		p = new Plant(this.bounds, radius,
+									vec2.fromValues(random.number() * (this.bounds.width-2*radius) + radius,
+																	random.number() * (this.bounds.height-2*radius) + radius),
 									vec2.create(),
 									envHue);
 		this.bg.addChild(p);
@@ -60,8 +61,8 @@ envPrototype.drawBg = function () {
 			} else {
 				r = AGENT_RADIUS;
 			}
-			c.x = random.number() * (bounds.width-2*r) + r;
-			c.y = random.number() * (bounds.height-2*r) + r;
+			c.x = random.number() * (this.bounds.width-2*r) + r;
+			c.y = random.number() * (this.bounds.height-2*r) + r;
 			col = chroma.hcl(this.hue+30*(random.number()-0.5),
 											 GLOBAL_CHROMA,GLOBAL_LIGHTNESS);
 			c.graphics.beginFill(col.hex());
@@ -70,8 +71,8 @@ envPrototype.drawBg = function () {
 		} else { // make an eye-like thing
 			r = AGENT_RADIUS;
 			g = c.graphics;
-			c.x = random.number() * (bounds.width-2*r) + r;
-			c.y = random.number() * (bounds.height-2*r) + r;
+			c.x = random.number() * (this.bounds.width-2*r) + r;
+			c.y = random.number() * (this.bounds.height-2*r) + r;
 			col = chroma.hcl(this.hue+30*(random.number()-0.5),
 											 GLOBAL_CHROMA,GLOBAL_LIGHTNESS);
 			// draw eyes
@@ -91,7 +92,7 @@ envPrototype.drawBg = function () {
 	*/
 
 	//this.bg.uncache();
-	//this.bg.cache(0,0,bounds.width,bounds.height);
+	//this.bg.cache(0,0,this.bounds.width,this.bounds.height);
 	this.colorHasChanged = false;
 }
 

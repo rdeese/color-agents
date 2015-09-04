@@ -42,9 +42,9 @@ function Agent(bounds, radius, position, velocity, genome) {
 
 	// add listener to process click events
 	this.on('mousedown', function (e) {
-		if (predatorMode) {
+		if (mode == 'predator' && !createjs.Ticker.paused) {
 			this.isEaten = true;
-		} else {
+		} else if (mode == 'observer') {
 			info.setTarget(this);
 		}
 	});
