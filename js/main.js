@@ -3,19 +3,19 @@
 var WORLD_OFFSET_Y = 58; // pixels
 var GLOBAL_COMPONENT_MARGIN = 8; // pixels
 
-var NUM_AGENTS = 100;
-var NUM_PLANTS = 300;
+var NUM_AGENTS = 50;
+var NUM_PLANTS = 100;
 var DEATH_THRESHHOLD = 300;
-var DEATH_DURATION = 2000; // milliseconds
+var DEATH_DURATION = 1000; // milliseconds
 
-var MATING_PROB = 0.05;
+var MATING_PROB = 0.1;
 var MUTATION_RATE = 20;
 var GESTATION_PD = 5000; // milliseconds
 var YOUTH_DURATION = 10000; // milliseconds
-var MAX_ACC = 50;
+var MAX_ACC = 40;
 var MOVEMENT_PROB = 0.02;
 
-var AUTOPRED_INTERVAL = 1000; // milliseconds
+var AUTOPRED_INTERVAL = 8000; // milliseconds
 
 var AGENT_RADIUS = 30;
 var BABY_AGENT_RADIUS = 1; // change this once scaling is introduced
@@ -110,7 +110,6 @@ function tick (event) {
 					if (diff > 180) { diff -= 360; }
 					if (diff < -180) { diff += 360; }
 					diff = Math.abs(diff);
-					//console.log("Genome=", ~~a.genome[0][0], "hue=", ~~envHue, "diff=", ~~diff);
 					if (diff > max) {
 						max = diff;
 						target = a;
@@ -121,7 +120,7 @@ function tick (event) {
 
 		if (target) {
 			console.log("genome", target.genome[0][0]);
-			if (max < 50) {
+			if (max < 20) {
 				console.log("spared one");
 			} else {
 				target.isEaten = true;
