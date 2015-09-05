@@ -190,29 +190,32 @@ agentPrototype.drawAgent = function () {
 	// draw body
 	g.drawCircle(0, 0, this.radius);
 	
-	if (mode != 'predator') {
-		// draw eyes
-		// whites
-		var eyeContrast = 0.4; //0.2;
-		g.beginFill(this.color.brighten(eyeContrast).hex());
-		g.beginStroke(this.color.darken(eyeContrast).hex());
-		g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.3);
-		g.endStroke();
-		g.beginStroke(this.color.darken(eyeContrast).hex());
-		g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.3);
-		g.endStroke();
-		// pupils
-		g.beginFill(this.color.darken(eyeContrast).hex());
-		g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.12);
-		g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.12);
-		g.endFill();
+	// draw eyes
+	var eyeContrast;
+	if (mode == 'predator') {
+		eyeContrast = 0.03; //0.2;
+	} else {
+		eyeContrast = 0.4;
+	}
+	// whites
+	g.beginFill(this.color.brighten(eyeContrast).hex());
+	g.beginStroke(this.color.darken(eyeContrast).hex());
+	g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.3);
+	g.endStroke();
+	g.beginStroke(this.color.darken(eyeContrast).hex());
+	g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.3);
+	g.endStroke();
+	// pupils
+	g.beginFill(this.color.darken(eyeContrast).hex());
+	g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.12);
+	g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.12);
+	g.endFill();
 
-		//draw baby
-		if (this.isPregnant) {
-			g.setStrokeStyle(3);
-			g.beginStroke(this.color.brighten(0.1).hex());
-			g.drawCircle(0,0,this.radius);
-		}
+	//draw baby
+	if (this.isPregnant) {
+		g.setStrokeStyle(3);
+		g.beginStroke(this.color.brighten(0.1).hex());
+		g.drawCircle(0,0,this.radius);
 	}
 	
 	this.uncache();
@@ -319,7 +322,7 @@ agentPrototype.update = function (e) {
 	velDir = velDir - this.rotation;
 	if (velDir < -180) { velDir += 360; }
 	else if (velDir > 180) { velDir -= 360; }
-	this.rotation = this.rotation + velDir/5;
+	this.rotation = this.rotation + velDir/10;
 	
 	// elastically collide with walls
 	if (this.x + this.scaleX*this.radius > this.bounds.width) {
