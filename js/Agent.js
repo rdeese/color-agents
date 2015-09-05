@@ -63,7 +63,7 @@ agentPrototype.expressPhenotype = function () {
 	// is to stay within a safe range, where the spectrum of hues is continuous
 	// and has consistent lightness
 	//this.color = chroma.hcl(this.genome[0][0] + this.genome[1][0], GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
-	this.color = chroma.hcl(2*this.genome[0][0], GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
+	this.color = chroma.hcl(this.genome[0][0], GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
 }
 
 // Two functions to move X & Y to play nice with the QUADTREE library

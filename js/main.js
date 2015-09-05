@@ -15,8 +15,10 @@ var YOUTH_DURATION = 10000; // milliseconds
 var MAX_ACC = 50;
 var MOVEMENT_PROB = 0.02;
 
+var AUTOPRED_INTERVAL = 1000; // milliseconds
+
 var AGENT_RADIUS = 30;
-var BABY_AGENT_RADIUS = 1; // TODO change this once scaling is introduced
+var BABY_AGENT_RADIUS = 1; // change this once scaling is introduced
 var BABY_SCALE = BABY_AGENT_RADIUS/AGENT_RADIUS;
 var YOUTH_SCALE_STEP = (1-BABY_SCALE)/YOUTH_DURATION;
 
@@ -38,6 +40,7 @@ var tree;
 var envHue;
 var mode;
 var allAgentsDirty;
+var lastAutopredTime;
 
 function configureDefaults () {
 	// dunno if static typed arrays will play nice so let's keep
@@ -77,6 +80,13 @@ function tick (event) {
 	// if we're not paused, we have to deal with 
 	// collisions
 	if (!event.paused) {
+		var currentTime = createjs.Ticker.getTime(true);
+
+		// autopredator vars
+		var max = 0;
+		var target = null;
+		var diff = 0;
+
 		// check for collisions
 		var items;
 		var a;
@@ -91,6 +101,32 @@ function tick (event) {
 				if (a == item) { continue; }
 				a.collide(item);
 			}
+
+			// autopredator
+			if (mode == 'autopredator' &&
+					(currentTime-lastAutopredTime)>AUTOPRED_INTERVAL) {
+				if (a.isAdult) {
+					diff = a.genome[0][0]-envHue;
+					if (diff > 180) { diff -= 360; }
+					if (diff < -180) { diff += 360; }
+					diff = Math.abs(diff);
+					//console.log("Genome=", ~~a.genome[0][0], "hue=", ~~envHue, "diff=", ~~diff);
+					if (diff > max) {
+						max = diff;
+						target = a;
+					}
+				}
+			}
+		}
+
+		if (target) {
+			console.log("genome", target.genome[0][0]);
+			if (max < 50) {
+				console.log("spared one");
+			} else {
+				target.isEaten = true;
+			}
+			lastAutopredTime = currentTime;
 		}
 
 		// iterate kinematics
@@ -152,6 +188,7 @@ function main () {
 	initAgents(NUM_AGENTS);
 
 	mode = 'observer';
+	lastAutopredTime = createjs.Ticker.getTime(true);
 	info = new Info(infoBounds, envHue);
 
 	stage.addChild(info);
