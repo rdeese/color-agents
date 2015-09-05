@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title>Color Agents</title>
+		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<script type="text/javascript" src="js/lib/pcg-random.js"></script>
 		<script type="text/javascript" src="js/lib/chroma.js"></script>
 		<script type="text/javascript" src="js/lib/easeljs-NEXT.combined.js"></script>
@@ -12,8 +13,71 @@
 		<script type="text/javascript" src="js/Agent.js"></script>
 		<script type="text/javascript" src="js/Info.js"></script>
 		<script type="text/javascript" src="js/main.js"></script>
+		<style>
+			* { -webkit-tap-highlight-color:rgba(0,0,0,0); }
+			h3 {
+				font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+				font-size: 20px;
+				text-align: center;
+			}
+			p {
+				font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+				font-size: 20px;
+			}
+			section {
+				width: 600px;
+				margin-top: 20px;
+				margin-bottom: 20px;
+			}
+			.centered {
+				margin-left:auto;
+				margin-right:auto;
+			}
+			.vspace {
+				margin-top: 50px;
+				margin-bottom: 50px;
+			}
+		</style>
 	</head>
 	<body>
-		<canvas id=world></canvas>
+		<section class=centered>
+			<h3>Color Critters</h3>
+			<p>
+				Welcome to the Color Critters beta! Please read the brief instructions,
+				and then take a look at the interactive below.
+			</p>
+			<p>
+				The world below is full of simple critters. When critters mate with one
+				another, the child's color is a blend of its parents' colors. The world also
+				contains a predator that eats critters.
+			</p>
+			<p>
+				The button at the top left starts and stops the world. Use the button next to it
+				to switch between modes. There are two modes besides
+				<b>Observe</b> mode. In <b>Predator</b> mode, try to max out your health by
+				hunting critters with your mouse. But watch out: if you hunt unsuccessfully, you'll waste energy.
+				In <b>AUTO Predator</b> mode, the computer hunts for you.
+			</p>
+			<p>
+				If you want to start over again, you'll have to refresh the page. You can also change
+				the size of the world by resizing your window before you refresh.
+			</p>
+		</section>
+
+		<div class="centered vspace">
+			<canvas id=world></canvas>
+		</div>
+
+		<section class=centered>
+			<p>
+				What happenned in your critters' world? Was hunting them easy? What did your critter
+				population look like before and after hunting?
+			</p>
+			<p>
+				Were you bored? Is anything broken? Any bugs to report or features to request?
+				Thoughts and feelings? Help make color critters better by sending me an email
+				at hartdeese@mac.com.
+			</p>
+		</section>
 	</body>
 </html>

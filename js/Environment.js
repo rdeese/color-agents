@@ -19,6 +19,10 @@ function Environment (bounds,envHue) {
 
 	this.on('mousedown', function (e) {
 		info.setTarget(null);
+		if (mode == 'predator') {
+			if (health > 0) { health -= MISS_HEALTH_LOSS; }
+			info.drawDetailViewer();
+		}
 	});
 
 	this.on('tick', function (e) {
@@ -40,7 +44,7 @@ envPrototype.drawBg = function () {
 	var radius;
 	var p;
 	var r;
-	for (var i = 0; i < NUM_BG_CIRCLES; i++) {
+	for (var i = 0; i < NUM_PLANTS; i++) {
 		r = random.number();
 		radius = AGENT_RADIUS-(AGENT_RADIUS*r*r);
 		p = new Plant(this.bounds, radius,

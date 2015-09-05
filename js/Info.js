@@ -59,15 +59,15 @@ function Info (bounds, hue) {
 			mode = 'predator';
 			this.instructions.text = "Eat critters by clicking on them " +
 															 "to increase your health.";
-			this.health = 50;
+			health = 50;
 			this.setTarget(null);
 			this.detailViewer.alpha = 1;
 		} else if (mode == 'predator') {
 			mode = 'autopredator';
 			this.instructions.text = "There's a predator at work! She eats any critters " +
 															 "she can find.";
+			lastAutoKill = null;
 			this.setTarget(null); 
-			this.detailViewer.alpha = 1;
 		} else if (mode == 'autopredator') {
 			mode = 'observer';
 			this.instructions.text = "Click on a critter to get some info about it."; 
@@ -94,15 +94,16 @@ function Info (bounds, hue) {
 	this.bg.y = 0;
 	this.detailViewer.addChild(this.bg);
 
-	this.detailLabel = new createjs.Text("---", "bold 24px Arial", this.darkColor.hex());
+	this.detailLabel = new createjs.Text("Last kill:", "bold 24px Arial", this.darkColor.hex());
+	this.detailLabel.textAlign = 'center';
 	this.detailLabel.x = this.detailViewer.width/2;
 	this.detailLabel.y = this.detailViewer.height/2-12;
 	this.detailViewer.addChild(this.detailLabel);
 
 	this.phenotypeCircle = new createjs.Shape();
 	this.phenotypeCircle.x = this.detailViewer.width/2 +
-													 this.detailViewer.getMeasuredWidth()/2 +
-													 12;
+													 this.detailLabel.getMeasuredWidth()/2 +
+													 20;
 	this.phenotypeCircle.y = this.detailViewer.height/2;
 	this.detailViewer.addChild(this.phenotypeCircle);
 
@@ -143,11 +144,7 @@ var infoPrototype = createjs.extend(Info, createjs.Container);
 
 infoPrototype.setTarget = function (target) {
 	this.target = target;
-	if (this.target) {
-		this.detailViewer.alpha = 1;
-	} else {
-		this.detailViewer.alpha = 0;
-	}
+	this.drawDetailViewer();
 }
 
 infoPrototype.drawTogglePause = function () {
@@ -175,6 +172,26 @@ infoPrototype.drawDetailViewer = function () {
 	this.bg.graphics.clear();
 	this.bg.graphics.beginFill(this.lightColor.hex());
 	this.bg.graphics.drawRoundRect(0,0,this.detailViewer.width,this.detailViewer.height,20);
+	if (mode == 'observer') {
+		if (this.target == null) {
+			this.detailLabel.text = "No critter.";
+		}
+		this.phenotypeCircle.alpha = 0;
+	} else if (mode == 'predator') {
+		this.detailLabel.text = "Health: " + health + "%";
+		this.phenotypeCircle.alpha = 0;
+	} else if (mode == 'autopredator') {
+		if (lastAutoKill != null) {
+			this.detailLabel.text = "Last kill: ";
+			this.phenotypeCircle.alpha = 1;
+			var g = this.phenotypeCircle.graphics;
+			g.beginStroke(lastAutoKill.color.darken(0.5).hex());
+			g.beginFill(lastAutoKill.color.hex());
+			g.drawCircle(0,0,15);
+		} else {
+			this.detailLabel.text = "Waiting for a kill...";
+		}
+	}
 }
 
 infoPrototype.drawInfo = function () {
@@ -188,13 +205,17 @@ infoPrototype.update = function () {
 		this.setTarget(null);
 	}
 
-	// update the age
-	if (this.target) {
-		var age = Math.floor((createjs.Ticker.getTime(true)-this.target.birthTime)/1000);
-		var ageStr = ('0' + Math.floor((age%3600)/60)).slice(-1) + ":" +
-								 ('00' + Math.floor(age%60)).slice(-2);
+	if (mode == 'observer') {
+		// update the age
+		if (this.target) {
+			var age = Math.floor((createjs.Ticker.getTime(true)-this.target.birthTime)/1000);
+			var ageStr = ('0' + Math.floor((age%3600)/60)).slice(-1) + ":" +
+									 ('00' + Math.floor(age%60)).slice(-2);
 
-		this.detailLabel.text = "Age: " + ageStr;
+			this.detailLabel.text = "Age: " + ageStr;
+		} else {
+			this.detailLabel.text = "No critter selected."
+		}
 	}
 
 	// update the play/pause character

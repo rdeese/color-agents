@@ -3,19 +3,21 @@
 var WORLD_OFFSET_Y = 58; // pixels
 var GLOBAL_COMPONENT_MARGIN = 8; // pixels
 
-var NUM_AGENTS = 50;
-var NUM_PLANTS = 100;
-var DEATH_THRESHHOLD = 300;
-var DEATH_DURATION = 1000; // milliseconds
+var NUM_AGENTS = 40;
+var NUM_PLANTS = 150;
+var DEATH_THRESHHOLD = 150;
+var DEATH_DURATION = 500; // milliseconds
 
-var MATING_PROB = 0.1;
+var MATING_PROB = 0.2;
 var MUTATION_RATE = 20;
-var GESTATION_PD = 5000; // milliseconds
+var GESTATION_PD = 4000; // milliseconds
 var YOUTH_DURATION = 10000; // milliseconds
 var MAX_ACC = 40;
 var MOVEMENT_PROB = 0.02;
 
-var AUTOPRED_INTERVAL = 8000; // milliseconds
+var AUTOPRED_INTERVAL = 1000; // milliseconds
+var KILL_HEALTH_GAIN = 3;
+var MISS_HEALTH_LOSS = 3;
 
 var AGENT_RADIUS = 30;
 var BABY_AGENT_RADIUS = 1; // change this once scaling is introduced
@@ -24,7 +26,6 @@ var YOUTH_SCALE_STEP = (1-BABY_SCALE)/YOUTH_DURATION;
 
 var GLOBAL_CHROMA = 55;
 var GLOBAL_LIGHTNESS = 70;
-var NUM_BG_CIRCLES = 500;
 
 var random;
 var stage;
@@ -41,6 +42,8 @@ var envHue;
 var mode;
 var allAgentsDirty;
 var lastAutopredTime;
+var lastAutoKill;
+var health;
 
 function configureDefaults () {
 	// dunno if static typed arrays will play nice so let's keep
@@ -119,11 +122,12 @@ function tick (event) {
 		}
 
 		if (target) {
-			console.log("genome", target.genome[0][0]);
-			if (max < 20) {
-				console.log("spared one");
+			if (max < 20 || agents.length < 10) {
+				// do nothing
 			} else {
 				target.isEaten = true;
+				lastAutoKill = target;
+				info.drawDetailViewer();
 			}
 			lastAutopredTime = currentTime;
 		}
@@ -163,8 +167,8 @@ function tick (event) {
 function main () {
 	configureDefaults();
 	var canvas = document.querySelector("#world");
-	canvas.width = window.innerWidth - 20;
-	canvas.height = window.innerHeight - 20;
+	canvas.width = Math.max(window.innerWidth - 20, 1000);
+	canvas.height = Math.max(window.innerHeight - 20, 600);
 	stage = new createjs.Stage(canvas);
 
 	envHue = random.number()*360;
