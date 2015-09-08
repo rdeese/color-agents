@@ -15,7 +15,7 @@ function Plant(bounds, radius, position, velocity, hue) {
 	this.height = this.width = this.radius * 2;
 	this.cached = false;
 	
-	this.color = chroma.hcl(hue+30*(random.number()-0.5), GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
+	this.color = chroma.hcl(hue+30*(random.number()-0.5), GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
 
 	this.drawPlant();
 	
@@ -31,12 +31,12 @@ function Plant(bounds, radius, position, velocity, hue) {
 
 var plantPrototype = createjs.extend(Plant, createjs.Shape);
 
-plantPrototype.wander = function () {
+plantPrototype.wander = function (e) {
 	vec2.scale(this.acc, this.acc, 0.9);
 	// randomly change the acceleration
-	if (random.number() < MOVEMENT_PROB) {
-		vec2.add(this.acc, this.acc, vec2.fromValues(MAX_ACC*(random.number()-0.5),
-																 								 MAX_ACC*(random.number()-0.5)));
+	if (random.number() < GLOBAL.MOVEMENT_PROB*e.delta) {
+		vec2.add(this.acc, this.acc, vec2.fromValues(GLOBAL.MAX_ACC*(random.number()-0.5),
+																 								 GLOBAL.MAX_ACC*(random.number()-0.5)));
 	}
 }
 
@@ -58,12 +58,12 @@ plantPrototype.update = function (e) {
 	var result = [];
 
 	// exercise free will (acceleration)
-	this.wander();
+	this.wander(e);
 
 	// Iterate internal kinematics
 	vec2.scale(this.vel, this.vel, 0.99);
 	vec2.add(this.vel, this.vel, this.acc);
-	vec2.scale(this.subResult, this.vel, e.delta/1000);
+	vec2.scale(this.subResult, this.vel, e.delta*GLOBAL.WORLD_SPEED);
 	vec2.add(this.pos, this.pos, this.subResult);
 	this.x = this.pos[0];
 	this.y = this.pos[1];

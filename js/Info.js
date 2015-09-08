@@ -3,8 +3,8 @@ function Info (bounds, hue) {
 	this.target = null;
 	this.bounds = bounds;
 
-	this.lightColor = chroma.hcl(hue, GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
-	this.darkColor = chroma.hcl(hue, GLOBAL_CHROMA, GLOBAL_LIGHTNESS).darken(-5);
+	this.lightColor = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
+	this.darkColor = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS).darken(-5);
 
 	// PAUSE BUTTON
 	this.togglePause = new createjs.Container();
@@ -33,7 +33,7 @@ function Info (bounds, hue) {
 
 	// MODE TOGGLE!
 	this.toggleMode = new createjs.Container();
-	this.toggleMode.x = this.togglePause.width+GLOBAL_COMPONENT_MARGIN;
+	this.toggleMode.x = this.togglePause.width+GLOBAL.COMPONENT_MARGIN;
 	this.toggleMode.y = 0;
 	this.toggleMode.width = 250;
 	this.toggleMode.height = 50;
@@ -56,22 +56,11 @@ function Info (bounds, hue) {
 
 	this.toggleMode.on('click', function (e) {
 		if (mode == 'observer') {
-			mode = 'predator';
-			this.instructions.text = "Eat critters by clicking on them " +
-															 "to increase your health.";
-			health = 50;
-			this.setTarget(null);
-			this.detailViewer.alpha = 1;
+			this.setPredatorMode();
 		} else if (mode == 'predator') {
-			mode = 'autopredator';
-			this.instructions.text = "There's a predator at work! She eats any critters " +
-															 "she can find.";
-			lastAutoKill = null;
-			this.setTarget(null); 
+			this.setAutoPredatorMode();
 		} else if (mode == 'autopredator') {
-			mode = 'observer';
-			this.instructions.text = "Click on a critter to get some info about it."; 
-			this.setTarget(null); 
+			this.setObserverMode();
 		}
 		this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
 		allAgentsDirty = true;
@@ -117,12 +106,12 @@ function Info (bounds, hue) {
 														this.togglePause.width -
 														this.toggleMode.width -
 														this.detailViewer.width -
-														3*GLOBAL_COMPONENT_MARGIN;
+														3*GLOBAL.COMPONENT_MARGIN;
 	this.instructions.lineWidth = this.instructions.width;
 	this.instructions.height = 50;
 	this.instructions.x = this.togglePause.width +
 												this.toggleMode.width +
-												2*GLOBAL_COMPONENT_MARGIN +
+												2*GLOBAL.COMPONENT_MARGIN +
 												this.instructions.width/2;
 	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
 	this.instructions.textAlign = 'center';
@@ -141,6 +130,38 @@ function Info (bounds, hue) {
 }
 
 var infoPrototype = createjs.extend(Info, createjs.Container);
+
+infoPrototype.setObserverMode = function () {
+	mode = 'observer';
+	this.instructions.text = "Click on a critter to get some info about it."; 
+	createjs.Tween.get(GLOBAL, { ignoreGlobalPause: true }, true) // third parameter
+																																// removes old tweens
+								.to({ WORLD_SPEED: 1/1000}, 2000)
+	this.setTarget(null); 
+}
+
+infoPrototype.setPredatorMode = function () {
+	mode = 'predator';
+	this.instructions.text = "Eat critters by clicking on them " +
+													 "to increase your health.";
+	health = 50;
+	createjs.Tween.get(GLOBAL, { ignoreGlobalPause: true }, true) // third parameter
+																																// removes old tweens
+								.to({ WORLD_SPEED: 1/10000}, 2000)
+	this.setTarget(null);
+	this.detailViewer.alpha = 1;
+}
+
+infoPrototype.setAutoPredatorMode = function () {
+	mode = 'autopredator';
+	this.instructions.text = "There's a predator at work! She eats any critters " +
+													 "she can find.";
+	lastAutoKill = null;
+	createjs.Tween.get(GLOBAL, { ignoreGlobalPause: true }, true) // third parameter
+																																// removes old tweens
+								.to({ WORLD_SPEED: 1/1000}, 2000)
+	this.setTarget(null); 
+}
 
 infoPrototype.setTarget = function (target) {
 	this.target = target;

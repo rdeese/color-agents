@@ -2,7 +2,7 @@ function Environment (bounds,envHue) {
 	this.Container_constructor();
 	this.bounds = bounds;
 	this.hue = envHue;
-	this.color = chroma.hcl(this.hue,GLOBAL_CHROMA,GLOBAL_LIGHTNESS);
+	this.color = chroma.hcl(this.hue,GLOBAL.CHROMA,GLOBAL.LIGHTNESS);
 	this.colorHasChanged = false;
 	
 	this.bg = new createjs.Container();
@@ -12,15 +12,15 @@ function Environment (bounds,envHue) {
 	this.targetHalo = new createjs.Shape();
 	this.targetHalo.alpha = 0;
 	var width = 40;
-	this.targetHaloRadius = AGENT_RADIUS + width;
-	this.targetToHaloDiff = this.targetHaloRadius - AGENT_RADIUS;
+	this.targetHaloRadius = GLOBAL.AGENT_RADIUS + width;
+	this.targetToHaloDiff = this.targetHaloRadius - GLOBAL.AGENT_RADIUS;
 	this.addChild(this.targetHalo);
 	this.drawTargetHalo();
 
 	this.on('mousedown', function (e) {
 		info.setTarget(null);
 		if (mode == 'predator') {
-			if (health > 0) { health -= MISS_HEALTH_LOSS; }
+			if (health > 0) { health -= GLOBAL.MISS_HEALTH_LOSS; }
 			info.drawDetailViewer();
 		}
 	});
@@ -44,9 +44,9 @@ envPrototype.drawBg = function () {
 	var radius;
 	var p;
 	var r;
-	for (var i = 0; i < NUM_PLANTS; i++) {
+	for (var i = 0; i < GLOBAL.NUM_PLANTS; i++) {
 		r = random.number();
-		radius = AGENT_RADIUS-(AGENT_RADIUS*r*r);
+		radius = GLOBAL.AGENT_RADIUS-(GLOBAL.AGENT_RADIUS*r*r);
 		p = new Plant(this.bounds, radius,
 									vec2.fromValues(random.number() * (this.bounds.width-2*radius) + radius,
 																	random.number() * (this.bounds.height-2*radius) + radius),

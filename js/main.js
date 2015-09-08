@@ -1,31 +1,35 @@
 "use strict";
 
-var WORLD_OFFSET_Y = 58; // pixels
-var GLOBAL_COMPONENT_MARGIN = 8; // pixels
+var GLOBAL = {
+	WORLD_OFFSET_Y: 58, // pixels
+	COMPONENT_MARGIN: 8, // pixels
+	WORLD_SPEED: 1/1000, // pixels per millisecond
+	NUM_AGENTS: 40,
+	NUM_PLANTS: 150,
+	DEATH_THRESHHOLD: 150,
+	DEATH_DURATION: 500, // milliseconds
 
-var NUM_AGENTS = 40;
-var NUM_PLANTS = 150;
-var DEATH_THRESHHOLD = 150;
-var DEATH_DURATION = 500; // milliseconds
+	MATING_PROB: 0.2,
+	MUTATION_RATE: 100,
+	GESTATION_PD: 4000, // milliseconds
+	YOUTH_DURATION: 10000, // milliseconds
+	MAX_ACC: 40,
+	MOVEMENT_PROB: 1/1000, // chance per millisecond;
 
-var MATING_PROB = 0.2;
-var MUTATION_RATE = 20;
-var GESTATION_PD = 4000; // milliseconds
-var YOUTH_DURATION = 10000; // milliseconds
-var MAX_ACC = 40;
-var MOVEMENT_PROB = 0.02;
+	AUTOPRED_INTERVAL: 1000, // milliseconds
+	KILL_HEALTH_GAIN: 3,
+	MISS_HEALTH_LOSS: 3,
 
-var AUTOPRED_INTERVAL = 1000; // milliseconds
-var KILL_HEALTH_GAIN = 3;
-var MISS_HEALTH_LOSS = 3;
+	AGENT_RADIUS: 30,
+	BABY_AGENT_RADIUS: 1, // change this once scaling is introduced
 
-var AGENT_RADIUS = 30;
-var BABY_AGENT_RADIUS = 1; // change this once scaling is introduced
-var BABY_SCALE = BABY_AGENT_RADIUS/AGENT_RADIUS;
-var YOUTH_SCALE_STEP = (1-BABY_SCALE)/YOUTH_DURATION;
+	CHROMA: 55,
+	LIGHTNESS: 70
+}
 
-var GLOBAL_CHROMA = 55;
-var GLOBAL_LIGHTNESS = 70;
+GLOBAL.BABY_SCALE = GLOBAL.BABY_AGENT_RADIUS/GLOBAL.AGENT_RADIUS;
+GLOBAL.YOUTH_SCALE_STEP = (1-GLOBAL.BABY_SCALE)/GLOBAL.YOUTH_DURATION;
+
 
 var random;
 var stage;
@@ -43,7 +47,9 @@ var mode;
 var allAgentsDirty;
 var lastAutopredTime;
 var lastAutoKill;
+var lastPredationTime;
 var health;
+var worldSpeed = 1/1000; // pixels per millisecond
 
 function configureDefaults () {
 	// dunno if static typed arrays will play nice so let's keep
@@ -60,7 +66,7 @@ function initAgents(num) {
 	var radius;
 	var a;
 	for (var i = 0; i < num; i++) {
-		radius = AGENT_RADIUS;
+		radius = GLOBAL.AGENT_RADIUS;
 		a = new Agent(worldBounds, radius,
 									vec2.fromValues(random.number() * (bounds.width-2*radius) + radius,
 																	random.number() * (bounds.height-2*radius) + radius),
@@ -107,7 +113,7 @@ function tick (event) {
 
 			// autopredator
 			if (mode == 'autopredator' &&
-					(currentTime-lastAutopredTime)>AUTOPRED_INTERVAL) {
+					(currentTime-lastAutopredTime)>GLOBAL.AUTOPRED_INTERVAL) {
 				if (a.isAdult) {
 					diff = a.genome[0][0]-envHue;
 					if (diff > 180) { diff -= 360; }
@@ -174,24 +180,24 @@ function main () {
 	envHue = random.number()*360;
 	
 	bounds = new createjs.Rectangle(0, 0, canvas.width, canvas.height);
-	infoBounds = new createjs.Rectangle(0, 0, canvas.width, WORLD_OFFSET_Y);
-	worldBounds = new createjs.Rectangle(0, 0, canvas.width, canvas.height-WORLD_OFFSET_Y);
+	infoBounds = new createjs.Rectangle(0, 0, canvas.width, GLOBAL.WORLD_OFFSET_Y);
+	worldBounds = new createjs.Rectangle(0, 0, canvas.width, canvas.height-GLOBAL.WORLD_OFFSET_Y);
 
 	// QuadTree setup
 	// give it the world bounds, false means shapes not points, and a depth of 7
 	tree = new QuadTree(worldBounds, false, 7);
 
 	bg = new Environment(worldBounds, envHue);
-	bg.y = WORLD_OFFSET_Y;
+	bg.y = GLOBAL.WORLD_OFFSET_Y;
 	stage.addChild(bg);
 
 	agentContainer = new createjs.Container();
-	agentContainer.y = WORLD_OFFSET_Y;
+	agentContainer.y = GLOBAL.WORLD_OFFSET_Y;
 	stage.addChild(agentContainer);
-	initAgents(NUM_AGENTS);
+	initAgents(GLOBAL.NUM_AGENTS);
 
 	mode = 'observer';
-	lastAutopredTime = createjs.Ticker.getTime(true);
+	lastPredationTime = lastAutopredTime = createjs.Ticker.getTime(true);
 	info = new Info(infoBounds, envHue);
 
 	stage.addChild(info);

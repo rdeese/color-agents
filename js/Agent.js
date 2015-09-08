@@ -43,7 +43,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 	// add listener to process click events
 	this.on('mousedown', function (e) {
 		if (mode == 'predator' && !createjs.Ticker.paused) {
-			health += KILL_HEALTH_GAIN;
+			health += GLOBAL.KILL_HEALTH_GAIN;
 			if (health > 100) { health = 100; }
 			info.drawDetailViewer();
 			this.isEaten = true;
@@ -66,7 +66,7 @@ agentPrototype.expressPhenotype = function () {
 	// is to stay within a safe range, where the spectrum of hues is continuous
 	// and has consistent lightness
 	//this.color = chroma.hcl(this.genome[0][0] + this.genome[1][0], GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
-	this.color = chroma.hcl(this.genome[0][0], GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
+	this.color = chroma.hcl(this.genome[0][0], GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
 }
 
 // Two functions to move X & Y to play nice with the QUADTREE library
@@ -81,12 +81,12 @@ agentPrototype.shiftXYToCenter = function () {
 }
 
 
-agentPrototype.wander = function () {
+agentPrototype.wander = function (e) {
 	vec2.scale(this.acc, this.acc, 0.9);
 	// randomly change the acceleration
-	if (random.number() < MOVEMENT_PROB) {
-		vec2.add(this.acc, this.acc, vec2.fromValues(MAX_ACC*(random.number()-0.5),
-																 								 MAX_ACC*(random.number()-0.5)));
+	if (random.number() < GLOBAL.MOVEMENT_PROB*e.delta) {
+		vec2.add(this.acc, this.acc, vec2.fromValues(GLOBAL.MAX_ACC*(random.number()-0.5),
+																 								 GLOBAL.MAX_ACC*(random.number()-0.5)));
 	}
 }
 
@@ -134,24 +134,29 @@ agentPrototype.collide = function (other) {
 		var r = random.number();
 		if (this.isAdult && !this.isPregnant &&
 				other.isAdult && !other.isPregnant &&
-				r < MATING_PROB) {
+				r < GLOBAL.MATING_PROB) {
 			var matingTime = createjs.Ticker.getTime(true);
-			if (r < MATING_PROB / 2) {
-				this.isPregnant = true;
-				this.matingTime = matingTime;
-				this.childGenome = [[(this.genome[0][0]+other.genome[0][0])/2], [0]];
-				this.childGenome[0][0] += (random.number()-0.5)*MUTATION_RATE;
+			if (r < GLOBAL.MATING_PROB / 2) {
+				this.motherChild(matingTime, other.genome);
 			} else {
-				other.isPregnant = true;
-				other.matingTime = matingTime;
-				other.childGenome = [[(this.genome[0][0]+other.genome[0][0])/2], [0]];
-				other.childGenome[0][0] += (random.number()-0.5)*50;
+				other.motherChild(matingTime, this.genome);
 			}
 		} else if (!this.wasColliding || !other.wasColliding) {
 			this.collisionCount += 1;
 			other.collisionCount += 1;
 		}
 	}
+}
+
+agentPrototype.motherChild = function (matingTime, otherGenome) {
+	this.isPregnant = true;
+	this.matingTime = matingTime;
+	var diff = this.genome[0][0]-otherGenome[0][0];
+	if (diff > 180) { diff -= 360; }
+	if (diff < -180) { diff += 360; }
+	this.childGenome = [[0],[0]];
+	this.childGenome[0][0] = (otherGenome[0][0] + diff/2)%360;
+	this.childGenome[0][0] += (random.number()-0.5)*GLOBAL.MUTATION_RATE;
 }
 
 agentPrototype.selectCacheIfExists = function () {
@@ -217,7 +222,7 @@ agentPrototype.drawAgent = function () {
 	//draw baby
 	if (this.isPregnant) {
 		g.setStrokeStyle(3);
-		g.beginStroke(this.color.brighten(0.1).hex());
+		g.beginStroke(this.color.brighten(eyeContrast).hex());
 		g.drawCircle(0,0,this.radius);
 	}
 	
@@ -240,7 +245,7 @@ agentPrototype.grow = function (currentTime) {
 		this.scaleX = this.scaleY = 1;
 		this.height = this.width = 2*this.radius;
 	} else {
-		var newScale = BABY_SCALE + (currentTime-this.birthTime)*YOUTH_SCALE_STEP;
+		var newScale = GLOBAL.BABY_SCALE + (currentTime-this.birthTime)*GLOBAL.YOUTH_SCALE_STEP;
 		this.scaleX = this.scaleY = newScale;
 		this.height = this.width = 2*this.radius*newScale;
 	}
@@ -259,13 +264,13 @@ agentPrototype.isDead = function (currentTime) {
 	if (!this.deathTime) {
 		var score = (currentTime-this.birthTime)/1000 +
 								1*this.collisionCount;
-		if (score > DEATH_THRESHHOLD) {
+		if (score > GLOBAL.DEATH_THRESHHOLD) {
 			this.isDying = true;
 			this.deathTime = currentTime;
 		}
 		return false;
 	} else {
-		this.alpha = 1-(currentTime-this.deathTime)/DEATH_DURATION;
+		this.alpha = 1-(currentTime-this.deathTime)/GLOBAL.DEATH_DURATION;
 		if (this.alpha <= 0) {
 			this.uncache();
 			this.graphics.clear();
@@ -283,22 +288,22 @@ agentPrototype.update = function (e) {
 	var currentTime = createjs.Ticker.getTime(true);
 
 	if (!this.isAdult) {
-		if (currentTime-this.birthTime > YOUTH_DURATION) {
+		if (currentTime-this.birthTime > GLOBAL.YOUTH_DURATION) {
 			this.isAdult = true;
 		}
 		this.grow(currentTime);
 	}
 
 	// exercise free will (acceleration)
-	this.wander();
+	this.wander(e);
 
 	// birth if necessary
 	if (this.isPregnant &&
-			currentTime-this.matingTime > GESTATION_PD) {
+			currentTime-this.matingTime > GLOBAL.GESTATION_PD) {
 		// put the baby behind the mama, touching. 
 		var newPos = vec2.clone(this.pos);
 		vec2.normalize(this.subResult, this.vel);
-		vec2.scale(this.subResult, this.subResult, -(this.radius*this.scaleX+BABY_AGENT_RADIUS));
+		vec2.scale(this.subResult, this.subResult, -(this.radius*this.scaleX+GLOBAL.BABY_AGENT_RADIUS));
 		vec2.add(newPos, this.pos, this.subResult);
 		// with the same speed
 		var newVel = vec2.clone(this.vel);
@@ -314,7 +319,7 @@ agentPrototype.update = function (e) {
 	// Iterate internal kinematics
 	vec2.scale(this.vel, this.vel, 0.98);
 	vec2.add(this.vel, this.vel, this.acc);
-	vec2.scale(this.subResult, this.vel, e.delta/1000);
+	vec2.scale(this.subResult, this.vel, e.delta*GLOBAL.WORLD_SPEED);
 	vec2.add(this.pos, this.pos, this.subResult);
 	this.x = this.pos[0];
 	this.y = this.pos[1];
@@ -343,8 +348,7 @@ agentPrototype.update = function (e) {
 	}
 
 	// handle redraws and collision logic
-	if ((this.wasColliding != this.isColliding) ||
-			(this.wasPregnant != this.isPregnant) ||
+	if ((this.wasPregnant != this.isPregnant) ||
 			allAgentsDirty) {
 		this.drawAgent();
 	}
