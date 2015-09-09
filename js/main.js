@@ -25,8 +25,8 @@ var GLOBAL = {
 	MOVEMENT_PROB: 1/10000, // chance per millisecond;
 
 	AUTOPRED_INTERVAL: 5000, // milliseconds
-	KILL_HEALTH_GAIN: 3,
-	MISS_HEALTH_LOSS: 3,
+	KILL_HEALTH_GAIN: 2,
+	MISS_HEALTH_LOSS: 20,
 
 	AGENT_RADIUS: 30,
 	BABY_AGENT_RADIUS: 1, // change this once scaling is introduced
@@ -182,8 +182,8 @@ function tick (event) {
 function main () {
 	configureDefaults();
 	var canvas = document.querySelector("#world");
-	canvas.width = Math.max(window.innerWidth - 20, 1000);
-	canvas.height = Math.max(window.innerHeight - 20, 600);
+	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
+	canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
 	stage = new createjs.Stage(canvas);
 
 	envHue = random.number()*360;

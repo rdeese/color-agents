@@ -144,7 +144,7 @@ infoPrototype.setPredatorMode = function () {
 	mode = 'predator';
 	this.instructions.text = "Eat critters by clicking on them " +
 													 "to increase your health.";
-	health = 50;
+	health = 40;
 	createjs.Tween.get(GLOBAL, { ignoreGlobalPause: true }, true) // third parameter
 																																// removes old tweens
 								.to({ WORLD_SPEED: GLOBAL.PRED_MODE_SPEED}, 200)

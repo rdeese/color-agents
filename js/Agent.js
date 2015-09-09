@@ -43,8 +43,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 	// add listener to process click events
 	this.on('mousedown', function (e) {
 		if (mode == 'predator' && !createjs.Ticker.paused) {
-			health += GLOBAL.KILL_HEALTH_GAIN;
-			if (health > 100) { health = 100; }
+			health += Math.min(GLOBAL.KILL_HEALTH_GAIN, 100-health);
 			info.drawDetailViewer();
 			this.isEaten = true;
 		} else if (mode == 'observer') {
