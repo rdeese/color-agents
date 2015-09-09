@@ -18,7 +18,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.genome[0][0] = genome[0][0];
 	this.genome[1][0] = genome[1][0];
 
-	this.birthTime = createjs.Ticker.getTime(true);
+	this.birthTime = GLOBAL.TIME;
 	this.isAdult = false;
 	this.collisionCount = 0;
 	this.height = this.width = this.radius * 2;
@@ -82,9 +82,9 @@ agentPrototype.shiftXYToCenter = function () {
 
 
 agentPrototype.wander = function (e) {
-	vec2.scale(this.acc, this.acc, 0.9);
+	vec2.scale(this.acc, this.acc, Math.pow(GLOBAL.ACC_DAMPING, GLOBAL.DELTA));
 	// randomly change the acceleration
-	if (random.number() < GLOBAL.MOVEMENT_PROB*e.delta) {
+	if (random.number() < GLOBAL.MOVEMENT_PROB*GLOBAL.DELTA) {
 		vec2.add(this.acc, this.acc, vec2.fromValues(GLOBAL.MAX_ACC*(random.number()-0.5),
 																 								 GLOBAL.MAX_ACC*(random.number()-0.5)));
 	}
@@ -135,7 +135,7 @@ agentPrototype.collide = function (other) {
 		if (this.isAdult && !this.isPregnant &&
 				other.isAdult && !other.isPregnant &&
 				r < GLOBAL.MATING_PROB) {
-			var matingTime = createjs.Ticker.getTime(true);
+			var matingTime = GLOBAL.TIME;
 			if (r < GLOBAL.MATING_PROB / 2) {
 				this.motherChild(matingTime, other.genome);
 			} else {
@@ -240,19 +240,19 @@ agentPrototype.drawAgent = function () {
 	}
 }
 
-agentPrototype.grow = function (currentTime) {
+agentPrototype.grow = function () {
 	if (this.isAdult) {
 		this.scaleX = this.scaleY = 1;
 		this.height = this.width = 2*this.radius;
 	} else {
-		var newScale = GLOBAL.BABY_SCALE + (currentTime-this.birthTime)*GLOBAL.YOUTH_SCALE_STEP;
+		var newScale = GLOBAL.BABY_SCALE + (GLOBAL.TIME-this.birthTime)*GLOBAL.YOUTH_SCALE_STEP;
 		this.scaleX = this.scaleY = newScale;
 		this.height = this.width = 2*this.radius*newScale;
 	}
 	this.mass = Math.PI*this.height*this.height/4; // comes out to pi*r^2
 }
 
-agentPrototype.isDead = function (currentTime) {
+agentPrototype.isDead = function () {
 	// check if I got eaten
 	if (this.isEaten) {
 		this.isDying = true;
@@ -262,15 +262,15 @@ agentPrototype.isDead = function (currentTime) {
 	}
 	// calculate probability of death
 	if (!this.deathTime) {
-		var score = (currentTime-this.birthTime)/1000 +
-								1*this.collisionCount;
+		var score = (GLOBAL.TIME-this.birthTime)/1000 +
+								GLOBAL.COLLISION_PENALTY*this.collisionCount;
 		if (score > GLOBAL.DEATH_THRESHHOLD) {
 			this.isDying = true;
-			this.deathTime = currentTime;
+			this.deathTime = GLOBAL.TIME;
 		}
 		return false;
 	} else {
-		this.alpha = 1-(currentTime-this.deathTime)/GLOBAL.DEATH_DURATION;
+		this.alpha = 1-(GLOBAL.TIME-this.deathTime)/GLOBAL.DEATH_DURATION;
 		if (this.alpha <= 0) {
 			this.uncache();
 			this.graphics.clear();
@@ -285,13 +285,12 @@ agentPrototype.isDead = function (currentTime) {
 // update the kinematics of the agent
 agentPrototype.update = function (e) {
 	var result = [];
-	var currentTime = createjs.Ticker.getTime(true);
 
 	if (!this.isAdult) {
-		if (currentTime-this.birthTime > GLOBAL.YOUTH_DURATION) {
+		if (GLOBAL.TIME-this.birthTime > GLOBAL.YOUTH_DURATION) {
 			this.isAdult = true;
 		}
-		this.grow(currentTime);
+		this.grow();
 	}
 
 	// exercise free will (acceleration)
@@ -299,7 +298,7 @@ agentPrototype.update = function (e) {
 
 	// birth if necessary
 	if (this.isPregnant &&
-			currentTime-this.matingTime > GLOBAL.GESTATION_PD) {
+			GLOBAL.TIME-this.matingTime > GLOBAL.GESTATION_PD) {
 		// put the baby behind the mama, touching. 
 		var newPos = vec2.clone(this.pos);
 		vec2.normalize(this.subResult, this.vel);
@@ -317,9 +316,10 @@ agentPrototype.update = function (e) {
 	}
 
 	// Iterate internal kinematics
-	vec2.scale(this.vel, this.vel, 0.98);
-	vec2.add(this.vel, this.vel, this.acc);
-	vec2.scale(this.subResult, this.vel, e.delta*GLOBAL.WORLD_SPEED);
+	vec2.scale(this.vel, this.vel, Math.pow(GLOBAL.VEL_DAMPING, GLOBAL.DELTA));
+	vec2.scale(this.subResult, this.acc, GLOBAL.DELTA);
+	vec2.add(this.vel, this.vel, this.subResult);
+	vec2.scale(this.subResult, this.vel, GLOBAL.DELTA);
 	vec2.add(this.pos, this.pos, this.subResult);
 	this.x = this.pos[0];
 	this.y = this.pos[1];
@@ -330,7 +330,7 @@ agentPrototype.update = function (e) {
 	velDir = velDir - this.rotation;
 	if (velDir < -180) { velDir += 360; }
 	else if (velDir > 180) { velDir -= 360; }
-	this.rotation = this.rotation + velDir/10;
+	this.rotation = this.rotation + velDir/100*GLOBAL.WORLD_SPEED;
 	
 	// elastically collide with walls
 	if (this.x + this.scaleX*this.radius > this.bounds.width) {
@@ -357,7 +357,7 @@ agentPrototype.update = function (e) {
 	this.wasColliding = this.isColliding;
 	this.isColliding = false;
 
-	if (!this.isDead(currentTime)) {
+	if (!this.isDead()) {
 		result.push(this);
 	}
 

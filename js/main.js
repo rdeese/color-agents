@@ -3,20 +3,28 @@
 var GLOBAL = {
 	WORLD_OFFSET_Y: 58, // pixels
 	COMPONENT_MARGIN: 8, // pixels
-	WORLD_SPEED: 1/1000, // pixels per millisecond
 	NUM_AGENTS: 40,
 	NUM_PLANTS: 150,
-	DEATH_THRESHHOLD: 150,
-	DEATH_DURATION: 500, // milliseconds
+	DEATH_THRESHHOLD: 800,
+	DEATH_DURATION: 1000, // milliseconds
+	COLLISION_PENALTY: 5,
+
+	WORLD_SPEED: 10, // virtual milliseconds per real millisecond
+	OBSERVE_MODE_SPEED: 10,
+	PRED_MODE_SPEED: 1,
+	AUTOPRED_MODE_SPEED: 10,
+	TIME: 0, // starts at 0
 
 	MATING_PROB: 0.2,
 	MUTATION_RATE: 100,
-	GESTATION_PD: 4000, // milliseconds
-	YOUTH_DURATION: 10000, // milliseconds
-	MAX_ACC: 40,
-	MOVEMENT_PROB: 1/1000, // chance per millisecond;
+	GESTATION_PD: 20000, // milliseconds
+	YOUTH_DURATION: 40000, // milliseconds
+	MAX_ACC: 4/100000, // pixels per millisecond
+	ACC_DAMPING: 0.999,
+	VEL_DAMPING: 0.9999,
+	MOVEMENT_PROB: 1/10000, // chance per millisecond;
 
-	AUTOPRED_INTERVAL: 1000, // milliseconds
+	AUTOPRED_INTERVAL: 5000, // milliseconds
 	KILL_HEALTH_GAIN: 3,
 	MISS_HEALTH_LOSS: 3,
 
@@ -89,7 +97,8 @@ function tick (event) {
 	// if we're not paused, we have to deal with 
 	// collisions
 	if (!event.paused) {
-		var currentTime = createjs.Ticker.getTime(true);
+		GLOBAL.DELTA = event.delta * GLOBAL.WORLD_SPEED;
+		GLOBAL.TIME += GLOBAL.DELTA;
 
 		// autopredator vars
 		var max = 0;
@@ -113,7 +122,7 @@ function tick (event) {
 
 			// autopredator
 			if (mode == 'autopredator' &&
-					(currentTime-lastAutopredTime)>GLOBAL.AUTOPRED_INTERVAL) {
+					(GLOBAL.TIME-lastAutopredTime)>GLOBAL.AUTOPRED_INTERVAL) {
 				if (a.isAdult) {
 					diff = a.genome[0][0]-envHue;
 					if (diff > 180) { diff -= 360; }
@@ -135,7 +144,7 @@ function tick (event) {
 				lastAutoKill = target;
 				info.drawDetailViewer();
 			}
-			lastAutopredTime = currentTime;
+			lastAutopredTime = GLOBAL.TIME;
 		}
 
 		// iterate kinematics
@@ -197,7 +206,7 @@ function main () {
 	initAgents(GLOBAL.NUM_AGENTS);
 
 	mode = 'observer';
-	lastPredationTime = lastAutopredTime = createjs.Ticker.getTime(true);
+	lastPredationTime = lastAutopredTime = GLOBAL.TIME;
 	info = new Info(infoBounds, envHue);
 
 	stage.addChild(info);

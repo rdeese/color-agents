@@ -32,9 +32,9 @@ function Plant(bounds, radius, position, velocity, hue) {
 var plantPrototype = createjs.extend(Plant, createjs.Shape);
 
 plantPrototype.wander = function (e) {
-	vec2.scale(this.acc, this.acc, 0.9);
+	vec2.scale(this.acc, this.acc, Math.pow(GLOBAL.ACC_DAMPING, GLOBAL.DELTA));
 	// randomly change the acceleration
-	if (random.number() < GLOBAL.MOVEMENT_PROB*e.delta) {
+	if (random.number() < GLOBAL.MOVEMENT_PROB*GLOBAL.DELTA) {
 		vec2.add(this.acc, this.acc, vec2.fromValues(GLOBAL.MAX_ACC*(random.number()-0.5),
 																 								 GLOBAL.MAX_ACC*(random.number()-0.5)));
 	}
@@ -61,9 +61,10 @@ plantPrototype.update = function (e) {
 	this.wander(e);
 
 	// Iterate internal kinematics
-	vec2.scale(this.vel, this.vel, 0.99);
-	vec2.add(this.vel, this.vel, this.acc);
-	vec2.scale(this.subResult, this.vel, e.delta*GLOBAL.WORLD_SPEED);
+	vec2.scale(this.vel, this.vel, Math.pow(GLOBAL.VEL_DAMPING, GLOBAL.DELTA));
+	vec2.scale(this.subResult, this.acc, GLOBAL.DELTA);
+	vec2.add(this.vel, this.vel, this.subResult);
+	vec2.scale(this.subResult, this.vel, GLOBAL.DELTA);
 	vec2.add(this.pos, this.pos, this.subResult);
 	this.x = this.pos[0];
 	this.y = this.pos[1];

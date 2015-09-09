@@ -136,7 +136,7 @@ infoPrototype.setObserverMode = function () {
 	this.instructions.text = "Click on a critter to get some info about it."; 
 	createjs.Tween.get(GLOBAL, { ignoreGlobalPause: true }, true) // third parameter
 																																// removes old tweens
-								.to({ WORLD_SPEED: 1/1000}, 2000)
+								.to({ WORLD_SPEED: GLOBAL.OBSERVE_MODE_SPEED }, 200)
 	this.setTarget(null); 
 }
 
@@ -147,7 +147,7 @@ infoPrototype.setPredatorMode = function () {
 	health = 50;
 	createjs.Tween.get(GLOBAL, { ignoreGlobalPause: true }, true) // third parameter
 																																// removes old tweens
-								.to({ WORLD_SPEED: 1/10000}, 2000)
+								.to({ WORLD_SPEED: GLOBAL.PRED_MODE_SPEED}, 200)
 	this.setTarget(null);
 	this.detailViewer.alpha = 1;
 }
@@ -159,7 +159,7 @@ infoPrototype.setAutoPredatorMode = function () {
 	lastAutoKill = null;
 	createjs.Tween.get(GLOBAL, { ignoreGlobalPause: true }, true) // third parameter
 																																// removes old tweens
-								.to({ WORLD_SPEED: 1/1000}, 2000)
+								.to({ WORLD_SPEED: GLOBAL.AUTOPRED_MODE_SPEED}, 200)
 	this.setTarget(null); 
 }
 
@@ -229,7 +229,7 @@ infoPrototype.update = function () {
 	if (mode == 'observer') {
 		// update the age
 		if (this.target) {
-			var age = Math.floor((createjs.Ticker.getTime(true)-this.target.birthTime)/1000);
+			var age = Math.floor((GLOBAL.TIME-this.target.birthTime)/1000);
 			var ageStr = ('0' + Math.floor((age%3600)/60)).slice(-1) + ":" +
 									 ('00' + Math.floor(age%60)).slice(-2);
 
