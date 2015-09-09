@@ -32,7 +32,10 @@ var GLOBAL = {
 	BABY_AGENT_RADIUS: 1, // change this once scaling is introduced
 
 	CHROMA: 55,
-	LIGHTNESS: 70
+	LIGHTNESS: 70,
+
+	UPDATES_PER_DRAW: 3,
+	UPDATE_COUNTER: 0
 }
 
 GLOBAL.BABY_SCALE = GLOBAL.BABY_AGENT_RADIUS/GLOBAL.AGENT_RADIUS;
@@ -94,6 +97,8 @@ function updateTree() {
 // our update function, which gets called by Ticker and then
 // calls the stage's update in turn, which draws things
 function tick (event) {
+	event.WILL_DRAW = (GLOBAL.UPDATE_COUNTER % GLOBAL.UPDATES_PER_DRAW == 0);
+	
 	// if we're not paused, we have to deal with 
 	// collisions
 	if (!event.paused) {
@@ -163,7 +168,11 @@ function tick (event) {
 				newAgents.push(result[1]);
 			}
 		}
-		allAgentsDirty = false;
+		for (var i = 0; i < bg.plants.length; i++) {
+			bg.plants[i].update(event);
+		}
+
+		if (event.WILL_DRAW) { allAgentsDirty = false; }
 
 		// swap agents and newAgents;
 		var temp = agents;
@@ -176,7 +185,9 @@ function tick (event) {
 	}
 
 	// update the stage
-	stage.update(event);
+	if (event.WILL_DRAW) { stage.update(event); }
+
+	GLOBAL.UPDATE_COUNTER++;
 }
 
 function main () {
@@ -211,8 +222,8 @@ function main () {
 
 	stage.addChild(info);
 
-	//createjs.Ticker.setFPS(24);
-	createjs.Ticker.timingMode = createjs.Ticker.RAF;
+	createjs.Ticker.setFPS(60);
+	//createjs.Ticker.timingMode = createjs.Ticker.RAF;
 	createjs.Ticker.on("tick", tick);
 };
 

@@ -4,6 +4,8 @@ function Environment (bounds,envHue) {
 	this.hue = envHue;
 	this.color = chroma.hcl(this.hue,GLOBAL.CHROMA,GLOBAL.LIGHTNESS);
 	this.colorHasChanged = false;
+
+	this.plants = [];
 	
 	this.bg = new createjs.Container();
 	this.addChild(this.bg);
@@ -52,6 +54,7 @@ envPrototype.drawBg = function () {
 																	random.number() * (this.bounds.height-2*radius) + radius),
 									vec2.create(),
 									envHue);
+		this.plants.push(p);
 		this.bg.addChild(p);
 	}
 	

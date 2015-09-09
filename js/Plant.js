@@ -21,12 +21,6 @@ function Plant(bounds, radius, position, velocity, hue) {
 	
 	// create temp vector we'll need later
 	this.subResult = vec2.create();
-
-	this.on('tick', function (e) {
-		if (!e.paused) {
-			this.update(e);
-		}
-	});
 }
 
 var plantPrototype = createjs.extend(Plant, createjs.Shape);
@@ -66,23 +60,25 @@ plantPrototype.update = function (e) {
 	vec2.add(this.vel, this.vel, this.subResult);
 	vec2.scale(this.subResult, this.vel, GLOBAL.DELTA);
 	vec2.add(this.pos, this.pos, this.subResult);
-	this.x = this.pos[0];
-	this.y = this.pos[1];
-	this.rotation = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
 	
 	// elastically collide with walls
-	if (this.x + this.scaleX*this.radius > this.bounds.width) {
-		this.x = this.pos[0] = this.bounds.width - this.scaleX*this.radius - 1;
+	if (this.pos[0] + this.scaleX*this.radius > this.bounds.width) {
+		this.pos[0] = this.pos[0] = this.bounds.width - this.scaleX*this.radius - 1;
 		this.vel[0] *= -1;
-	} else if (this.x - this.scaleX*this.radius < this.bounds.x) {
-		this.x = this.pos[0] = this.bounds.x + this.scaleX*this.radius + 1;
+	} else if (this.pos[0] - this.scaleX*this.radius < this.bounds.x) {
+		this.pos[0] = this.pos[0] = this.bounds.x + this.scaleX*this.radius + 1;
 		this.vel[0] *= -1;
-	} else if (this.y + this.scaleX*this.radius > this.bounds.height) {
-		this.y = this.pos[1] = this.bounds.height - this.scaleX*this.radius - 1;
+	} else if (this.pos[1] + this.scaleX*this.radius > this.bounds.height) {
+		this.pos[1] = this.pos[1] = this.bounds.height - this.scaleX*this.radius - 1;
 		this.vel[1] *= -1;
-	} else if (this.y - this.scaleX*this.radius < this.bounds.y) {
-		this.y = this.pos[1] = this.bounds.y + this.scaleX*this.radius + 1;
+	} else if (this.pos[1] - this.scaleX*this.radius < this.bounds.y) {
+		this.pos[1] = this.pos[1] = this.bounds.y + this.scaleX*this.radius + 1;
 		this.vel[1] *= -1;
+	}
+	
+	if (e.WILL_DRAW) {
+		this.x = this.pos[0];
+		this.y = this.pos[1];
 	}
 
 	return result;
