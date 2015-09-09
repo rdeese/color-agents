@@ -16,7 +16,7 @@ var GLOBAL = {
 	TIME: 0, // starts at 0
 
 	MATING_PROB: 0.2,
-	MUTATION_RATE: 100,
+	MUTATION_RATE: 40,
 	GESTATION_PD: 20000, // milliseconds
 	YOUTH_DURATION: 40000, // milliseconds
 	MAX_ACC: 4/100000, // pixels per millisecond
@@ -34,7 +34,7 @@ var GLOBAL = {
 	CHROMA: 55,
 	LIGHTNESS: 70,
 
-	UPDATES_PER_DRAW: 3,
+	UPDATES_PER_DRAW: 5,
 	UPDATE_COUNTER: 0
 }
 
@@ -60,7 +60,6 @@ var lastAutopredTime;
 var lastAutoKill;
 var lastPredationTime;
 var health;
-var worldSpeed = 1/1000; // pixels per millisecond
 
 function configureDefaults () {
 	// dunno if static typed arrays will play nice so let's keep
@@ -182,11 +181,20 @@ function tick (event) {
 
 		// update quadtree
 		updateTree();
+
+		// update the stage
+		if (event.WILL_DRAW) { stage.update(event); }
+	} else if (event.WILL_DRAW && GLOBAL.DIRTY) {
+	// when the world is paused, only update the
+	// stage (read: draw everything) when we know
+	// that something is dirty. Since the game is
+	// paused, DIRTY is just an indication of
+	// user interaction
+		stage.update(event);
+		GLOBAL.DIRTY = false;
 	}
 
-	// update the stage
-	if (event.WILL_DRAW) { stage.update(event); }
-
+	// add a tick to the update counter
 	GLOBAL.UPDATE_COUNTER++;
 }
 
@@ -222,7 +230,7 @@ function main () {
 
 	stage.addChild(info);
 
-	createjs.Ticker.setFPS(60);
+	createjs.Ticker.setFPS(120);
 	//createjs.Ticker.timingMode = createjs.Ticker.RAF;
 	createjs.Ticker.on("tick", tick);
 };

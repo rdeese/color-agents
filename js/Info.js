@@ -26,6 +26,7 @@ function Info (bounds, hue) {
 
 	this.togglePause.on('click', function (e) {
 		createjs.Ticker.paused = !createjs.Ticker.paused;
+		GLOBAL.DIRTY = true;
 	});
 
 	this.addChild(this.togglePause);
@@ -173,6 +174,7 @@ infoPrototype.drawTogglePause = function () {
 	this.togglePauseBg.graphics.beginFill(this.lightColor.hex());
 	this.togglePauseBg.graphics.drawRoundRect(0,0,this.togglePause.width,
 																						this.togglePause.height,20);
+	GLOBAL.DIRTY = true;
 }
 
 infoPrototype.drawToggleMode = function () {
@@ -187,6 +189,7 @@ infoPrototype.drawToggleMode = function () {
 	} else if (mode == 'autopredator') {
 		this.toggleModeLabel.text = "AUTO Predator";
 	}
+	GLOBAL.DIRTY = true;
 }
 
 infoPrototype.drawDetailViewer = function () {
@@ -213,6 +216,7 @@ infoPrototype.drawDetailViewer = function () {
 			this.detailLabel.text = "Waiting for a kill...";
 		}
 	}
+	GLOBAL.DIRTY = true;
 }
 
 infoPrototype.drawInfo = function () {
