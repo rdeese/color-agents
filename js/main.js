@@ -7,7 +7,7 @@ var GLOBAL = {
 	NUM_PLANTS: 150,
 	DEATH_THRESHHOLD: 800,
 	DEATH_DURATION: 1000, // milliseconds
-	COLLISION_PENALTY: 5,
+	COLLISION_PENALTY: 8,
 
 	WORLD_SPEED: 10, // virtual milliseconds per real millisecond
 	OBSERVE_MODE_SPEED: 10,
@@ -24,7 +24,7 @@ var GLOBAL = {
 	VEL_DAMPING: 0.9999,
 	MOVEMENT_PROB: 1/10000, // chance per millisecond;
 
-	AUTOPRED_INTERVAL: 5000, // milliseconds
+	AUTOPRED_INTERVAL: 8000, // milliseconds
 	KILL_HEALTH_GAIN: 2,
 	MISS_HEALTH_LOSS: 20,
 
@@ -137,7 +137,7 @@ function tick (event) {
 		}
 
 		if (target) {
-			if (max < 20 || agents.length < 10) {
+			if (agents.length < 20) {
 				// do nothing
 			} else {
 				target.isEaten = true;
