@@ -6,7 +6,8 @@ var GLOBAL = {
 	NUM_AGENTS: 40,
 	NUM_PLANTS: 150,
 	DEATH_THRESHHOLD: 800,
-	DEATH_DURATION: 1000, // milliseconds
+	DEATH_DURATION: 2000, // milliseconds
+	EATEN_DURATION: 2000, // milliseconds
 	COLLISION_PENALTY: 8,
 
 	WORLD_SPEED: 10, // virtual milliseconds per real millisecond

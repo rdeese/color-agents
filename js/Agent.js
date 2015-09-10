@@ -32,6 +32,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.wasPregnant = false;
 	this.isPregnant = false;
 	this.isDying = false;
+	this.isEaten = false;
 	this.collisionStart = null;
 	
 	this.expressPhenotype();
@@ -163,6 +164,14 @@ agentPrototype.motherChild = function (matingTime, otherGenome) {
 }
 
 agentPrototype.selectCacheIfExists = function () {
+	if (this.isEaten) {
+		if (this.eatenCacheCanvas) {
+			this.cacheCanvas = this.eatenCacheCanvas;
+			return true;
+		} else {
+			return false;
+		}
+	}
 	if (this.isPregnant &&
 			mode != 'predator' && this.peCacheCanvas) {
 		this.cacheCanvas = this.peCacheCanvas;
@@ -193,8 +202,6 @@ agentPrototype.drawAgent = function () {
 	}
 	var g = this.graphics;
 	g.clear();
-	var strokeWidth = 1;
-	g.setStrokeStyle(strokeWidth);
 
 	g.beginFill(this.color.hex());
 
@@ -203,8 +210,10 @@ agentPrototype.drawAgent = function () {
 	
 	// draw eyes
 	var eyeContrast;
-	if (mode == 'predator') {
-		eyeContrast = 0.03; //0.2;
+	if (this.isEaten) {
+		eyeContrast = 10;
+	} else if (mode == 'predator') {
+		eyeContrast = 0.03;
 	} else {
 		eyeContrast = 0.4;
 	}
@@ -223,7 +232,7 @@ agentPrototype.drawAgent = function () {
 	g.endFill();
 
 	//draw baby
-	if (this.isPregnant) {
+	if (this.isPregnant && !this.isEaten) {
 		g.setStrokeStyle(3);
 		g.beginStroke(this.color.brighten(eyeContrast).hex());
 		g.drawCircle(0,0,this.radius);
@@ -232,7 +241,9 @@ agentPrototype.drawAgent = function () {
 	this.uncache();
 	this.cache(-this.radius-1, -this.radius-1, 2*this.radius+2, 2*this.radius+2);
 
-	if (this.isPregnant && mode != 'predator') {
+	if (this.isEaten) {
+		this.eatenCacheCanvas = this.cacheCanvas;
+	} else if (this.isPregnant && mode != 'predator') {
 		this.peCacheCanvas = this.cacheCanvas;
 	} else if (this.isPregnant && mode != 'predator') {
 		this.neCacheCanvas = this.cacheCanvas;
@@ -258,11 +269,17 @@ agentPrototype.grow = function () {
 agentPrototype.isDead = function () {
 	// check if I got eaten
 	if (this.isEaten) {
-		this.isDying = true;
-		this.uncache();
-		this.graphics.clear();
-		return true;
-	}
+		if (!this.deathTime) {
+			this.color = this.color.darken(1);
+			this.deathTime = GLOBAL.TIME;
+			return false;
+		} else if (GLOBAL.TIME-this.deathTime > GLOBAL.EATEN_DURATION) {
+			this.uncache();
+			this.graphics.clear();
+			return true;
+		}
+		return false;
+	} 
 	// calculate probability of death
 	if (!this.deathTime) {
 		var score = (GLOBAL.TIME-this.birthTime)/1000 +
@@ -348,6 +365,11 @@ agentPrototype.update = function (e) {
 		this.vel[1] *= -1;
 	}
 
+	// check for survival of agent
+	if (!this.isDead()) {
+		result.push(this);
+	}
+
 	// only write to the position vars used by createjs
 	// if we are on a draw update
 	if (e.WILL_DRAW) {
@@ -360,17 +382,14 @@ agentPrototype.update = function (e) {
 	// require it
 	if (e.WILL_DRAW && 
 			((this.wasPregnant != this.isPregnant) ||
-			allAgentsDirty)) {
+			 this.isEaten ||
+			 allAgentsDirty)) {
 		this.drawAgent();
+		this.wasPregnant = this.isPregnant;
 	}
 
-	this.wasPregnant = this.isPregnant;
 	this.wasColliding = this.isColliding;
 	this.isColliding = false;
-
-	if (!this.isDead()) {
-		result.push(this);
-	}
 
 	return result;
 }
