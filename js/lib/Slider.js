@@ -31,8 +31,18 @@
 	/**
 	 * Simple slider control for EaselJS examples.
 	 **/
-	function Slider(min, max, width, height) {
-		this.Shape_constructor();
+	function Slider(min, max, width, height, bgText, hue) {
+		this.Container_constructor();
+		this.color = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
+		this.textColor = chroma("#FFFFFF");
+		this.bgColor = this.color.brighten(1);
+
+		this._bg = new createjs.Shape();
+		this._minText = new createjs.Text(min.toString(), "bold 24px Arial", this.textColor);
+		this._maxText = new createjs.Text(max.toString(), "bold 24px Arial", this.textColor);
+		this._bgText = new createjs.Text(bgText, "bold 24px Arial", this.textColor.hex());
+		this._nub = new createjs.Shape();
+		this.addChild(this._bg, this._minText, this._maxText, this._bgText, this._nub);
 		
 	// public properties:
 		this.min = this.value = min||0;
@@ -41,55 +51,63 @@
 		this.width = width||100;
 		this.height = height||20;
 		
-		this.values = {};
-		
-		this.trackColor = "#EEE";
-		this.thumbColor = "#666";
-		
 		this.cursor = "pointer";
 		this.on("mousedown", this._handleInput, this);
 		this.on("pressmove", this._handleInput, this);
+		this.on("tick", this.update, this);
+		this._drawSlider();
 	}
-	var p = createjs.extend(Slider, createjs.Shape);
-	
+	var p = createjs.extend(Slider, createjs.Container);
 	
 // public methods:
 	p.isVisible = function() { return true; };
 
-	p.draw = function(ctx, ignoreCache) {
-		if (this._checkChange()) {
-			var x = (this.width-this.height) * Math.max(0,Math.min(1,(this.value-this.min) / (this.max-this.min)));
-			this.graphics.clear()
-				.beginFill(this.trackColor).drawRect(0,0,this.width,this.height)
-				.beginFill(this.thumbColor).drawRect(x,0,this.height, this.height);
+	p.setEnabled = function (enabled) {
+		if (enabled) {
+			this.mouseEnabled = true;
+			this.alpha = 1;
+		} else {
+			this.mouseEnabled = false;
+			this.alpha = 0.5;
 		}
-		this.Shape_draw(ctx, true);
-	};
-	
+	}
+
+	p.update = function (e) {
+		var x = (this.width-this.height) * Math.max(0,Math.min(1,(this.value-this.min) / (this.max-this.min)));
+		if (x != this._nub.x) {
+			this.dispatchEvent("change");
+			this._nub.x = x;
+		}
+	}
 
 // private methods:
-	p._checkChange = function() {
-		var a = this, b = a.values;
-		if (a.value !== b.value || a.min !== b.min || a.max !== b.max || a.width !== b.width || a.height !== b.height) {
-			b.min = a.min;
-			b.max = a.max;
-			b.value = a.value;
-			b.width = a.width;
-			b.height = a.height;
-			this.dispatchEvent("change");
-			return true;
-		}
-		return false;
-	};
-	
+	p._drawSlider = function () {
+		var g = this._bg.graphics;
+		g.clear();
+		g.beginFill(this.bgColor).drawRoundRect(0,0,this.width,this.height, 20);
+		g = this._nub.graphics;
+		g.clear();
+		g.beginFill(this.color).drawRoundRect(0,0,this.height, this.height, 20);
+		this._minText.textAlign = "center";
+		this._minText.x = this.height/2;
+		this._minText.y = this.height/2-12;
+		this._maxText.textAlign = "center";
+		this._maxText.x = this.width-this.height/2;
+		this._maxText.y = this.height/2-12;
+		this._bgText.textAlign = "center";
+		this._bgText.x = this.width/2;
+		this._bgText.y = this.height/2-12;
+	}
+
 	p._handleInput = function(evt) {
 		var val = (evt.localX-this.height/2)/(this.width-this.height)*(this.max-this.min)+this.min;
 		val = Math.max(this.min, Math.min(this.max, val));
 		if (val == this.value) { return; }
+		this.userVal = val;
 		this.value = val;
 		this.dispatchEvent("change");
 	};
 
 	
-	window.Slider = createjs.promote(Slider, "Shape");
+	window.Slider = createjs.promote(Slider, "Container");
 }());

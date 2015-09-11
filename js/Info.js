@@ -120,15 +120,18 @@ function Info (bounds, hue) {
 	// END INSTRUCTIONS
 
 	// BEGIN SLIDER
-	this.worldSpeedSlider = new Slider(1, 30, this.instructions.width, 50);
+	this.worldSpeedSlider = new Slider(1, 30, this.instructions.width, 50,
+																		 "World Speed", hue);
 	this.worldSpeedSlider.x = this.togglePause.width +
 														this.toggleMode.width +
 														2*GLOBAL.COMPONENT_MARGIN;
 	this.worldSpeedSlider.y = 0;
 	this.addChild(this.worldSpeedSlider);
+	this.worldSpeedSlider.userVal = 10;
 	this.worldSpeedSlider.value = 10;
 	this.worldSpeedSlider.on('change', function () {
 		GLOBAL.WORLD_SPEED = this.worldSpeedSlider.value;
+		GLOBAL.DIRTY = true;
 	}, this);
 
 	this.x = 0;
@@ -147,9 +150,12 @@ var infoPrototype = createjs.extend(Info, createjs.Container);
 infoPrototype.setObserverMode = function () {
 	mode = 'observer';
 	this.instructions.text = "Click on a critter to get some info about it."; 
-	createjs.Tween.get(this.worldSpeedSlider, { ignoreGlobalPause: true }, true) // third parameter
-																																// removes old tweens
-								.to({ value: GLOBAL.OBSERVE_MODE_SPEED }, 1000)
+	createjs.Tween.get(this.worldSpeedSlider, {
+																							ignoreGlobalPause: true,
+																							override: true
+																						}) 
+								.to({ value: this.worldSpeedSlider.userVal }, 1000)
+	this.worldSpeedSlider.setEnabled(true);
 	this.setTarget(null); 
 }
 
@@ -158,9 +164,12 @@ infoPrototype.setPredatorMode = function () {
 	this.instructions.text = "Eat critters by clicking on them " +
 													 "to increase your health.";
 	health = 40;
-	createjs.Tween.get(this.worldSpeedSlider, { ignoreGlobalPause: true }, true) // third parameter
-																																// removes old tweens
+	createjs.Tween.get(this.worldSpeedSlider, {
+																							ignoreGlobalPause: true,
+																							override: true
+																						}) 
 								.to({ value: GLOBAL.PRED_MODE_SPEED}, 1000)
+	this.worldSpeedSlider.setEnabled(false);
 	this.setTarget(null);
 	this.detailViewer.alpha = 1;
 }
@@ -170,9 +179,12 @@ infoPrototype.setAutoPredatorMode = function () {
 	this.instructions.text = "There's a predator at work! She eats any critters " +
 													 "she can find.";
 	lastAutoKill = null;
-	createjs.Tween.get(this.worldSpeedSlider, { ignoreGlobalPause: true }, true) // third parameter
-																																// removes old tweens
-								.to({ value: GLOBAL.AUTOPRED_MODE_SPEED}, 1000)
+	createjs.Tween.get(this.worldSpeedSlider, {
+																							ignoreGlobalPause: true,
+																							override: true
+																						}) 
+								.to({ value: this.worldSpeedSlider.userVal }, 1000)
+	this.worldSpeedSlider.setEnabled(true);
 	this.setTarget(null); 
 }
 
