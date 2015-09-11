@@ -47,11 +47,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 
 	// add listener to process click events
 	this.on('mousedown', function (e) {
-		if (mode == 'predator' && !createjs.Ticker.paused) {
-			this.isEaten = true;
-		} else if (mode == 'observer') {
-			info.setTarget(this);
-		}
+		info.handleWorldClick(e, true, this);
 	});
 }
 

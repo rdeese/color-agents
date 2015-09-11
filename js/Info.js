@@ -5,6 +5,11 @@ function Info (bounds, hue) {
 
 	this.lightColor = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
 	this.darkColor = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS).darken(-5);
+	this.overlayHitColorHex = "#FFFFFF"; //chroma.hcl(145, 55, 90).hex();
+	this.overlayMissColorHex = "#FFFFFF"; //chroma.hcl(25, 55, 90).hex();
+
+	var tempText = new createjs.Text("M", "bold 30px "+GLOBAL.FONT, "#FFFFFF");
+	this.textLineHeight = tempText.getMeasuredLineHeight();
 
 	// PAUSE BUTTON
 	this.togglePause = new createjs.Container();
@@ -18,10 +23,10 @@ function Info (bounds, hue) {
 	this.togglePauseBg.y = 0;
 	this.togglePause.addChild(this.togglePauseBg);
 
-	this.togglePauseLabel = new createjs.Text("", "bold 30px Arial", this.darkColor.hex());
+	this.togglePauseLabel = new createjs.Text("", "bold 30px "+GLOBAL.FONT, this.darkColor.hex());
 	this.togglePauseLabel.textAlign = "center";
 	this.togglePauseLabel.x = this.togglePause.width/2;
-	this.togglePauseLabel.y = this.togglePause.height/2-15;
+	this.togglePauseLabel.y = this.togglePause.height/2-20;
 	this.togglePause.addChild(this.togglePauseLabel);
 
 	this.addChild(this.togglePause);
@@ -40,21 +45,21 @@ function Info (bounds, hue) {
 	this.toggleMode.addChild(this.toggleModeBg);
 
 	/*
-	this.toggleModeArrow = new createjs.Text("\u25be", "bold 24px Arial", this.darkColor.hex());
+	this.toggleModeArrow = new createjs.Text("\u25be", "bold 24px "+GLOBAL.FONT, this.darkColor.hex());
 	this.toggleModeArrow.x = this.toggleMode.width - 30;
-	this.toggleModeArrow.y = this.toggleMode.height/2-12;
+	this.toggleModeArrow.y = this.toggleMode.height/2-this.textLineHeight/2;
 	this.toggleMode.addChild(this.toggleModeArrow);
 	*/
 
-	this.toggleModeLabel = new createjs.Text("", "bold 24px Arial", this.darkColor.hex());
+	this.toggleModeLabel = new createjs.Text("", "bold 24px "+GLOBAL.FONT, this.darkColor.hex());
 	this.toggleModeLabel.x = 20;
-	this.toggleModeLabel.y = this.toggleMode.height/2-12;
+	this.toggleModeLabel.y = this.toggleMode.height/2-this.textLineHeight/2;
 	this.toggleMode.addChild(this.toggleModeLabel);
 	
-	this.toggleModeTime = new createjs.Text("", "bold 24px Arial", this.lightColor.brighten(1).hex());
+	this.toggleModeTime = new createjs.Text("", "bold 24px "+GLOBAL.FONT, this.lightColor.brighten(1).hex());
 	this.toggleModeTime.textAlign = "right";
 	this.toggleModeTime.x = this.toggleMode.width-20;
-	this.toggleModeTime.y = this.toggleMode.height/2-12;
+	this.toggleModeTime.y = this.toggleMode.height/2-this.textLineHeight/2;
 	this.toggleMode.addChild(this.toggleModeTime);
 
 	this.toggleMode.on('click', function (e) {
@@ -77,10 +82,10 @@ function Info (bounds, hue) {
 	this.bg.y = 0;
 	this.detailViewer.addChild(this.bg);
 
-	this.detailLabel = new createjs.Text("Last kill:", "bold 24px Arial", this.darkColor.hex());
+	this.detailLabel = new createjs.Text("Last kill:", "bold 24px "+GLOBAL.FONT, this.darkColor.hex());
 	this.detailLabel.textAlign = 'center';
 	this.detailLabel.x = this.detailViewer.width/2;
-	this.detailLabel.y = this.detailViewer.height/2-12;
+	this.detailLabel.y = this.detailViewer.height/2-this.textLineHeight/2;
 	this.detailViewer.addChild(this.detailLabel);
 
 	this.phenotypeCircle = new createjs.Shape();
@@ -95,7 +100,7 @@ function Info (bounds, hue) {
 
 	// INSTRUCTIONS
 	this.instructions = new createjs.Text("Click on a critter to get some info about it.",
-																				"bold 20px Arial", this.lightColor.hex());
+																				"bold 20px "+GLOBAL.FONT, this.lightColor.hex());
 	this.instructions.width = this.bounds.width -
 														this.togglePause.width -
 														this.toggleMode.width -
@@ -128,6 +133,7 @@ function Info (bounds, hue) {
 	}, this);
 	// END SLIDER
 
+
 	this.togglePause.on('click', function (e) {
 		createjs.Ticker.paused = !createjs.Ticker.paused;
 		this.worldSpeedSlider.setEnabled(!createjs.Ticker.paused && mode == 'observer');
@@ -150,10 +156,49 @@ function Info (bounds, hue) {
 
 var infoPrototype = createjs.extend(Info, createjs.Container);
 
+infoPrototype.handleWorldClick = function (event, didHit, agent) {
+	if (mode == 'predator' && !createjs.Ticker.paused) {
+		if (agent && agent.isEaten) {
+			return;
+		}
+		// BEGIN OVERLAY
+		if (didHit) {
+			agent.isEaten = true;
+			this.numHits++;
+		} else {
+			this.modeEnd -= GLOBAL.MISS_TIME_PENALTY;
+		}
+		var text = didHit ? this.numHits.toString() : "MISS!";
+		var color = didHit ? this.overlayHitColorHex
+											 : this.overlayMissColorHex;
+		var overlay = new createjs.Text(text, "bold 50px "+GLOBAL.FONT, color);
+		overlay.alpha = 0.7;
+		overlay.textAlign = "center";
+		overlay.x = event.stageX;
+		overlay.y = event.stageY-60;
+		this.addChild(overlay);
+		createjs.Tween.get(overlay)
+									.wait(1000)
+									.to({ alpha: 0 }, 1000)
+									.call(function () {
+										console.log(this);
+										this.removeChild(overlay)
+									}, [], this);
+	} else if (mode == 'observer') {
+		if (didHit) {
+			this.setTarget(agent);
+		} else {
+			this.setTarget(null);
+		}
+		GLOBAL.DIRTY = true;
+	}
+}
+
 infoPrototype.nextMode = function () {
 	if (mode == 'observer') {
 		this.setPredatorMode();
 		this.modeEnd = GLOBAL.TIME + GLOBAL.PREDATOR_PERIOD;
+		this.numHits = 0;
 	} else if (mode == 'predator') {
 		this.setObserverMode();
 		this.modeEnd = GLOBAL.TIME + GLOBAL.OBSERVER_PERIOD;

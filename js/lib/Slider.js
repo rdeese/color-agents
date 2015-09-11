@@ -36,11 +36,13 @@
 		this.color = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
 		this.textColor = chroma("#FFFFFF");
 		this.bgColor = this.color.brighten(1);
+		var tempText = new createjs.Text("M", "bold 30px "+GLOBAL.FONT, "#FFFFFF");
+		this.textLineHeight = tempText.getMeasuredLineHeight();
 
 		this._bg = new createjs.Shape();
-		this._minText = new createjs.Text(min.toString(), "bold 24px Arial", this.textColor.hex());
-		this._maxText = new createjs.Text(max.toString(), "bold 24px Arial", this.textColor.hex());
-		this._bgText = new createjs.Text(bgText, "bold 24px Arial", this.textColor.hex());
+		this._minText = new createjs.Text(min.toString(), "bold 24px "+GLOBAL.FONT, this.textColor.hex());
+		this._maxText = new createjs.Text(max.toString(), "bold 24px "+GLOBAL.FONT, this.textColor.hex());
+		this._bgText = new createjs.Text(bgText, "bold 24px "+GLOBAL.FONT, this.textColor.hex());
 		this._nub = new createjs.Shape();
 		this.addChild(this._bg, this._minText, this._maxText, this._bgText, this._nub);
 		
@@ -90,13 +92,13 @@
 		g.beginFill(this.color.hex()).drawRoundRect(0,0,this.height, this.height, 20);
 		this._minText.textAlign = "center";
 		this._minText.x = this.height/2;
-		this._minText.y = this.height/2-12;
+		this._minText.y = this.height/2-this.textLineHeight/2;
 		this._maxText.textAlign = "center";
 		this._maxText.x = this.width-this.height/2;
-		this._maxText.y = this.height/2-12;
+		this._maxText.y = this.height/2-this.textLineHeight/2;
 		this._bgText.textAlign = "center";
 		this._bgText.x = this.width/2;
-		this._bgText.y = this.height/2-12;
+		this._bgText.y = this.height/2-this.textLineHeight/2;
 	}
 
 	p._handleInput = function(evt) {

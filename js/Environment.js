@@ -20,10 +20,7 @@ function Environment (bounds,envHue) {
 	this.drawTargetHalo();
 
 	this.on('mousedown', function (e) {
-		info.setTarget(null);
-		if (mode == 'predator') {
-			info.modeEnd -= GLOBAL.MISS_TIME_PENALTY;
-		}
+		info.handleWorldClick(e, false);
 	});
 
 	this.on('tick', function (e) {

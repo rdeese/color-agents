@@ -37,6 +37,8 @@ var GLOBAL = {
 	CHROMA: 55,
 	LIGHTNESS: 70,
 
+	FONT: "Catamaran",
+
 	UPDATES_PER_DRAW: 5,
 	UPDATE_COUNTER: 0
 }
