@@ -76,6 +76,7 @@
 			b.value = a.value;
 			b.width = a.width;
 			b.height = a.height;
+			this.dispatchEvent("change");
 			return true;
 		}
 		return false;
