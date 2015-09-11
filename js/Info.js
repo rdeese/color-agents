@@ -144,6 +144,8 @@ function Info (bounds, hue) {
 	this.y = 0;
 	this.alpha = 1;
 
+	this.lifetimeScore = 0;
+
 	this.drawInfo();
 
 	this.setObserverMode();
@@ -165,12 +167,24 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 		if (didHit) {
 			agent.isEaten = true;
 			this.numHits++;
+			this.lifetimeScore++;
+			this.drawDetailViewer();
 		} else {
 			this.modeEnd -= GLOBAL.MISS_TIME_PENALTY;
 		}
-		var text = didHit ? this.numHits.toString() : "MISS!";
-		var color = didHit ? this.overlayHitColorHex
-											 : this.overlayMissColorHex;
+
+		var text;
+		var color;
+		if (didHit) {
+			text = this.numHits.toString();
+			if (this.numHits == GLOBAL.HIT_THRESHOLD) {
+				text += "!";
+			}
+			color = this.overlayHitColorHex;
+		} else {
+			text = "MISS!";
+			color = this.overlayMissColorHex;
+		}
 		var overlay = new createjs.Text(text, "bold 50px "+GLOBAL.FONT, color);
 		overlay.alpha = 0.7;
 		overlay.textAlign = "center";
@@ -196,12 +210,16 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 
 infoPrototype.nextMode = function () {
 	if (mode == 'observer') {
-		this.setPredatorMode();
 		this.modeEnd = GLOBAL.TIME + GLOBAL.PREDATOR_PERIOD;
+		// reset lifetime score if hits from last Pred round are below threshold
+		if (this.numHits < GLOBAL.HIT_THRESHOLD) {
+			this.lifetimeScore = 0;
+		}
 		this.numHits = 0;
+		this.setPredatorMode();
 	} else if (mode == 'predator') {
-		this.setObserverMode();
 		this.modeEnd = GLOBAL.TIME + GLOBAL.OBSERVER_PERIOD;
+		this.setObserverMode();
 	}
 	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
 	allAgentsDirty = true;
@@ -289,7 +307,7 @@ infoPrototype.drawDetailViewer = function () {
 		}
 		this.phenotypeCircle.alpha = 0;
 	} else if (mode == 'predator') {
-		//this.detailLabel.text = "Health: " + health + "%";
+		this.detailLabel.text = "Lifetime score: " + this.lifetimeScore;
 		this.phenotypeCircle.alpha = 0;
 	} else if (mode == 'autopredator') {
 		if (lastAutoKill != null) {
@@ -324,9 +342,9 @@ infoPrototype.update = function () {
 	if (mode == 'observer') {
 		// update the age
 		if (this.target) {
-			var age = Math.floor((GLOBAL.TIME-this.target.birthTime)/1000);
+			var age = Math.ceil((GLOBAL.TIME-this.target.birthTime)/1000);
 			var ageStr = ('0' + Math.floor((age%3600)/60)).slice(-1) + ":" +
-									 ('00' + Math.floor(age%60)).slice(-2);
+									 ('00' + Math.ceil(age%60)).slice(-2);
 
 			this.detailLabel.text = "Age: " + ageStr;
 		} else {
@@ -334,9 +352,9 @@ infoPrototype.update = function () {
 		}
 	}
 
-	var time = Math.floor((this.modeEnd-GLOBAL.TIME)/1000);
+	var time = Math.ceil((this.modeEnd-GLOBAL.TIME)/1000);
 	var timeStr = ('0' + Math.floor((time%3600)/60)).slice(-1) + ":" +
-							 ('0' + Math.floor(time%60)).slice(-2);
+							 ('0' + Math.ceil(time%60)).slice(-2);
 	this.toggleModeTime.text = timeStr;
 
 	// update the play/pause character

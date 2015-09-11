@@ -27,9 +27,10 @@ var GLOBAL = {
 
 	AUTOPRED_INTERVAL: 8000, // milliseconds
 	
-	OBSERVER_PERIOD: 180000, // milliseconds
-	PREDATOR_PERIOD: 30000, // milliseconds
+	OBSERVER_PERIOD: 120000, // milliseconds
+	PREDATOR_PERIOD: 12000, // milliseconds
 	MISS_TIME_PENALTY: 5000, // milliseconds
+	HIT_THRESHOLD: 8,
 
 	AGENT_RADIUS: 30,
 	BABY_AGENT_RADIUS: 1, // change this once scaling is introduced
