@@ -31,7 +31,7 @@ function Info (bounds, hue) {
 	this.toggleMode = new createjs.Container();
 	this.toggleMode.x = this.togglePause.width+GLOBAL.COMPONENT_MARGIN;
 	this.toggleMode.y = 0;
-	this.toggleMode.width = 250;
+	this.toggleMode.width = 300;
 	this.toggleMode.height = 50;
 
 	this.toggleModeBg = new createjs.Shape();
@@ -51,22 +51,13 @@ function Info (bounds, hue) {
 	this.toggleModeLabel.y = this.toggleMode.height/2-12;
 	this.toggleMode.addChild(this.toggleModeLabel);
 	
-	this.toggleModeTime = new createjs.Text("", "bold 24px Arial", this.lightColor.brighten(1));
+	this.toggleModeTime = new createjs.Text("", "bold 24px Arial", this.lightColor.brighten(1).hex());
 	this.toggleModeTime.textAlign = "right";
 	this.toggleModeTime.x = this.toggleMode.width-20;
 	this.toggleModeTime.y = this.toggleMode.height/2-12;
 	this.toggleMode.addChild(this.toggleModeTime);
 
 	this.toggleMode.on('click', function (e) {
-		if (mode == 'observer') {
-			this.setPredatorMode();
-		} else if (mode == 'predator') {
-			this.setAutoPredatorMode();
-		} else if (mode == 'autopredator') {
-			this.setObserverMode();
-		}
-		this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
-		allAgentsDirty = true;
 		this.drawToggleMode();
 	}, this); // callback executes in the scope of Info object
 
@@ -139,7 +130,7 @@ function Info (bounds, hue) {
 
 	this.togglePause.on('click', function (e) {
 		createjs.Ticker.paused = !createjs.Ticker.paused;
-		this.worldSpeedSlider.setEnabled(!createjs.Ticker.paused);
+		this.worldSpeedSlider.setEnabled(!createjs.Ticker.paused && mode == 'observer');
 		GLOBAL.DIRTY = true;
 	}, this);
 	
@@ -147,14 +138,31 @@ function Info (bounds, hue) {
 	this.y = 0;
 	this.alpha = 1;
 
+	this.drawInfo();
+
+	this.setObserverMode();
+	this.modeEnd = GLOBAL.TIME + GLOBAL.OBSERVER_PERIOD;
+
 	this.on('tick', function (e) {
 		this.update();
 	});
-
-	this.drawInfo();
 }
 
 var infoPrototype = createjs.extend(Info, createjs.Container);
+
+infoPrototype.nextMode = function () {
+	if (mode == 'observer') {
+		this.setPredatorMode();
+		this.modeEnd = GLOBAL.TIME + GLOBAL.PREDATOR_PERIOD;
+	} else if (mode == 'predator') {
+		this.setObserverMode();
+		this.modeEnd = GLOBAL.TIME + GLOBAL.OBSERVER_PERIOD;
+	}
+	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
+	allAgentsDirty = true;
+	this.drawToggleMode();
+}
+
 
 infoPrototype.setObserverMode = function () {
 	mode = 'observer';
@@ -163,8 +171,9 @@ infoPrototype.setObserverMode = function () {
 																							ignoreGlobalPause: true,
 																							override: true
 																						}) 
-								.to({ value: this.worldSpeedSlider.userVal }, 1000)
-	this.worldSpeedSlider.setEnabled(true);
+								.to({ value: this.worldSpeedSlider.userVal }, 1000);
+	this.worldSpeedSlider.setEnabled(true && !createjs.Ticker.paused);
+	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null); 
 }
 
@@ -172,13 +181,13 @@ infoPrototype.setPredatorMode = function () {
 	mode = 'predator';
 	this.instructions.text = "Eat critters by clicking on them " +
 													 "to increase your health.";
-	health = 40;
 	createjs.Tween.get(this.worldSpeedSlider, {
 																							ignoreGlobalPause: true,
 																							override: true
 																						}) 
-								.to({ value: GLOBAL.PRED_MODE_SPEED}, 1000)
-	this.worldSpeedSlider.setEnabled(false);
+								.to({ value: GLOBAL.PRED_MODE_SPEED}, 0)
+	this.worldSpeedSlider.setEnabled(false && !createjs.Ticker.paused);
+	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null);
 	this.detailViewer.alpha = 1;
 }
@@ -193,7 +202,7 @@ infoPrototype.setAutoPredatorMode = function () {
 																							override: true
 																						}) 
 								.to({ value: this.worldSpeedSlider.userVal }, 1000)
-	this.worldSpeedSlider.setEnabled(true);
+	this.worldSpeedSlider.setEnabled(true && !createjs.Ticker.paused);
 	this.setTarget(null); 
 }
 
@@ -235,7 +244,7 @@ infoPrototype.drawDetailViewer = function () {
 		}
 		this.phenotypeCircle.alpha = 0;
 	} else if (mode == 'predator') {
-		this.detailLabel.text = "Health: " + health + "%";
+		//this.detailLabel.text = "Health: " + health + "%";
 		this.phenotypeCircle.alpha = 0;
 	} else if (mode == 'autopredator') {
 		if (lastAutoKill != null) {
@@ -259,8 +268,10 @@ infoPrototype.drawInfo = function () {
 }
 
 infoPrototype.update = function () {
-	if (this.modeEnd > GLOBAL.TIME) {
-		if (mode == "observer") 
+	if (this.modeEnd < GLOBAL.TIME) {
+		this.nextMode();
+	}
+
 	if (this.target && this.target.isDying) {
 		this.setTarget(null);
 	}
@@ -278,7 +289,10 @@ infoPrototype.update = function () {
 		}
 	}
 
-	this.toggleModeTime = 
+	var time = Math.floor((this.modeEnd-GLOBAL.TIME)/1000);
+	var timeStr = ('0' + Math.floor((time%3600)/60)).slice(-1) + ":" +
+							 ('0' + Math.floor(time%60)).slice(-2);
+	this.toggleModeTime.text = timeStr;
 
 	// update the play/pause character
 	if (createjs.Ticker.paused) {

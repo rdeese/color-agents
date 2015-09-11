@@ -48,8 +48,6 @@ function Agent(bounds, radius, position, velocity, genome) {
 	// add listener to process click events
 	this.on('mousedown', function (e) {
 		if (mode == 'predator' && !createjs.Ticker.paused) {
-			health += Math.min(GLOBAL.KILL_HEALTH_GAIN, 100-health);
-			info.drawDetailViewer();
 			this.isEaten = true;
 		} else if (mode == 'observer') {
 			info.setTarget(this);
@@ -211,25 +209,51 @@ agentPrototype.drawAgent = function () {
 	// draw eyes
 	var eyeContrast;
 	if (this.isEaten) {
-		eyeContrast = 10;
+		eyeContrast = 0.4;
 	} else if (mode == 'predator') {
 		eyeContrast = 0.03;
 	} else {
 		eyeContrast = 0.4;
 	}
-	// whites
-	g.beginFill(this.color.brighten(eyeContrast).hex());
-	g.beginStroke(this.color.darken(eyeContrast).hex());
-	g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.3);
-	g.endStroke();
-	g.beginStroke(this.color.darken(eyeContrast).hex());
-	g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.3);
-	g.endStroke();
-	// pupils
-	g.beginFill(this.color.darken(eyeContrast).hex());
-	g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.12);
-	g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.12);
-	g.endFill();
+	if (this.isEaten) {
+		var lineWidth = this.radius*0.15;
+		g.setStrokeStyle(lineWidth, 'round');
+		g.beginStroke(this.color.brighten(eyeContrast).hex());
+		// left eye
+		g.moveTo(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
+		g.lineTo(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
+		g.moveTo(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
+		g.lineTo(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
+		// right eye
+		g.moveTo(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 -(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
+		g.lineTo(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 -(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
+		g.moveTo(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 -(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
+		g.lineTo(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 -(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
+		g.endStroke();
+	} else {
+		// whites
+		g.beginFill(this.color.brighten(eyeContrast).hex());
+		g.beginStroke(this.color.darken(eyeContrast).hex());
+		g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.3);
+		g.endStroke();
+		g.beginStroke(this.color.darken(eyeContrast).hex());
+		g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.3);
+		g.endStroke();
+		g.endFill();
+		// pupils
+		g.beginFill(this.color.darken(eyeContrast).hex());
+		g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.12);
+		g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.12);
+		g.endFill();
+	}
 
 	//draw baby
 	if (this.isPregnant && !this.isEaten) {
@@ -270,7 +294,7 @@ agentPrototype.isDead = function () {
 	// check if I got eaten
 	if (this.isEaten) {
 		if (!this.deathTime) {
-			this.color = this.color.darken(1);
+			//this.color = this.color.darken(1);
 			this.deathTime = GLOBAL.TIME;
 			return false;
 		} else if (GLOBAL.TIME-this.deathTime > GLOBAL.EATEN_DURATION) {

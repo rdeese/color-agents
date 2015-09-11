@@ -22,8 +22,7 @@ function Environment (bounds,envHue) {
 	this.on('mousedown', function (e) {
 		info.setTarget(null);
 		if (mode == 'predator') {
-			if (health > 0) { health -= Math.min(GLOBAL.MISS_HEALTH_LOSS, health); }
-			info.drawDetailViewer();
+			info.modeEnd -= GLOBAL.MISS_TIME_PENALTY;
 		}
 	});
 

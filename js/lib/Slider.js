@@ -38,8 +38,8 @@
 		this.bgColor = this.color.brighten(1);
 
 		this._bg = new createjs.Shape();
-		this._minText = new createjs.Text(min.toString(), "bold 24px Arial", this.textColor);
-		this._maxText = new createjs.Text(max.toString(), "bold 24px Arial", this.textColor);
+		this._minText = new createjs.Text(min.toString(), "bold 24px Arial", this.textColor.hex());
+		this._maxText = new createjs.Text(max.toString(), "bold 24px Arial", this.textColor.hex());
 		this._bgText = new createjs.Text(bgText, "bold 24px Arial", this.textColor.hex());
 		this._nub = new createjs.Shape();
 		this.addChild(this._bg, this._minText, this._maxText, this._bgText, this._nub);
@@ -84,10 +84,10 @@
 	p._drawSlider = function () {
 		var g = this._bg.graphics;
 		g.clear();
-		g.beginFill(this.bgColor).drawRoundRect(0,0,this.width,this.height, 20);
+		g.beginFill(this.bgColor.hex()).drawRoundRect(0,0,this.width,this.height, 20);
 		g = this._nub.graphics;
 		g.clear();
-		g.beginFill(this.color).drawRoundRect(0,0,this.height, this.height, 20);
+		g.beginFill(this.color.hex()).drawRoundRect(0,0,this.height, this.height, 20);
 		this._minText.textAlign = "center";
 		this._minText.x = this.height/2;
 		this._minText.y = this.height/2-12;

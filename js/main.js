@@ -27,7 +27,7 @@ var GLOBAL = {
 
 	AUTOPRED_INTERVAL: 8000, // milliseconds
 	
-	OBSERVER_PERIOD: 300000, // milliseconds
+	OBSERVER_PERIOD: 180000, // milliseconds
 	PREDATOR_PERIOD: 30000, // milliseconds
 	MISS_TIME_PENALTY: 5000, // milliseconds
 
