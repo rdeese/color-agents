@@ -24,11 +24,6 @@ function Info (bounds, hue) {
 	this.togglePauseLabel.y = this.togglePause.height/2-15;
 	this.togglePause.addChild(this.togglePauseLabel);
 
-	this.togglePause.on('click', function (e) {
-		createjs.Ticker.paused = !createjs.Ticker.paused;
-		GLOBAL.DIRTY = true;
-	});
-
 	this.addChild(this.togglePause);
 	// END PAUSE BUTTON
 
@@ -44,16 +39,23 @@ function Info (bounds, hue) {
 	this.toggleModeBg.y = 0;
 	this.toggleMode.addChild(this.toggleModeBg);
 
+	/*
 	this.toggleModeArrow = new createjs.Text("\u25be", "bold 24px Arial", this.darkColor.hex());
 	this.toggleModeArrow.x = this.toggleMode.width - 30;
 	this.toggleModeArrow.y = this.toggleMode.height/2-12;
 	this.toggleMode.addChild(this.toggleModeArrow);
+	*/
 
 	this.toggleModeLabel = new createjs.Text("", "bold 24px Arial", this.darkColor.hex());
-	this.toggleModeLabel.textAlign = "center";
-	this.toggleModeLabel.x = this.toggleMode.width/2;
+	this.toggleModeLabel.x = 20;
 	this.toggleModeLabel.y = this.toggleMode.height/2-12;
 	this.toggleMode.addChild(this.toggleModeLabel);
+	
+	this.toggleModeTime = new createjs.Text("", "bold 24px Arial", this.lightColor.brighten(1));
+	this.toggleModeTime.textAlign = "right";
+	this.toggleModeTime.x = this.toggleMode.width-20;
+	this.toggleModeTime.y = this.toggleMode.height/2-12;
+	this.toggleMode.addChild(this.toggleModeTime);
 
 	this.toggleMode.on('click', function (e) {
 		if (mode == 'observer') {
@@ -133,7 +135,14 @@ function Info (bounds, hue) {
 		GLOBAL.WORLD_SPEED = this.worldSpeedSlider.value;
 		GLOBAL.DIRTY = true;
 	}, this);
+	// END SLIDER
 
+	this.togglePause.on('click', function (e) {
+		createjs.Ticker.paused = !createjs.Ticker.paused;
+		this.worldSpeedSlider.setEnabled(!createjs.Ticker.paused);
+		GLOBAL.DIRTY = true;
+	}, this);
+	
 	this.x = 0;
 	this.y = 0;
 	this.alpha = 1;
@@ -250,6 +259,8 @@ infoPrototype.drawInfo = function () {
 }
 
 infoPrototype.update = function () {
+	if (this.modeEnd > GLOBAL.TIME) {
+		if (mode == "observer") 
 	if (this.target && this.target.isDying) {
 		this.setTarget(null);
 	}
@@ -266,6 +277,8 @@ infoPrototype.update = function () {
 			this.detailLabel.text = "No critter selected."
 		}
 	}
+
+	this.toggleModeTime = 
 
 	// update the play/pause character
 	if (createjs.Ticker.paused) {

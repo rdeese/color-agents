@@ -26,8 +26,10 @@ var GLOBAL = {
 	MOVEMENT_PROB: 1/10000, // chance per millisecond;
 
 	AUTOPRED_INTERVAL: 8000, // milliseconds
-	KILL_HEALTH_GAIN: 2,
-	MISS_HEALTH_LOSS: 20,
+	
+	OBSERVER_PERIOD: 300000, // milliseconds
+	PREDATOR_PERIOD: 30000, // milliseconds
+	MISS_TIME_PENALTY: 5000, // milliseconds
 
 	AGENT_RADIUS: 30,
 	BABY_AGENT_RADIUS: 1, // change this once scaling is introduced
@@ -60,7 +62,6 @@ var allAgentsDirty;
 var lastAutopredTime;
 var lastAutoKill;
 var lastPredationTime;
-var health;
 
 function configureDefaults () {
 	// dunno if static typed arrays will play nice so let's keep
