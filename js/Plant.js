@@ -21,6 +21,11 @@ function Plant(bounds, radius, position, velocity, hue) {
 	
 	// create temp vector we'll need later
 	this.subResult = vec2.create();
+	this.on("click", function () {
+		createjs.Tween.get(this, { override: true })
+									.to({ alpha: 0 }, 500)
+									.to({ alpha: 1 }, 500);
+	}, this);
 }
 
 var plantPrototype = createjs.extend(Plant, createjs.Shape);
