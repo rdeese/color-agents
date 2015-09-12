@@ -28,9 +28,11 @@ var GLOBAL = {
 	AUTOPRED_INTERVAL: 8000, // milliseconds
 	
 	OBSERVER_PERIOD: 120000, // milliseconds
-	PREDATOR_PERIOD: 12000, // milliseconds
-	MISS_TIME_PENALTY: 5000, // milliseconds
-	HIT_THRESHOLD: 8,
+	PREDATOR_PERIOD: 20000, // milliseconds
+	MISS_TIME_PENALTY: 8000, // milliseconds
+	HIT_THRESHOLD: 15,
+
+	INITIAL_AGENT_OFFSET: 40,
 
 	AGENT_RADIUS: 30,
 	BABY_AGENT_RADIUS: 1, // change this once scaling is introduced
@@ -74,7 +76,7 @@ function configureDefaults () {
 	random = new PcgRandom(Date.now());
 };
 
-function initAgents(num) {
+function initAgents(hue, num) {
 	agents = [];
 	newAgents = [];
 
@@ -86,7 +88,7 @@ function initAgents(num) {
 									vec2.fromValues(random.number() * (bounds.width-2*radius) + radius,
 																	random.number() * (bounds.height-2*radius) + radius),
 									vec2.create(),
-									[[random.number()*360], [random.number()*180]]);
+									[[hue+30*(random.number()-0.5)], [random.number()*180]]);
 		agentContainer.addChild(a);
 		agents.push(a);
 		tree.insert(a);
@@ -227,7 +229,13 @@ function main () {
 	agentContainer = new createjs.Container();
 	agentContainer.y = GLOBAL.WORLD_OFFSET_Y;
 	stage.addChild(agentContainer);
-	initAgents(GLOBAL.NUM_AGENTS);
+	var agentStartCol = envHue;
+	if (random.number() < 0.5) {
+		agentStartCol += GLOBAL.INITIAL_AGENT_OFFSET;
+	} else {
+		agentStartCol -= GLOBAL.INITIAL_AGENT_OFFSET;
+	}
+	initAgents(agentStartCol, GLOBAL.NUM_AGENTS);
 
 	mode = 'observer';
 	lastPredationTime = lastAutopredTime = GLOBAL.TIME;

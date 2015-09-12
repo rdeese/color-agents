@@ -15,7 +15,7 @@ function Plant(bounds, radius, position, velocity, hue) {
 	this.height = this.width = this.radius * 2;
 	this.cached = false;
 	
-	this.color = chroma.hcl(hue+30*(random.number()-0.5), GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
+	this.color = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
 
 	this.drawPlant();
 	

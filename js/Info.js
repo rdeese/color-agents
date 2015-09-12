@@ -74,7 +74,7 @@ function Info (bounds, hue) {
 	this.detailViewer = new createjs.Container();
 	this.detailViewer.width = 300;
 	this.detailViewer.height = 50;
-	this.detailViewer.x = this.bounds.width-this.detailViewer.width;
+	this.detailViewer.x = this.toggleMode.x + this.toggleMode.width + GLOBAL.COMPONENT_MARGIN;
 	this.detailViewer.y = 0;
 
 	this.bg = new createjs.Shape();
@@ -122,7 +122,8 @@ function Info (bounds, hue) {
 																		 "World Speed", hue);
 	this.worldSpeedSlider.x = this.togglePause.width +
 														this.toggleMode.width +
-														2*GLOBAL.COMPONENT_MARGIN;
+														this.detailViewer.width +
+														3*GLOBAL.COMPONENT_MARGIN;
 	this.worldSpeedSlider.y = 0;
 	this.addChild(this.worldSpeedSlider);
 	this.worldSpeedSlider.userVal = 10;
@@ -144,7 +145,9 @@ function Info (bounds, hue) {
 	this.y = 0;
 	this.alpha = 1;
 
+	this.numHits = 0;
 	this.lifetimeScore = 0;
+	this.round = 1;
 
 	this.drawInfo();
 
@@ -199,6 +202,7 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 										this.removeChild(overlay)
 									}, [], this);
 	} else if (mode == 'observer') {
+		return;
 		if (didHit) {
 			this.setTarget(agent);
 		} else {
@@ -211,21 +215,22 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 infoPrototype.nextMode = function () {
 	if (mode == 'observer') {
 		this.modeEnd = GLOBAL.TIME + GLOBAL.PREDATOR_PERIOD;
-		// reset lifetime score if hits from last Pred round are below threshold
-		if (this.numHits < GLOBAL.HIT_THRESHOLD) {
-			this.lifetimeScore = 0;
-		}
-		this.numHits = 0;
 		this.setPredatorMode();
 	} else if (mode == 'predator') {
 		this.modeEnd = GLOBAL.TIME + GLOBAL.OBSERVER_PERIOD;
+		// reset lifetime score if hits from last Pred round are below threshold
+		if (this.numHits < GLOBAL.HIT_THRESHOLD) {
+			this.lifetimeScore = 0;
+		} else {
+			this.round += 1;
+		}
+		this.numHits = 0;
 		this.setObserverMode();
 	}
 	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
 	allAgentsDirty = true;
 	this.drawToggleMode();
 }
-
 
 infoPrototype.setObserverMode = function () {
 	mode = 'observer';
@@ -301,13 +306,13 @@ infoPrototype.drawDetailViewer = function () {
 	this.bg.graphics.clear();
 	this.bg.graphics.beginFill(this.lightColor.hex());
 	this.bg.graphics.drawRoundRect(0,0,this.detailViewer.width,this.detailViewer.height,20);
-	if (mode == 'observer') {
+	if (false) { //mode == 'observer') {
 		if (this.target == null) {
 			this.detailLabel.text = "No critter.";
 		}
 		this.phenotypeCircle.alpha = 0;
-	} else if (mode == 'predator') {
-		this.detailLabel.text = "Lifetime score: " + this.lifetimeScore;
+	} else if (true) { //mode == 'predator') {
+		this.detailLabel.text = "Round " + this.round;
 		this.phenotypeCircle.alpha = 0;
 	} else if (mode == 'autopredator') {
 		if (lastAutoKill != null) {
@@ -327,11 +332,10 @@ infoPrototype.drawDetailViewer = function () {
 infoPrototype.drawInfo = function () {
 	this.drawTogglePause();
 	this.drawToggleMode();
-	this.drawDetailViewer();
 }
 
 infoPrototype.update = function () {
-	if (this.modeEnd < GLOBAL.TIME) {
+	if (this.modeEnd < GLOBAL.TIME || this.numHits >= GLOBAL.HIT_THRESHOLD) {
 		this.nextMode();
 	}
 
@@ -339,7 +343,7 @@ infoPrototype.update = function () {
 		this.setTarget(null);
 	}
 
-	if (mode == 'observer') {
+	if (false) { //mode == 'observer') {
 		// update the age
 		if (this.target) {
 			var age = Math.ceil((GLOBAL.TIME-this.target.birthTime)/1000);

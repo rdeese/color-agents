@@ -252,11 +252,13 @@ agentPrototype.drawAgent = function () {
 	}
 
 	//draw baby
+	/*
 	if (this.isPregnant && !this.isEaten) {
 		g.setStrokeStyle(3);
 		g.beginStroke(this.color.brighten(eyeContrast).hex());
 		g.drawCircle(0,0,this.radius);
 	}
+	*/
 	
 	this.uncache();
 	this.cache(-this.radius-1, -this.radius-1, 2*this.radius+2, 2*this.radius+2);
