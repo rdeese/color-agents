@@ -67,12 +67,26 @@ function main () {
 	// INTERACTIVES
 	var canvas;
 	var world;
+	var global;
 
 	// single critter interactive
 	canvas = document.querySelector("#single-critter");
-	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
-	canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
-	var world = new World(globalClone(), canvas);
+	canvas.width = Math.min(600, Math.max(window.innerWidth - 20, 400));
+	canvas.height = Math.min(400, Math.max(window.innerHeight - 20, 300));
+	global = globalClone();
+	global.NUM_AGENTS = 1; // just one critter
+	global.DEATH_THRESHHOLD = Infinity; // wont die
+	global.OBSERVER_PERIOD = Infinity; // no predator period
+	global.INITIAL_AGENT_OFFSET = 0; // same color as controls
+	// start adult size
+	global.BABY_SCALE = 1;
+	global.YOUTH_SCALE_STEP = 0;
+	var world = new World(global, canvas);
+	world.stage.removeChild(world.bg); // get rid of the background
+	// hide all of the info bar except for play/pause
+	world.info.removeChild(world.info.toggleMode);
+	world.info.removeChild(world.info.detailViewer);
+	world.info.removeChild(world.info.worldSpeedSlider);
 	world.start();
 
 	// sandbox
