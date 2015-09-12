@@ -1,8 +1,9 @@
-function Environment (bounds,envHue) {
+function Environment (GLOBAL,bounds,envHue) {
 	this.Container_constructor();
+	this.GLOBAL = GLOBAL;
 	this.bounds = bounds;
 	this.hue = envHue;
-	this.color = chroma.hcl(this.hue,GLOBAL.CHROMA,GLOBAL.LIGHTNESS);
+	this.color = chroma.hcl(this.hue,this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 	this.colorHasChanged = false;
 
 	this.plants = [];
@@ -14,13 +15,17 @@ function Environment (bounds,envHue) {
 	this.targetHalo = new createjs.Shape();
 	this.targetHalo.alpha = 0;
 	var width = 40;
-	this.targetHaloRadius = GLOBAL.AGENT_RADIUS + width;
-	this.targetToHaloDiff = this.targetHaloRadius - GLOBAL.AGENT_RADIUS;
+	this.targetHaloRadius = this.GLOBAL.AGENT_RADIUS + width;
+	this.targetToHaloDiff = this.targetHaloRadius - this.GLOBAL.AGENT_RADIUS;
 	this.addChild(this.targetHalo);
 	this.drawTargetHalo();
 
 	this.on('mousedown', function (e) {
-		info.handleWorldClick(e, false);
+		var evt = new createjs.Event("worldClick", true);
+		evt.mouseEvent = e;
+		evt.onAgent = false;
+		evt.agent = this;
+		this.dispatchEvent(evt);
 	});
 
 	this.on('tick', function (e) {
@@ -42,10 +47,10 @@ envPrototype.drawBg = function () {
 	var radius;
 	var p;
 	var r;
-	for (var i = 0; i < GLOBAL.NUM_PLANTS; i++) {
+	for (var i = 0; i < this.GLOBAL.NUM_PLANTS; i++) {
 		r = random.number();
-		radius = GLOBAL.AGENT_RADIUS-(GLOBAL.AGENT_RADIUS*r*r);
-		p = new Plant(this.bounds, radius,
+		radius = this.GLOBAL.AGENT_RADIUS-(this.GLOBAL.AGENT_RADIUS*r*r);
+		p = new Plant(this.GLOBAL, this.bounds, radius,
 									vec2.fromValues(random.number() * (this.bounds.width-2*radius) + radius,
 																	random.number() * (this.bounds.height-2*radius) + radius),
 									vec2.create(),
@@ -111,6 +116,7 @@ envPrototype.update = function (e) {
 	if (this.colorHasChanged) {
 		this.drawBg();
 	}
+	/*
 	if (info.target) {
 		this.targetHalo.alpha = 0.5;
 		this.targetHalo.x = info.target.x;
@@ -118,6 +124,7 @@ envPrototype.update = function (e) {
 	} else { 
 		this.targetHalo.alpha = 0;
 	}
+	*/
 }
 
 window.Environment = createjs.promote(Environment, "Container");

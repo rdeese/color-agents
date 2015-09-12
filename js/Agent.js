@@ -1,7 +1,9 @@
 // constructor
-function Agent(bounds, radius, position, velocity, genome) {
+function Agent(GLOBAL, bounds, radius, position, velocity, genome) {
 	// call inherited shape constructor
 	this.Shape_constructor();
+
+	this.GLOBAL = GLOBAL;
 
 	this.snapToPixel = true;
 	this.bounds = bounds;
@@ -22,7 +24,7 @@ function Agent(bounds, radius, position, velocity, genome) {
 	this.genome[0][0] = genome[0][0];
 	this.genome[1][0] = genome[1][0];
 
-	this.birthTime = GLOBAL.TIME;
+	this.birthTime = this.GLOBAL.TIME;
 	this.isAdult = false;
 	this.collisionCount = 0;
 	this.height = this.width = this.radius * 2;
@@ -47,7 +49,11 @@ function Agent(bounds, radius, position, velocity, genome) {
 
 	// add listener to process click events
 	this.on('mousedown', function (e) {
-		info.handleWorldClick(e, true, this);
+		var evt = new createjs.Event("worldClick", true);
+		evt.mouseEvent = e;
+		evt.onAgent = true;
+		evt.agent = this;
+		this.dispatchEvent(evt);
 	});
 }
 
@@ -64,7 +70,7 @@ agentPrototype.expressPhenotype = function () {
 	// is to stay within a safe range, where the spectrum of hues is continuous
 	// and has consistent lightness
 	//this.color = chroma.hcl(this.genome[0][0] + this.genome[1][0], GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
-	this.color = chroma.hcl(this.genome[0][0], GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
+	this.color = chroma.hcl(this.genome[0][0], this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
 }
 
 // Two functions to move X & Y to play nice with the QUADTREE library
@@ -80,11 +86,11 @@ agentPrototype.shiftXYToCenter = function () {
 
 
 agentPrototype.wander = function (e) {
-	vec2.scale(this.acc, this.acc, Math.pow(GLOBAL.ACC_DAMPING, GLOBAL.DELTA));
+	vec2.scale(this.acc, this.acc, Math.pow(this.GLOBAL.ACC_DAMPING, this.GLOBAL.DELTA));
 	// randomly change the acceleration
-	if (random.number() < GLOBAL.MOVEMENT_PROB*GLOBAL.DELTA) {
-		vec2.add(this.acc, this.acc, vec2.fromValues(GLOBAL.MAX_ACC*(random.number()-0.5),
-																 								 GLOBAL.MAX_ACC*(random.number()-0.5)));
+	if (random.number() < this.GLOBAL.MOVEMENT_PROB*this.GLOBAL.DELTA) {
+		vec2.add(this.acc, this.acc, vec2.fromValues(this.GLOBAL.MAX_ACC*(random.number()-0.5),
+																 								 this.GLOBAL.MAX_ACC*(random.number()-0.5)));
 	}
 }
 
@@ -132,9 +138,9 @@ agentPrototype.collide = function (other) {
 		var r = random.number();
 		if (this.isAdult && !this.isPregnant &&
 				other.isAdult && !other.isPregnant &&
-				r < GLOBAL.MATING_PROB) {
-			var matingTime = GLOBAL.TIME;
-			if (r < GLOBAL.MATING_PROB / 2) {
+				r < this.GLOBAL.MATING_PROB) {
+			var matingTime = this.GLOBAL.TIME;
+			if (r < this.GLOBAL.MATING_PROB / 2) {
 				this.motherChild(matingTime, other.genome);
 			} else {
 				other.motherChild(matingTime, this.genome);
@@ -154,7 +160,7 @@ agentPrototype.motherChild = function (matingTime, otherGenome) {
 	if (diff < -180) { diff += 360; }
 	this.childGenome = [[0],[0]];
 	this.childGenome[0][0] = (otherGenome[0][0] + diff/2)%360;
-	this.childGenome[0][0] += (random.number()-0.5)*GLOBAL.MUTATION_RATE;
+	this.childGenome[0][0] += (random.number()-0.5)*this.GLOBAL.MUTATION_RATE;
 }
 
 agentPrototype.selectCacheIfExists = function () {
@@ -167,22 +173,22 @@ agentPrototype.selectCacheIfExists = function () {
 		}
 	}
 	if (this.isPregnant &&
-			mode != 'predator' && this.peCacheCanvas) {
+			this.GLOBAL.MODE != 'predator' && this.peCacheCanvas) {
 		this.cacheCanvas = this.peCacheCanvas;
 		return true;
 	}
 	if (!this.isPregnant &&
-			mode != 'predator' && this.neCacheCanvas) {
+			this.GLOBAL.MODE != 'predator' && this.neCacheCanvas) {
 		this.cacheCanvas = this.neCacheCanvas;
 		return true;
 	}
 	if (this.isPregnant &&
-			mode == 'predator' && this.pnCacheCanvas) {
+			this.GLOBAL.MODE == 'predator' && this.pnCacheCanvas) {
 		this.cacheCanvas = this.pnCacheCanvas;
 		return true;
 	}
 	if (!this.isPregnant &&
-			mode == 'predator' && this.nnCacheCanvas) {
+			this.GLOBAL.MODE == 'predator' && this.nnCacheCanvas) {
 		this.cacheCanvas = this.nnCacheCanvas;
 		return true;
 	}
@@ -206,7 +212,7 @@ agentPrototype.drawAgent = function () {
 	var eyeContrast;
 	if (this.isEaten) {
 		eyeContrast = 0.4;
-	} else if (mode == 'predator') {
+	} else if (this.GLOBAL.MODE == 'predator') {
 		eyeContrast = 0.03;
 	} else {
 		eyeContrast = 0.4;
@@ -265,13 +271,13 @@ agentPrototype.drawAgent = function () {
 
 	if (this.isEaten) {
 		this.eatenCacheCanvas = this.cacheCanvas;
-	} else if (this.isPregnant && mode != 'predator') {
+	} else if (this.isPregnant && this.GLOBAL.MODE != 'predator') {
 		this.peCacheCanvas = this.cacheCanvas;
-	} else if (this.isPregnant && mode != 'predator') {
+	} else if (this.isPregnant && this.GLOBAL.MODE != 'predator') {
 		this.neCacheCanvas = this.cacheCanvas;
-	} else if (!this.isPregnant && mode == 'predator') {
+	} else if (!this.isPregnant && this.GLOBAL.MODE == 'predator') {
 		this.pnCacheCanvas = this.cacheCanvas;
-	} else if (!this.isPregnant && mode == 'predator') {
+	} else if (!this.isPregnant && this.GLOBAL.MODE == 'predator') {
 		this.nnCacheCanvas = this.cacheCanvas;
 	}
 }
@@ -281,7 +287,7 @@ agentPrototype.grow = function () {
 		this.scaleX = this.scaleY = 1;
 		this.height = this.width = 2*this.radius;
 	} else {
-		var newScale = GLOBAL.BABY_SCALE + (GLOBAL.TIME-this.birthTime)*GLOBAL.YOUTH_SCALE_STEP;
+		var newScale = this.GLOBAL.BABY_SCALE + (this.GLOBAL.TIME-this.birthTime)*this.GLOBAL.YOUTH_SCALE_STEP;
 		this.scaleX = this.scaleY = newScale;
 		this.height = this.width = 2*this.radius*newScale;
 	}
@@ -293,9 +299,9 @@ agentPrototype.isDead = function () {
 	if (this.isEaten) {
 		if (!this.deathTime) {
 			//this.color = this.color.darken(1);
-			this.deathTime = GLOBAL.TIME;
+			this.deathTime = this.GLOBAL.TIME;
 			return false;
-		} else if (GLOBAL.TIME-this.deathTime > GLOBAL.EATEN_DURATION) {
+		} else if (this.GLOBAL.TIME-this.deathTime > this.GLOBAL.EATEN_DURATION) {
 			this.uncache();
 			this.graphics.clear();
 			return true;
@@ -304,15 +310,15 @@ agentPrototype.isDead = function () {
 	} 
 	// calculate probability of death
 	if (!this.deathTime) {
-		var score = (GLOBAL.TIME-this.birthTime)/1000 +
-								GLOBAL.COLLISION_PENALTY*this.collisionCount;
-		if (score > GLOBAL.DEATH_THRESHHOLD) {
+		var score = (this.GLOBAL.TIME-this.birthTime)/1000 +
+								this.GLOBAL.COLLISION_PENALTY*this.collisionCount;
+		if (score > this.GLOBAL.DEATH_THRESHHOLD) {
 			this.isDying = true;
-			this.deathTime = GLOBAL.TIME;
+			this.deathTime = this.GLOBAL.TIME;
 		}
 		return false;
 	} else {
-		this.alpha = 1-(GLOBAL.TIME-this.deathTime)/GLOBAL.DEATH_DURATION;
+		this.alpha = 1-(this.GLOBAL.TIME-this.deathTime)/this.GLOBAL.DEATH_DURATION;
 		if (this.alpha <= 0) {
 			this.uncache();
 			this.graphics.clear();
@@ -329,7 +335,7 @@ agentPrototype.update = function (e) {
 	var result = [];
 
 	if (!this.isAdult) {
-		if (GLOBAL.TIME-this.birthTime > GLOBAL.YOUTH_DURATION) {
+		if (this.GLOBAL.TIME-this.birthTime > this.GLOBAL.YOUTH_DURATION) {
 			this.isAdult = true;
 		}
 		this.grow();
@@ -340,16 +346,16 @@ agentPrototype.update = function (e) {
 
 	// birth if necessary
 	if (this.isPregnant &&
-			GLOBAL.TIME-this.matingTime > GLOBAL.GESTATION_PD) {
+			this.GLOBAL.TIME-this.matingTime > this.GLOBAL.GESTATION_PD) {
 		// put the baby behind the mama, touching. 
 		var newPos = vec2.clone(this.pos);
 		vec2.normalize(this.subResult, this.vel);
-		vec2.scale(this.subResult, this.subResult, -(this.radius*this.scaleX+GLOBAL.BABY_AGENT_RADIUS));
+		vec2.scale(this.subResult, this.subResult, -(this.radius*this.scaleX+this.GLOBAL.BABY_AGENT_RADIUS));
 		vec2.add(newPos, this.pos, this.subResult);
 		// with the same speed
 		var newVel = vec2.clone(this.vel);
 
-		result.push(new Agent(this.bounds, this.radius, newPos, newVel, this.childGenome));
+		result.push(new Agent(this.GLOBAL, this.bounds, this.radius, newPos, newVel, this.childGenome));
 		this.isPregnant = false;
 		this.childGenome = null;
 		this.matingTime = null;
@@ -358,10 +364,10 @@ agentPrototype.update = function (e) {
 	}
 
 	// Iterate internal kinematics
-	vec2.scale(this.vel, this.vel, Math.pow(GLOBAL.VEL_DAMPING, GLOBAL.DELTA));
-	vec2.scale(this.subResult, this.acc, GLOBAL.DELTA);
+	vec2.scale(this.vel, this.vel, Math.pow(this.GLOBAL.VEL_DAMPING, this.GLOBAL.DELTA));
+	vec2.scale(this.subResult, this.acc, this.GLOBAL.DELTA);
 	vec2.add(this.vel, this.vel, this.subResult);
-	vec2.scale(this.subResult, this.vel, GLOBAL.DELTA);
+	vec2.scale(this.subResult, this.vel, this.GLOBAL.DELTA);
 	vec2.add(this.pos, this.pos, this.subResult);
 	
 	// update the heading properly
@@ -370,7 +376,7 @@ agentPrototype.update = function (e) {
 	velDir = velDir - this.heading;
 	if (velDir < -180) { velDir += 360; }
 	else if (velDir > 180) { velDir -= 360; }
-	this.heading = this.heading + velDir/100*GLOBAL.WORLD_SPEED;
+	this.heading = this.heading + velDir/100*this.GLOBAL.WORLD_SPEED;
 	
 	// elastically collide with walls
 	if (this.pos[0] + this.scaleX*this.radius > this.bounds.width) {
@@ -405,7 +411,7 @@ agentPrototype.update = function (e) {
 	if (e.WILL_DRAW && 
 			((this.wasPregnant != this.isPregnant) ||
 			 this.isEaten ||
-			 allAgentsDirty)) {
+			 this.GLOBAL.AGENTS_DIRTY)) {
 		this.drawAgent();
 		this.wasPregnant = this.isPregnant;
 	}

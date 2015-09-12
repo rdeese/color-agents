@@ -1,14 +1,15 @@
-function Info (bounds, hue) {
+function Info (GLOBAL, bounds, hue) {
 	this.Container_constructor();
+	this.GLOBAL = GLOBAL;
 	this.target = null;
 	this.bounds = bounds;
 
-	this.lightColor = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
-	this.darkColor = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS).darken(-5);
+	this.lightColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
+	this.darkColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS).darken(-5);
 	this.overlayHitColorHex = "#FFFFFF"; //chroma.hcl(145, 55, 90).hex();
 	this.overlayMissColorHex = "#FFFFFF"; //chroma.hcl(25, 55, 90).hex();
 
-	var tempText = new createjs.Text("M", "bold 30px "+GLOBAL.FONT, "#FFFFFF");
+	var tempText = new createjs.Text("M", "bold 30px "+this.GLOBAL.FONT, "#FFFFFF");
 	this.textLineHeight = tempText.getMeasuredLineHeight();
 
 	// PAUSE BUTTON
@@ -23,7 +24,7 @@ function Info (bounds, hue) {
 	this.togglePauseBg.y = 0;
 	this.togglePause.addChild(this.togglePauseBg);
 
-	this.togglePauseLabel = new createjs.Text("", "bold 30px "+GLOBAL.FONT, this.darkColor.hex());
+	this.togglePauseLabel = new createjs.Text("", "bold 30px "+this.GLOBAL.FONT, this.darkColor.hex());
 	this.togglePauseLabel.textAlign = "center";
 	this.togglePauseLabel.x = this.togglePause.width/2;
 	this.togglePauseLabel.y = this.togglePause.height/2-20;
@@ -34,7 +35,7 @@ function Info (bounds, hue) {
 
 	// MODE TOGGLE!
 	this.toggleMode = new createjs.Container();
-	this.toggleMode.x = this.togglePause.width+GLOBAL.COMPONENT_MARGIN;
+	this.toggleMode.x = this.togglePause.width+this.GLOBAL.COMPONENT_MARGIN;
 	this.toggleMode.y = 0;
 	this.toggleMode.width = 300;
 	this.toggleMode.height = 50;
@@ -45,18 +46,18 @@ function Info (bounds, hue) {
 	this.toggleMode.addChild(this.toggleModeBg);
 
 	/*
-	this.toggleModeArrow = new createjs.Text("\u25be", "bold 24px "+GLOBAL.FONT, this.darkColor.hex());
+	this.toggleModeArrow = new createjs.Text("\u25be", "bold 24px "+this.GLOBAL.FONT, this.darkColor.hex());
 	this.toggleModeArrow.x = this.toggleMode.width - 30;
 	this.toggleModeArrow.y = this.toggleMode.height/2-this.textLineHeight/2;
 	this.toggleMode.addChild(this.toggleModeArrow);
 	*/
 
-	this.toggleModeLabel = new createjs.Text("", "bold 24px "+GLOBAL.FONT, this.darkColor.hex());
+	this.toggleModeLabel = new createjs.Text("", "bold 24px "+this.GLOBAL.FONT, this.darkColor.hex());
 	this.toggleModeLabel.x = 20;
 	this.toggleModeLabel.y = this.toggleMode.height/2-this.textLineHeight/2;
 	this.toggleMode.addChild(this.toggleModeLabel);
 	
-	this.toggleModeTime = new createjs.Text("", "bold 24px "+GLOBAL.FONT, this.lightColor.brighten(1).hex());
+	this.toggleModeTime = new createjs.Text("", "bold 24px "+this.GLOBAL.FONT, this.lightColor.brighten(1).hex());
 	this.toggleModeTime.textAlign = "right";
 	this.toggleModeTime.x = this.toggleMode.width-20;
 	this.toggleModeTime.y = this.toggleMode.height/2-this.textLineHeight/2;
@@ -74,7 +75,7 @@ function Info (bounds, hue) {
 	this.detailViewer = new createjs.Container();
 	this.detailViewer.width = 300;
 	this.detailViewer.height = 50;
-	this.detailViewer.x = this.toggleMode.x + this.toggleMode.width + GLOBAL.COMPONENT_MARGIN;
+	this.detailViewer.x = this.toggleMode.x + this.toggleMode.width + this.GLOBAL.COMPONENT_MARGIN;
 	this.detailViewer.y = 0;
 
 	this.bg = new createjs.Shape();
@@ -82,7 +83,7 @@ function Info (bounds, hue) {
 	this.bg.y = 0;
 	this.detailViewer.addChild(this.bg);
 
-	this.detailLabel = new createjs.Text("Last kill:", "bold 24px "+GLOBAL.FONT, this.darkColor.hex());
+	this.detailLabel = new createjs.Text("Last kill:", "bold 24px "+this.GLOBAL.FONT, this.darkColor.hex());
 	this.detailLabel.textAlign = 'center';
 	this.detailLabel.x = this.detailViewer.width/2;
 	this.detailLabel.y = this.detailViewer.height/2-this.textLineHeight/2;
@@ -100,17 +101,17 @@ function Info (bounds, hue) {
 
 	// INSTRUCTIONS
 	this.instructions = new createjs.Text("Click on a critter to get some info about it.",
-																				"bold 20px "+GLOBAL.FONT, this.lightColor.hex());
+																				"bold 20px "+this.GLOBAL.FONT, this.lightColor.hex());
 	this.instructions.width = this.bounds.width -
 														this.togglePause.width -
 														this.toggleMode.width -
 														this.detailViewer.width -
-														3*GLOBAL.COMPONENT_MARGIN;
+														3*this.GLOBAL.COMPONENT_MARGIN;
 	this.instructions.lineWidth = this.instructions.width;
 	this.instructions.height = 50;
 	this.instructions.x = this.togglePause.width +
 												this.toggleMode.width +
-												2*GLOBAL.COMPONENT_MARGIN +
+												2*this.GLOBAL.COMPONENT_MARGIN +
 												this.instructions.width/2;
 	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
 	this.instructions.textAlign = 'center';
@@ -118,27 +119,27 @@ function Info (bounds, hue) {
 	// END INSTRUCTIONS
 
 	// BEGIN SLIDER
-	this.worldSpeedSlider = new Slider(1, 30, this.instructions.width, 50,
+	this.worldSpeedSlider = new Slider(this.GLOBAL, 1, 30, this.instructions.width, 50,
 																		 "World Speed", hue);
 	this.worldSpeedSlider.x = this.togglePause.width +
 														this.toggleMode.width +
 														this.detailViewer.width +
-														3*GLOBAL.COMPONENT_MARGIN;
+														3*this.GLOBAL.COMPONENT_MARGIN;
 	this.worldSpeedSlider.y = 0;
 	this.addChild(this.worldSpeedSlider);
 	this.worldSpeedSlider.userVal = 10;
 	this.worldSpeedSlider.value = 10;
 	this.worldSpeedSlider.on('change', function () {
-		GLOBAL.WORLD_SPEED = this.worldSpeedSlider.value;
-		GLOBAL.DIRTY = true;
+		this.GLOBAL.WORLD_SPEED = this.worldSpeedSlider.value;
+		this.GLOBAL.DIRTY = true;
 	}, this);
 	// END SLIDER
 
 
 	this.togglePause.on('click', function (e) {
 		createjs.Ticker.paused = !createjs.Ticker.paused;
-		this.worldSpeedSlider.setEnabled(!createjs.Ticker.paused && mode == 'observer');
-		GLOBAL.DIRTY = true;
+		this.worldSpeedSlider.setEnabled(!createjs.Ticker.paused && this.GLOBAL.MODE == 'observer');
+		this.GLOBAL.DIRTY = true;
 	}, this);
 	
 	this.x = 0;
@@ -152,7 +153,7 @@ function Info (bounds, hue) {
 	this.drawInfo();
 
 	this.setObserverMode();
-	this.modeEnd = GLOBAL.TIME + GLOBAL.OBSERVER_PERIOD;
+	this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.OBSERVER_PERIOD;
 
 	this.on('tick', function (e) {
 		this.update();
@@ -162,7 +163,7 @@ function Info (bounds, hue) {
 var infoPrototype = createjs.extend(Info, createjs.Container);
 
 infoPrototype.handleWorldClick = function (event, didHit, agent) {
-	if (mode == 'predator' && !createjs.Ticker.paused) {
+	if (this.GLOBAL.MODE == 'predator' && !createjs.Ticker.paused) {
 		if (agent && agent.isEaten) {
 			return;
 		}
@@ -173,14 +174,14 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 			this.lifetimeScore++;
 			this.drawDetailViewer();
 		} else {
-			this.modeEnd -= GLOBAL.MISS_TIME_PENALTY;
+			this.modeEnd -= this.GLOBAL.MISS_TIME_PENALTY;
 		}
 
 		var text;
 		var color;
 		if (didHit) {
 			text = this.numHits.toString();
-			if (this.numHits == GLOBAL.HIT_THRESHOLD) {
+			if (this.numHits == this.GLOBAL.HIT_THRESHOLD) {
 				text += "!";
 			}
 			color = this.overlayHitColorHex;
@@ -188,7 +189,7 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 			text = "MISS!";
 			color = this.overlayMissColorHex;
 		}
-		var overlay = new createjs.Text(text, "bold 50px "+GLOBAL.FONT, color);
+		var overlay = new createjs.Text(text, "bold 50px "+this.GLOBAL.FONT, color);
 		overlay.alpha = 0.7;
 		overlay.textAlign = "center";
 		overlay.x = event.stageX;
@@ -198,28 +199,27 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 									.wait(1000)
 									.to({ alpha: 0 }, 1000)
 									.call(function () {
-										console.log(this);
 										this.removeChild(overlay)
 									}, [], this);
-	} else if (mode == 'observer') {
+	} else if (this.GLOBAL.MODE == 'observer') {
 		return;
 		if (didHit) {
 			this.setTarget(agent);
 		} else {
 			this.setTarget(null);
 		}
-		GLOBAL.DIRTY = true;
+		this.GLOBAL.DIRTY = true;
 	}
 }
 
 infoPrototype.nextMode = function () {
-	if (mode == 'observer') {
-		this.modeEnd = GLOBAL.TIME + GLOBAL.PREDATOR_PERIOD;
+	if (this.GLOBAL.MODE == 'observer') {
+		this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.PREDATOR_PERIOD;
 		this.setPredatorMode();
-	} else if (mode == 'predator') {
-		this.modeEnd = GLOBAL.TIME + GLOBAL.OBSERVER_PERIOD;
+	} else if (this.GLOBAL.MODE == 'predator') {
+		this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.OBSERVER_PERIOD;
 		// reset lifetime score if hits from last Pred round are below threshold
-		if (this.numHits < GLOBAL.HIT_THRESHOLD) {
+		if (this.numHits < this.GLOBAL.HIT_THRESHOLD) {
 			this.lifetimeScore = 0;
 		} else {
 			this.round += 1;
@@ -228,12 +228,12 @@ infoPrototype.nextMode = function () {
 		this.setObserverMode();
 	}
 	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
-	allAgentsDirty = true;
+	this.GLOBAL.AGENTS_DIRTY = true;
 	this.drawToggleMode();
 }
 
 infoPrototype.setObserverMode = function () {
-	mode = 'observer';
+	this.GLOBAL.MODE = 'observer';
 	this.instructions.text = "Click on a critter to get some info about it."; 
 	createjs.Tween.get(this.worldSpeedSlider, {
 																							ignoreGlobalPause: true,
@@ -246,14 +246,14 @@ infoPrototype.setObserverMode = function () {
 }
 
 infoPrototype.setPredatorMode = function () {
-	mode = 'predator';
+	this.GLOBAL.MODE = 'predator';
 	this.instructions.text = "Eat critters by clicking on them " +
 													 "to increase your health.";
 	createjs.Tween.get(this.worldSpeedSlider, {
 																							ignoreGlobalPause: true,
 																							override: true
 																						}) 
-								.to({ value: GLOBAL.PRED_MODE_SPEED}, 0)
+								.to({ value: this.GLOBAL.PRED_MODE_SPEED}, 0)
 	this.worldSpeedSlider.setEnabled(false && !createjs.Ticker.paused);
 	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null);
@@ -261,7 +261,7 @@ infoPrototype.setPredatorMode = function () {
 }
 
 infoPrototype.setAutoPredatorMode = function () {
-	mode = 'autopredator';
+	this.GLOBAL.MODE = 'autopredator';
 	this.instructions.text = "There's a predator at work! She eats any critters " +
 													 "she can find.";
 	lastAutoKill = null;
@@ -284,7 +284,7 @@ infoPrototype.drawTogglePause = function () {
 	this.togglePauseBg.graphics.beginFill(this.lightColor.hex());
 	this.togglePauseBg.graphics.drawRoundRect(0,0,this.togglePause.width,
 																						this.togglePause.height,20);
-	GLOBAL.DIRTY = true;
+	this.GLOBAL.DIRTY = true;
 }
 
 infoPrototype.drawToggleMode = function () {
@@ -292,29 +292,29 @@ infoPrototype.drawToggleMode = function () {
 	this.toggleModeBg.graphics.beginFill(this.lightColor.hex());
 	this.toggleModeBg.graphics.drawRoundRect(0,0,this.toggleMode.width,
 																						this.togglePause.height,20);
-	if (mode == 'observer') {
+	if (this.GLOBAL.MODE == 'observer') {
 		this.toggleModeLabel.text = "Observer";
-	} else if (mode == 'predator') {
+	} else if (this.GLOBAL.MODE == 'predator') {
 		this.toggleModeLabel.text = "Predator";
-	} else if (mode == 'autopredator') {
+	} else if (this.GLOBAL.MODE == 'autopredator') {
 		this.toggleModeLabel.text = "AUTO Predator";
 	}
-	GLOBAL.DIRTY = true;
+	this.GLOBAL.DIRTY = true;
 }
 
 infoPrototype.drawDetailViewer = function () {
 	this.bg.graphics.clear();
 	this.bg.graphics.beginFill(this.lightColor.hex());
 	this.bg.graphics.drawRoundRect(0,0,this.detailViewer.width,this.detailViewer.height,20);
-	if (false) { //mode == 'observer') {
+	if (false) { //this.GLOBAL.MODE == 'observer') {
 		if (this.target == null) {
 			this.detailLabel.text = "No critter.";
 		}
 		this.phenotypeCircle.alpha = 0;
-	} else if (true) { //mode == 'predator') {
+	} else if (true) { //this.GLOBAL.MODE == 'predator') {
 		this.detailLabel.text = "Round " + this.round;
 		this.phenotypeCircle.alpha = 0;
-	} else if (mode == 'autopredator') {
+	} else if (this.GLOBAL.MODE == 'autopredator') {
 		if (lastAutoKill != null) {
 			this.detailLabel.text = "Last kill: ";
 			this.phenotypeCircle.alpha = 1;
@@ -326,7 +326,7 @@ infoPrototype.drawDetailViewer = function () {
 			this.detailLabel.text = "Waiting for a kill...";
 		}
 	}
-	GLOBAL.DIRTY = true;
+	this.GLOBAL.DIRTY = true;
 }
 
 infoPrototype.drawInfo = function () {
@@ -335,7 +335,7 @@ infoPrototype.drawInfo = function () {
 }
 
 infoPrototype.update = function () {
-	if (this.modeEnd < GLOBAL.TIME || this.numHits >= GLOBAL.HIT_THRESHOLD) {
+	if (this.modeEnd < this.GLOBAL.TIME || this.numHits >= this.GLOBAL.HIT_THRESHOLD) {
 		this.nextMode();
 	}
 
@@ -343,10 +343,10 @@ infoPrototype.update = function () {
 		this.setTarget(null);
 	}
 
-	if (false) { //mode == 'observer') {
+	if (false) { //this.GLOBAL.MODE == 'observer') {
 		// update the age
 		if (this.target) {
-			var age = Math.ceil((GLOBAL.TIME-this.target.birthTime)/1000);
+			var age = Math.ceil((this.GLOBAL.TIME-this.target.birthTime)/1000);
 			var ageStr = ('0' + Math.floor((age%3600)/60)).slice(-1) + ":" +
 									 ('00' + Math.ceil(age%60)).slice(-2);
 
@@ -356,7 +356,7 @@ infoPrototype.update = function () {
 		}
 	}
 
-	var time = Math.ceil((this.modeEnd-GLOBAL.TIME)/1000);
+	var time = Math.ceil((this.modeEnd-this.GLOBAL.TIME)/1000);
 	var timeStr = ('0' + Math.floor((time%3600)/60)).slice(-1) + ":" +
 							 ('0' + Math.ceil(time%60)).slice(-2);
 	this.toggleModeTime.text = timeStr;

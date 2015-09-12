@@ -31,18 +31,19 @@
 	/**
 	 * Simple slider control for EaselJS examples.
 	 **/
-	function Slider(min, max, width, height, bgText, hue) {
+	function Slider(GLOBAL, min, max, width, height, bgText, hue) {
 		this.Container_constructor();
-		this.color = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
+		this.GLOBAL = GLOBAL;
+		this.color = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
 		this.textColor = chroma("#FFFFFF");
 		this.bgColor = this.color.brighten(1);
-		var tempText = new createjs.Text("M", "bold 30px "+GLOBAL.FONT, "#FFFFFF");
+		var tempText = new createjs.Text("M", "bold 30px "+this.GLOBAL.FONT, "#FFFFFF");
 		this.textLineHeight = tempText.getMeasuredLineHeight();
 
 		this._bg = new createjs.Shape();
-		this._minText = new createjs.Text(min.toString(), "bold 24px "+GLOBAL.FONT, this.textColor.hex());
-		this._maxText = new createjs.Text(max.toString(), "bold 24px "+GLOBAL.FONT, this.textColor.hex());
-		this._bgText = new createjs.Text(bgText, "bold 24px "+GLOBAL.FONT, this.textColor.hex());
+		this._minText = new createjs.Text(min.toString(), "bold 24px "+this.GLOBAL.FONT, this.textColor.hex());
+		this._maxText = new createjs.Text(max.toString(), "bold 24px "+this.GLOBAL.FONT, this.textColor.hex());
+		this._bgText = new createjs.Text(bgText, "bold 24px "+this.GLOBAL.FONT, this.textColor.hex());
 		this._nub = new createjs.Shape();
 		this.addChild(this._bg, this._minText, this._maxText, this._bgText, this._nub);
 		

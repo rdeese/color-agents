@@ -1,8 +1,9 @@
 // constructor
-function Plant(bounds, radius, position, velocity, hue) {
+function Plant(GLOBAL, bounds, radius, position, velocity, hue) {
 	// call inherited shape constructor
 	this.Shape_constructor();
-
+	
+	this.GLOBAL = GLOBAL;
 	this.snapToPixel = true;
 	this.bounds = bounds;
 	this.radius = radius;
@@ -15,7 +16,7 @@ function Plant(bounds, radius, position, velocity, hue) {
 	this.height = this.width = this.radius * 2;
 	this.cached = false;
 	
-	this.color = chroma.hcl(hue, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
+	this.color = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
 
 	this.drawPlant();
 	
@@ -31,11 +32,11 @@ function Plant(bounds, radius, position, velocity, hue) {
 var plantPrototype = createjs.extend(Plant, createjs.Shape);
 
 plantPrototype.wander = function (e) {
-	vec2.scale(this.acc, this.acc, Math.pow(GLOBAL.ACC_DAMPING, GLOBAL.DELTA));
+	vec2.scale(this.acc, this.acc, Math.pow(this.GLOBAL.ACC_DAMPING, this.GLOBAL.DELTA));
 	// randomly change the acceleration
-	if (random.number() < GLOBAL.MOVEMENT_PROB*GLOBAL.DELTA) {
-		vec2.add(this.acc, this.acc, vec2.fromValues(GLOBAL.MAX_ACC*(random.number()-0.5),
-																 								 GLOBAL.MAX_ACC*(random.number()-0.5)));
+	if (random.number() < this.GLOBAL.MOVEMENT_PROB*this.GLOBAL.DELTA) {
+		vec2.add(this.acc, this.acc, vec2.fromValues(this.GLOBAL.MAX_ACC*(random.number()-0.5),
+																 								 this.GLOBAL.MAX_ACC*(random.number()-0.5)));
 	}
 }
 
@@ -60,10 +61,10 @@ plantPrototype.update = function (e) {
 	this.wander(e);
 
 	// Iterate internal kinematics
-	vec2.scale(this.vel, this.vel, Math.pow(GLOBAL.VEL_DAMPING, GLOBAL.DELTA));
-	vec2.scale(this.subResult, this.acc, GLOBAL.DELTA);
+	vec2.scale(this.vel, this.vel, Math.pow(this.GLOBAL.VEL_DAMPING, this.GLOBAL.DELTA));
+	vec2.scale(this.subResult, this.acc, this.GLOBAL.DELTA);
 	vec2.add(this.vel, this.vel, this.subResult);
-	vec2.scale(this.subResult, this.vel, GLOBAL.DELTA);
+	vec2.scale(this.subResult, this.vel, this.GLOBAL.DELTA);
 	vec2.add(this.pos, this.pos, this.subResult);
 	
 	// elastically collide with walls
