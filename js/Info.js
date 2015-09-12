@@ -137,8 +137,8 @@ function Info (GLOBAL, bounds, hue) {
 
 
 	this.togglePause.on('click', function (e) {
-		createjs.Ticker.paused = !createjs.Ticker.paused;
-		this.worldSpeedSlider.setEnabled(!createjs.Ticker.paused && this.GLOBAL.MODE == 'observer');
+		this.GLOBAL.PAUSED = !this.GLOBAL.PAUSED;
+		this.worldSpeedSlider.setEnabled(!this.GLOBAL.PAUSED && this.GLOBAL.MODE == 'observer');
 		this.GLOBAL.DIRTY = true;
 	}, this);
 	
@@ -163,7 +163,7 @@ function Info (GLOBAL, bounds, hue) {
 var infoPrototype = createjs.extend(Info, createjs.Container);
 
 infoPrototype.handleWorldClick = function (event, didHit, agent) {
-	if (this.GLOBAL.MODE == 'predator' && !createjs.Ticker.paused) {
+	if (this.GLOBAL.MODE == 'predator' && !this.GLOBAL.PAUSED) {
 		if (agent && agent.isEaten) {
 			return;
 		}
@@ -240,7 +240,7 @@ infoPrototype.setObserverMode = function () {
 																							override: true
 																						}) 
 								.to({ value: this.worldSpeedSlider.userVal }, 1000);
-	this.worldSpeedSlider.setEnabled(true && !createjs.Ticker.paused);
+	this.worldSpeedSlider.setEnabled(true && !this.GLOBAL.PAUSED);
 	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null); 
 }
@@ -254,7 +254,7 @@ infoPrototype.setPredatorMode = function () {
 																							override: true
 																						}) 
 								.to({ value: this.GLOBAL.PRED_MODE_SPEED}, 0)
-	this.worldSpeedSlider.setEnabled(false && !createjs.Ticker.paused);
+	this.worldSpeedSlider.setEnabled(false && !this.GLOBAL.PAUSED);
 	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null);
 	this.detailViewer.alpha = 1;
@@ -270,7 +270,7 @@ infoPrototype.setAutoPredatorMode = function () {
 																							override: true
 																						}) 
 								.to({ value: this.worldSpeedSlider.userVal }, 1000)
-	this.worldSpeedSlider.setEnabled(true && !createjs.Ticker.paused);
+	this.worldSpeedSlider.setEnabled(true && !this.GLOBAL.PAUSED);
 	this.setTarget(null); 
 }
 
@@ -362,7 +362,7 @@ infoPrototype.update = function () {
 	this.toggleModeTime.text = timeStr;
 
 	// update the play/pause character
-	if (createjs.Ticker.paused) {
+	if (this.GLOBAL.PAUSED) {
 		this.togglePauseLabel.text = "\u25ba"
 	} else {
 		this.togglePauseLabel.text = "\u275a\u200a\u275a"
