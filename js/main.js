@@ -49,6 +49,7 @@ function main () {
 		MODE: "observer",
 		PAUSED: true
 	}
+
 	var globalClone = function () {
 		return JSON.parse(JSON.stringify(GLOBAL));
 	}
@@ -66,28 +67,31 @@ function main () {
 
 	// INTERACTIVES
 	var canvas;
+	var interactives = [];
 	var world;
 	var global;
 
 	// single critter interactive
 	canvas = document.querySelector("#single-critter");
-	canvas.width = Math.min(600, Math.max(window.innerWidth - 20, 400));
-	canvas.height = Math.min(400, Math.max(window.innerHeight - 20, 300));
+	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
+	canvas.height = Math.min(200, Math.max(window.innerHeight - 20, 100));
 	global = globalClone();
 	global.NUM_AGENTS = 1; // just one critter
 	global.DEATH_THRESHHOLD = Infinity; // wont die
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.INITIAL_AGENT_OFFSET = 0; // same color as controls
+	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	// start adult size
 	global.BABY_SCALE = 1;
 	global.YOUTH_SCALE_STEP = 0;
+	// autoplay
+	global.AUTOPLAY = true;
+	global.PAUSED = false;
 	var world = new World(global, canvas);
-	world.stage.removeChild(world.bg); // get rid of the background
-	// hide all of the info bar except for play/pause
-	world.info.removeChild(world.info.toggleMode);
-	world.info.removeChild(world.info.detailViewer);
-	world.info.removeChild(world.info.worldSpeedSlider);
+	world.stage.removeChild(world.bg); // hide the background
+	world.stage.removeChild(world.info); // hide the info bar
 	world.start();
+	interactives.push(world);
 
 	// sandbox
 	canvas = document.querySelector("#world");
@@ -95,6 +99,43 @@ function main () {
 	canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
 	var world = new World(globalClone(), canvas);
 	world.start();
+	interactives.push(world);
+
+	// add listener to pause when not visible
+	window.onscroll = function () {
+		var scrollY = window.pageYOffset;
+		var innerHeight = window.innerHeight;
+		for (var i = 0; i < interactives.length; i++) {
+			var w = interactives[i];
+			var isVisible = w.stage.canvas.offsetTop<scrollY+innerHeight &&
+											w.stage.canvas.offsetTop+w.stage.canvas.height>scrollY;
+			if (isVisible && w.GLOBAL.PAUSED && w.GLOBAL.AUTOPLAY) {
+				w.GLOBAL.PAUSED = false;
+			} else if (!isVisible && !w.GLOBAL.PAUSED) {
+				w.GLOBAL.PAUSED = true;
+			}
+		}
+	};
+
+	window.onblur = function () {
+		for (var i = 0; i < interactives.length; i++) {
+			var w = interactives[i];
+			w.GLOBAL.PAUSED = true;
+		}
+	};
+
+	window.onfocus = function () {
+		var scrollY = window.pageYOffset;
+		var innerHeight = window.innerHeight;
+		for (var i = 0; i < interactives.length; i++) {
+			var w = interactives[i];
+			var isVisible = w.stage.canvas.offsetTop<scrollY+innerHeight &&
+											w.stage.canvas.offsetTop+w.stage.canvas.height>scrollY;
+			if (isVisible && w.GLOBAL.PAUSED && w.GLOBAL.AUTOPLAY) {
+				w.GLOBAL.PAUSED = false;
+			} 
+		}
+	};
 }
 
 window.onload = main;
