@@ -33,9 +33,30 @@ function Info (GLOBAL, bounds, hue) {
 	this.addChild(this.togglePause);
 	// END PAUSE BUTTON
 
+	// RESET BUTTON
+	this.resetButton = new createjs.Container();
+	this.resetButton.x = this.togglePause.width+this.GLOBAL.COMPONENT_MARGIN;
+	this.resetButton.y = 0;
+	this.resetButton.width = 95;
+	this.resetButton.height = 50;
+
+	this.resetButtonBg = new createjs.Shape();
+	this.resetButtonBg.x = 0;
+	this.resetButtonBg.y = 0;
+	this.resetButton.addChild(this.resetButtonBg);
+
+	this.resetButtonLabel = new createjs.Text("", "bold 30px "+this.GLOBAL.FONT, this.darkColor.hex());
+	this.resetButtonLabel.textAlign = "center";
+	this.resetButtonLabel.x = this.resetButton.width/2;
+	this.resetButtonLabel.y = this.resetButton.height/2-20;
+	this.resetButton.addChild(this.resetButtonLabel);
+
+	this.addChild(this.resetButton);
+	// END RESET BUTTON
+
 	// MODE TOGGLE!
 	this.toggleMode = new createjs.Container();
-	this.toggleMode.x = this.togglePause.width+this.GLOBAL.COMPONENT_MARGIN;
+	this.toggleMode.x = this.resetButton.x+this.resetButton.width+this.GLOBAL.COMPONENT_MARGIN;
 	this.toggleMode.y = 0;
 	this.toggleMode.width = 300;
 	this.toggleMode.height = 50;
@@ -104,9 +125,10 @@ function Info (GLOBAL, bounds, hue) {
 																				"bold 20px "+this.GLOBAL.FONT, this.lightColor.hex());
 	this.instructions.width = this.bounds.width -
 														this.togglePause.width -
+														this.resetButton.width -
 														this.toggleMode.width -
 														this.detailViewer.width -
-														3*this.GLOBAL.COMPONENT_MARGIN;
+														4*this.GLOBAL.COMPONENT_MARGIN;
 	this.instructions.lineWidth = this.instructions.width;
 	this.instructions.height = 50;
 	this.instructions.x = this.togglePause.width +
@@ -121,10 +143,9 @@ function Info (GLOBAL, bounds, hue) {
 	// BEGIN SLIDER
 	this.worldSpeedSlider = new Slider(this.GLOBAL, 1, 30, this.instructions.width, 50,
 																		 "World Speed", hue);
-	this.worldSpeedSlider.x = this.togglePause.width +
-														this.toggleMode.width +
+	this.worldSpeedSlider.x = this.detailViewer.x +
 														this.detailViewer.width +
-														3*this.GLOBAL.COMPONENT_MARGIN;
+														this.GLOBAL.COMPONENT_MARGIN;
 	this.worldSpeedSlider.y = 0;
 	this.addChild(this.worldSpeedSlider);
 	this.worldSpeedSlider.userVal = 10;
@@ -140,6 +161,12 @@ function Info (GLOBAL, bounds, hue) {
 		this.GLOBAL.PAUSED = !this.GLOBAL.PAUSED;
 		this.worldSpeedSlider.setEnabled(!this.GLOBAL.PAUSED && this.GLOBAL.MODE == 'observer');
 		this.GLOBAL.DIRTY = true;
+		console.log("pause button!");
+	}, this);
+
+	this.resetButton.on('click', function (e) {
+		var evt = new createjs.Event('reset', true);
+		this.dispatchEvent(evt);
 	}, this);
 	
 	this.x = 0;
@@ -243,6 +270,7 @@ infoPrototype.setObserverMode = function () {
 	this.worldSpeedSlider.setEnabled(true && !this.GLOBAL.PAUSED);
 	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null); 
+	this.drawInfo();
 }
 
 infoPrototype.setPredatorMode = function () {
@@ -257,6 +285,7 @@ infoPrototype.setPredatorMode = function () {
 	this.worldSpeedSlider.setEnabled(false && !this.GLOBAL.PAUSED);
 	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null);
+	this.drawInfo();
 	this.detailViewer.alpha = 1;
 }
 
@@ -272,6 +301,7 @@ infoPrototype.setAutoPredatorMode = function () {
 								.to({ value: this.worldSpeedSlider.userVal }, 1000)
 	this.worldSpeedSlider.setEnabled(true && !this.GLOBAL.PAUSED);
 	this.setTarget(null); 
+	this.drawInfo();
 }
 
 infoPrototype.setTarget = function (target) {
@@ -284,6 +314,15 @@ infoPrototype.drawTogglePause = function () {
 	this.togglePauseBg.graphics.beginFill(this.lightColor.hex());
 	this.togglePauseBg.graphics.drawRoundRect(0,0,this.togglePause.width,
 																						this.togglePause.height,20);
+	this.GLOBAL.DIRTY = true;
+}
+
+infoPrototype.drawResetButton = function () {
+	this.resetButtonBg.graphics.clear();
+	this.resetButtonBg.graphics.beginFill(this.lightColor.hex());
+	this.resetButtonBg.graphics.drawRoundRect(0,0,this.resetButton.width,
+																						this.resetButton.height,20);
+	this.resetButtonLabel.text = "\u21bb";
 	this.GLOBAL.DIRTY = true;
 }
 
@@ -331,6 +370,7 @@ infoPrototype.drawDetailViewer = function () {
 
 infoPrototype.drawInfo = function () {
 	this.drawTogglePause();
+	this.drawResetButton();
 	this.drawToggleMode();
 }
 

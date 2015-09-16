@@ -4,15 +4,24 @@ var World = function (GLOBAL, canvas) {
 
 World.prototype = {
 	init: function (GLOBAL, canvas) {
-		this.GLOBAL = GLOBAL;
-	
-		this.stage = new createjs.Stage(canvas);
+		if (this.GLOBAL && this.stage) {
+			this.GLOBAL.TIME = 0;
+			this.stage.enableDOMEvents(false);
+			this.stage = new createjs.Stage(this.stage.canvas);
+		} else { 
+			this.GLOBAL = GLOBAL;
+			this.stage = new createjs.Stage(canvas);
+		}
+
+
 		envHue = random.number()*360;
-		var bounds = new createjs.Rectangle(0, 0, canvas.width, canvas.height);
-		var infoBounds = new createjs.Rectangle(0, 0, canvas.width, this.GLOBAL.WORLD_OFFSET_Y);
+		var bounds = new createjs.Rectangle(0, 0, this.stage.canvas.width,
+																							this.stage.canvas.height);
+		var infoBounds = new createjs.Rectangle(0, 0, this.stage.canvas.width,
+																									this.GLOBAL.WORLD_OFFSET_Y);
 		var worldBounds = new createjs.Rectangle(0, 0,
-																						 canvas.width,
-																						 canvas.height-this.GLOBAL.WORLD_OFFSET_Y);
+																						 this.stage.canvas.width,
+																						 this.stage.canvas.height-this.GLOBAL.WORLD_OFFSET_Y);
 		// QuadTree setup
 		// give it the world bounds, false means shapes not points, and a depth of 7
 		this.tree = new QuadTree(worldBounds, false, 7);
@@ -43,6 +52,11 @@ World.prototype = {
 		// create info
 		this.info = new Info(this.GLOBAL, infoBounds, envHue);
 		this.stage.addChild(this.info);
+
+		// handle reset from UI
+		this.info.on('reset', function () {
+			this.init();
+		}, this);
 	},
 
 	initAgents: function (hue, num) {
