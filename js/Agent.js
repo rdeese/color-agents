@@ -155,12 +155,24 @@ agentPrototype.collide = function (other) {
 agentPrototype.motherChild = function (matingTime, otherGenome) {
 	this.isPregnant = true;
 	this.matingTime = matingTime;
-	var diff = this.genome[0][0]-otherGenome[0][0];
+	var thisGene = this.genome[0][0];
+	var otherGene = otherGenome[0][0];
+	// infrequent, significant mutations
+	if (random.number()<this.GLOBAL.MUTATION_PROB) {
+		thisGene += (0.5+0.5*random.number())*this.GLOBAL.MUTATION_RATE*(Math.round(random.number())*2-1);
+		thisGene %= 360;
+	}
+	if (random.number()<this.GLOBAL.MUTATION_PROB) {
+		otherGene += (0.5+0.5*random.number())*this.GLOBAL.MUTATION_RATE*(Math.round(random.number())*2-1);
+		otherGene %= 360;
+	}
+	var diff = thisGene-otherGene;
 	if (diff > 180) { diff -= 360; }
 	if (diff < -180) { diff += 360; }
 	this.childGenome = [[0],[0]];
-	this.childGenome[0][0] = (otherGenome[0][0] + diff/2)%360;
-	this.childGenome[0][0] += (random.number()-0.5)*this.GLOBAL.MUTATION_RATE;
+	this.childGenome[0][0] = (otherGene + diff/2)%360;
+	// small, frequent mutations (unrealistic)
+	// this.childGenome[0][0] += (random.number()-0.5)*this.GLOBAL.MUTATION_RATE;
 }
 
 agentPrototype.selectCacheIfExists = function () {

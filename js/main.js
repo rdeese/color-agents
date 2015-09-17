@@ -16,7 +16,8 @@ function main () {
 		TIME: 0, // starts at 0
 
 		MATING_PROB: 0.2,
-		MUTATION_RATE: 40,
+		MUTATION_RATE: 60,
+		MUTATION_PROB: 0.2,
 		GESTATION_PD: 20000, // milliseconds
 		YOUTH_DURATION: 40000, // milliseconds
 		MAX_ACC: 4/100000, // pixels per millisecond
