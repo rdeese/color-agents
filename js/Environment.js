@@ -54,7 +54,7 @@ envPrototype.drawBg = function () {
 									vec2.fromValues(random.number() * (this.bounds.width-2*radius) + radius,
 																	random.number() * (this.bounds.height-2*radius) + radius),
 									vec2.create(),
-									envHue+30*(random.number()-0.5));
+									this.hue+30*(random.number()-0.5));
 		this.plants.push(p);
 		this.bg.addChild(p);
 	}

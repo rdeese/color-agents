@@ -14,7 +14,7 @@ World.prototype = {
 		}
 
 
-		envHue = random.number()*360;
+		this.envHue = random.number()*360;
 		var bounds = new createjs.Rectangle(0, 0, this.stage.canvas.width,
 																							this.stage.canvas.height);
 		var infoBounds = new createjs.Rectangle(0, 0, this.stage.canvas.width,
@@ -27,7 +27,7 @@ World.prototype = {
 		this.tree = new QuadTree(worldBounds, false, 7);
 
 		// create the environment
-		this.bg = new Environment(this.GLOBAL, worldBounds, envHue);
+		this.bg = new Environment(this.GLOBAL, worldBounds, this.envHue);
 		this.bg.y = this.GLOBAL.WORLD_OFFSET_Y;
 		this.stage.addChild(this.bg);
 
@@ -36,13 +36,7 @@ World.prototype = {
 		this.agentContainer.y = this.GLOBAL.WORLD_OFFSET_Y;
 		this.agentContainer.GLOBAL = this.GLOBAL;
 		this.stage.addChild(this.agentContainer);
-		var agentStartCol = envHue;
-		if (random.number() < 0.5) {
-			agentStartCol += this.GLOBAL.INITIAL_AGENT_OFFSET;
-		} else {
-			agentStartCol -= this.GLOBAL.INITIAL_AGENT_OFFSET;
-		}
-		this.initAgents(agentStartCol, this.GLOBAL.NUM_AGENTS);
+		this.initAgents(this.envHue, this.GLOBAL.NUM_AGENTS);
 
 		// send world clicks to the info obj
 		this.stage.on("worldClick", function (e) {
@@ -50,7 +44,7 @@ World.prototype = {
 		}, this);
 
 		// create info
-		this.info = new Info(this.GLOBAL, infoBounds, envHue);
+		this.info = new Info(this.GLOBAL, infoBounds, this.envHue);
 		this.stage.addChild(this.info);
 
 		// handle reset from UI
@@ -60,6 +54,13 @@ World.prototype = {
 	},
 
 	initAgents: function (hue, num) {
+		var agentStartCol = hue;
+		if (random.number() < 0.5) {
+			agentStartCol += this.GLOBAL.INITIAL_AGENT_OFFSET;
+		} else {
+			agentStartCol -= this.GLOBAL.INITIAL_AGENT_OFFSET;
+		}
+
 		this.agents = [];
 		this.newAgents = [];
 
@@ -72,7 +73,7 @@ World.prototype = {
 										vec2.fromValues(random.number() * (worldBounds.width-2*radius) + radius,
 																		random.number() * (worldBounds.height-2*radius) + radius),
 										vec2.create(),
-										[[hue+30*(random.number()-0.5)], [random.number()*180]]);
+										[[agentStartCol+30*(random.number()-0.5)], [random.number()*180]]);
 			this.agentContainer.addChild(a);
 			this.agents.push(a);
 			this.tree.insert(a);
@@ -191,5 +192,9 @@ World.prototype = {
 
 		// add a tick to the update counter
 		this.GLOBAL.UPDATE_COUNTER++;
+
+		if (this.externalTick) {
+			this.externalTick();
+		}
 	}
 };

@@ -78,9 +78,9 @@ function main () {
 	canvas.height = Math.min(200, Math.max(window.innerHeight - 20, 100));
 	global = globalClone();
 	global.NUM_AGENTS = 1; // just one critter
-	global.DEATH_THRESHHOLD = Infinity; // wont die
+	global.DEATH_THRESHHOLD = 200; // wont die
 	global.OBSERVER_PERIOD = Infinity; // no predator period
-	global.INITIAL_AGENT_OFFSET = 0; // same color as controls
+	// global.INITIAL_AGENT_OFFSET = 0; // same color as controls
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	// start adult size
 	global.BABY_SCALE = 1;
@@ -88,17 +88,24 @@ function main () {
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	var world = new World(global, canvas);
+	world = new World(global, canvas);
 	world.stage.removeChild(world.bg); // hide the background
 	world.stage.removeChild(world.info); // hide the info bar
 	world.start();
 	interactives.push(world);
+	world.externalTick = function () {
+		if (interactives[0].agents.length == 0) {
+			this.init();
+			this.stage.removeChild(this.bg); // hide the background
+			this.stage.removeChild(this.info); // hide the info bar
+		}
+	}.bind(world);
 
 	// sandbox
 	canvas = document.querySelector("#world");
 	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
 	canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
-	var world = new World(globalClone(), canvas);
+	world = new World(globalClone(), canvas);
 	world.start();
 	interactives.push(world);
 
