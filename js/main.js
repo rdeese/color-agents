@@ -110,7 +110,7 @@ function main () {
 			var w = interactives[i];
 			var isVisible = w.stage.canvas.offsetTop<scrollY+innerHeight &&
 											w.stage.canvas.offsetTop+w.stage.canvas.height>scrollY;
-			if (isVisible && w.GLOBAL.PAUSED && w.GLOBAL.AUTOPLAY) {
+			if (isVisible && w.GLOBAL.PAUSED && w.GLOBAL.AUTOPLAY && document.hasFocus()) {
 				w.GLOBAL.PAUSED = false;
 			} else if (!isVisible && !w.GLOBAL.PAUSED) {
 				w.GLOBAL.PAUSED = true;
@@ -137,6 +137,14 @@ function main () {
 			} 
 		}
 	};
+
+	// start in the right state
+	if (document.hasFocus()) {
+		window.onfocus();
+	} else {
+		window.onblur();
+	}
+	window.scroll(window.scrollX, window.scrollY);
 }
 
 window.onload = main;

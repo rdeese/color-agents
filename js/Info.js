@@ -161,7 +161,6 @@ function Info (GLOBAL, bounds, hue) {
 		this.GLOBAL.PAUSED = !this.GLOBAL.PAUSED;
 		this.worldSpeedSlider.setEnabled(!this.GLOBAL.PAUSED && this.GLOBAL.MODE == 'observer');
 		this.GLOBAL.DIRTY = true;
-		console.log("pause button!");
 	}, this);
 
 	this.resetButton.on('click', function (e) {
