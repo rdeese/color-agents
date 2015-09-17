@@ -11,7 +11,11 @@ function Agent(GLOBAL, bounds, radius, position, velocity, genome) {
 	this.vel = vec2.clone(velocity);
 	this.pos = vec2.clone(position);
 	this.acc = vec2.fromValues(0,0);
-	this.heading = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
+	if (this.vel[0] == 0 && this.vel[1] == 0) {
+		this.heading = random.number()*360;
+	} else {
+		this.heading = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
+	}
 
 	// set createjs position & rotation vars based on internals
 	this.rotation = this.heading;

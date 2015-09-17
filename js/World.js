@@ -73,7 +73,9 @@ World.prototype = {
 										vec2.fromValues(random.number() * (worldBounds.width-2*radius) + radius,
 																		random.number() * (worldBounds.height-2*radius) + radius),
 										vec2.create(),
-										[[agentStartCol+30*(random.number()-0.5)], [random.number()*180]]);
+										[[agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [random.number()*180]]);
+			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
+			a.update({ WILL_DRAW: true });
 			this.agentContainer.addChild(a);
 			this.agents.push(a);
 			this.tree.insert(a);

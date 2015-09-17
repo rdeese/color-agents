@@ -3,6 +3,7 @@ function main () {
 		WORLD_OFFSET_Y: 58, // pixels
 		COMPONENT_MARGIN: 8, // pixels
 		NUM_AGENTS: 40,
+		INIT_AGENTS_VARIATION: 30,
 		NUM_PLANTS: 150,
 		DEATH_THRESHHOLD: 800,
 		DEATH_DURATION: 2000, // milliseconds
@@ -14,6 +15,7 @@ function main () {
 		PRED_MODE_SPEED: 1,
 		AUTOPRED_MODE_SPEED: 10,
 		TIME: 0, // starts at 0
+		DELTA: 0, // just in case
 
 		MATING_PROB: 0.2,
 		MUTATION_RATE: 60,
@@ -78,13 +80,10 @@ function main () {
 	canvas.height = Math.min(200, Math.max(window.innerHeight - 20, 100));
 	global = globalClone();
 	global.NUM_AGENTS = 1; // just one critter
-	global.DEATH_THRESHHOLD = 200; // wont die
+	global.DEATH_THRESHHOLD = 200; // lower death threshhold so things happen faster
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	// global.INITIAL_AGENT_OFFSET = 0; // same color as controls
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
-	// start adult size
-	global.BABY_SCALE = 1;
-	global.YOUTH_SCALE_STEP = 0;
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
@@ -94,7 +93,35 @@ function main () {
 	world.start();
 	interactives.push(world);
 	world.externalTick = function () {
-		if (interactives[0].agents.length == 0) {
+		if (this.agents.length == 0) {
+			this.init();
+			this.stage.removeChild(this.bg); // hide the background
+			this.stage.removeChild(this.info); // hide the info bar
+		}
+	}.bind(world);
+
+	// critter family interactive
+	canvas = document.querySelector("#critter-family");
+	canvas.width = Math.min(300, Math.max(window.innerWidth - 20, 200));
+	canvas.height = Math.min(200, Math.max(window.innerHeight - 20, 100));
+	global = globalClone();
+	global.NUM_AGENTS = 2; // two critters!
+	// global.DEATH_THRESHHOLD = 200;
+	global.OBSERVER_PERIOD = Infinity; // no predator period
+	// global.INITIAL_AGENT_OFFSET = 0; // same color as controls
+	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
+	global.INIT_AGENTS_VARIATION = 360;
+	// autoplay
+	global.AUTOPLAY = true;
+	global.PAUSED = false;
+	world = new World(global, canvas);
+	world.stage.removeChild(world.bg); // hide the background
+	world.stage.removeChild(world.info); // hide the info bar
+	world.start();
+	interactives.push(world);
+	world.externalTick = function () {
+		if (this.agents.filter(function (x) { return x.isAdult }).length >= 3 ||
+				this.agents.length < 2) {
 			this.init();
 			this.stage.removeChild(this.bg); // hide the background
 			this.stage.removeChild(this.info); // hide the info bar
