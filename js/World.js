@@ -47,15 +47,18 @@ World.prototype = {
 		this.info = new Info(this.GLOBAL, infoBounds, this.envHue);
 		this.stage.addChild(this.info);
 
+		// handle reset from UI
+		this.info.on('reset', function () {
+			this.init();
+			this.tickOnce();
+		}, this);
+	},
+
+	tickOnce: function () {
 		var temp = this.GLOBAL.PAUSED;
 		this.GLOBAL.PAUSED = false;
 		this.tick({ WILL_DRAW: true, delta: 0});
 		this.GLOBAL.PAUSED = temp;
-
-		// handle reset from UI
-		this.info.on('reset', function () {
-			this.init();
-		}, this);
 	},
 
 	initAgents: function (hue, num) {
@@ -102,7 +105,6 @@ World.prototype = {
 		// if we're not paused, we have to deal with 
 		// collisions
 		if (!this.GLOBAL.PAUSED) {
-			console.log("tick");
 			this.GLOBAL.DELTA = event.delta * this.GLOBAL.WORLD_SPEED;
 			this.GLOBAL.TIME += this.GLOBAL.DELTA;
 

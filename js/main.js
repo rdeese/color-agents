@@ -90,6 +90,7 @@ function main () {
 	world = new World(global, canvas);
 	world.stage.removeChild(world.bg); // hide the background
 	world.stage.removeChild(world.info); // hide the info bar
+	world.tickOnce();
 	world.start();
 	interactives.push(world);
 	world.externalTick = function () {
@@ -117,6 +118,7 @@ function main () {
 	world = new World(global, canvas);
 	world.stage.removeChild(world.bg); // hide the background
 	world.stage.removeChild(world.info); // hide the info bar
+	world.tickOnce();
 	world.start();
 	interactives.push(world);
 	world.externalTick = function () {
@@ -133,6 +135,7 @@ function main () {
 	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
 	canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
 	world = new World(globalClone(), canvas);
+	world.tickOnce();
 	world.start();
 	interactives.push(world);
 
