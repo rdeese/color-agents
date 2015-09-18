@@ -44,6 +44,7 @@ envPrototype.drawBg = function () {
 	g.clear();
 	g.beginFill(this.color.hex()).drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
 	
+	/*
 	var radius;
 	var p;
 	var r;
@@ -58,49 +59,28 @@ envPrototype.drawBg = function () {
 		this.plants.push(p);
 		this.bg.addChild(p);
 	}
-	
-	/*
-	// body like things
-	for (var i = 0; i < NUM_BG_CIRCLES; i++) {
-		c = new createjs.Shape();
-		if (random.number() < 0.5) { // make a body-like thing
-			if (random.number() < 0.2) {
-				r = random.number()*(AGENT_RADIUS-BABY_AGENT_RADIUS)+BABY_AGENT_RADIUS;
-			} else {
-				r = AGENT_RADIUS;
-			}
-			c.x = random.number() * (this.bounds.width-2*r) + r;
-			c.y = random.number() * (this.bounds.height-2*r) + r;
-			col = chroma.hcl(this.hue+30*(random.number()-0.5),
-											 GLOBAL_CHROMA,GLOBAL_LIGHTNESS);
-			c.graphics.beginFill(col.hex());
-			c.graphics.drawCircle(0,0,r);
-			this.bg.addChild(c);
-		} else { // make an eye-like thing
-			r = AGENT_RADIUS;
-			g = c.graphics;
-			c.x = random.number() * (this.bounds.width-2*r) + r;
-			c.y = random.number() * (this.bounds.height-2*r) + r;
-			col = chroma.hcl(this.hue+30*(random.number()-0.5),
-											 GLOBAL_CHROMA,GLOBAL_LIGHTNESS);
-			// draw eyes
-			// whites
-			g.beginFill(col.brighten(0.2).hex());
-			g.beginStroke(col.darken(0.2).hex());
-			g.drawCircle(r*0.4, -r*0.4, r*0.3);
-			g.endStroke();
-			g.endFill();
-			// pupils
-			g.beginFill(col.darken(0.2).hex());
-			g.drawCircle(r*0.4, -r*0.4, r*0.12);
-			g.endFill();
-			this.bg.addChild(c);
-    }
-	}
 	*/
+	
+	
+	// body like things
+	var c;
+	var r;
+	var radius;
+	for (var i = 0; i < this.GLOBAL.NUM_PLANTS; i++) {
+		r = random.number();
+		radius = this.GLOBAL.AGENT_RADIUS-(this.GLOBAL.AGENT_RADIUS*r*r);
+		c = new createjs.Shape();
+		c.x = random.number() * (this.bounds.width-2*r) + r;
+		c.y = random.number() * (this.bounds.height-2*r) + r;
+		col = chroma.hcl(this.hue+30*(random.number()-0.5),
+										 this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
+		c.graphics.beginFill(col.hex());
+		c.graphics.drawCircle(0,0,radius);
+		this.bg.addChild(c);
+	}
 
-	//this.bg.uncache();
-	//this.bg.cache(0,0,this.bounds.width,this.bounds.height);
+	this.bg.uncache();
+	this.bg.cache(0,0,this.bounds.width,this.bounds.height);
 	this.colorHasChanged = false;
 }
 

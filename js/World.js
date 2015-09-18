@@ -6,13 +6,13 @@ World.prototype = {
 	init: function (GLOBAL, canvas) {
 		if (this.GLOBAL && this.stage) {
 			this.GLOBAL.TIME = 0;
+			this.GLOBAL.UPDATE_COUNTER = 0;
 			this.stage.enableDOMEvents(false);
 			this.stage = new createjs.Stage(this.stage.canvas);
 		} else { 
 			this.GLOBAL = GLOBAL;
 			this.stage = new createjs.Stage(canvas);
 		}
-
 
 		this.envHue = random.number()*360;
 		var bounds = new createjs.Rectangle(0, 0, this.stage.canvas.width,
@@ -46,6 +46,11 @@ World.prototype = {
 		// create info
 		this.info = new Info(this.GLOBAL, infoBounds, this.envHue);
 		this.stage.addChild(this.info);
+
+		var temp = this.GLOBAL.PAUSED;
+		this.GLOBAL.PAUSED = false;
+		this.tick({ WILL_DRAW: true, delta: 0});
+		this.GLOBAL.PAUSED = temp;
 
 		// handle reset from UI
 		this.info.on('reset', function () {
@@ -97,6 +102,7 @@ World.prototype = {
 		// if we're not paused, we have to deal with 
 		// collisions
 		if (!this.GLOBAL.PAUSED) {
+			console.log("tick");
 			this.GLOBAL.DELTA = event.delta * this.GLOBAL.WORLD_SPEED;
 			this.GLOBAL.TIME += this.GLOBAL.DELTA;
 

@@ -4,7 +4,7 @@ function main () {
 		COMPONENT_MARGIN: 8, // pixels
 		NUM_AGENTS: 40,
 		INIT_AGENTS_VARIATION: 30,
-		NUM_PLANTS: 150,
+		NUM_PLANTS: 500,
 		DEATH_THRESHHOLD: 800,
 		DEATH_DURATION: 2000, // milliseconds
 		EATEN_DURATION: 2000, // milliseconds
@@ -12,7 +12,7 @@ function main () {
 
 		WORLD_SPEED: 10, // virtual milliseconds per real millisecond
 		OBSERVE_MODE_SPEED: 10,
-		PRED_MODE_SPEED: 1,
+		PRED_MODE_SPEED: 0,
 		AUTOPRED_MODE_SPEED: 10,
 		TIME: 0, // starts at 0
 		DELTA: 0, // just in case

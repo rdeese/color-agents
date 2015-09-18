@@ -156,6 +156,11 @@ function Info (GLOBAL, bounds, hue) {
 	}, this);
 	// END SLIDER
 
+	// BEGIN OVERLAY LAYER
+	this.overlayContainer = new createjs.Container();
+	this.addChild(this.overlayContainer);
+	// END OVERLAY LAYER
+
 
 	this.togglePause.on('click', function (e) {
 		this.GLOBAL.PAUSED = !this.GLOBAL.PAUSED;
@@ -220,10 +225,10 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 		overlay.textAlign = "center";
 		overlay.x = event.stageX;
 		overlay.y = event.stageY-60;
-		this.addChild(overlay);
+		this.overlayContainer.addChild(overlay);
 		createjs.Tween.get(overlay)
 									.wait(1000)
-									.to({ alpha: 0 }, 1000)
+									.to({ alpha: 0 }, 3000)
 									.call(function () {
 										this.removeChild(overlay)
 									}, [], this);
@@ -266,6 +271,15 @@ infoPrototype.setObserverMode = function () {
 																							override: true
 																						}) 
 								.to({ value: this.worldSpeedSlider.userVal }, 1000);
+	createjs.Tween.get(this.overlayContainer, {
+																							ignoreGlobalPause: true,
+																							override: true
+																						})
+								.to({ alpha: 0 }, 500)
+								.call(function () {
+									this.overlayContainer.removeAllChildren();
+								}, [], this);
+	this.toggleModeTime.alpha = 1;
 	this.worldSpeedSlider.setEnabled(true && !this.GLOBAL.PAUSED);
 	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null); 
@@ -280,7 +294,9 @@ infoPrototype.setPredatorMode = function () {
 																							ignoreGlobalPause: true,
 																							override: true
 																						}) 
-								.to({ value: this.GLOBAL.PRED_MODE_SPEED}, 0)
+								.to({ value: this.GLOBAL.PRED_MODE_SPEED}, 0);
+	this.toggleModeTime.alpha = 0;
+	this.overlayContainer.alpha = 1;
 	this.worldSpeedSlider.setEnabled(false && !this.GLOBAL.PAUSED);
 	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null);

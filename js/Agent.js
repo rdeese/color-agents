@@ -229,7 +229,7 @@ agentPrototype.drawAgent = function () {
 	if (this.isEaten) {
 		eyeContrast = 0.4;
 	} else if (this.GLOBAL.MODE == 'predator') {
-		eyeContrast = 0.03;
+		eyeContrast = 0; //0.03;
 	} else {
 		eyeContrast = 0.4;
 	}
