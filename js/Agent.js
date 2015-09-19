@@ -1,13 +1,14 @@
 // constructor
 function Agent(GLOBAL, bounds, radius, position, velocity, genome) {
 	// call inherited shape constructor
-	this.Shape_constructor();
+	this.Container_constructor();
 
 	this.GLOBAL = GLOBAL;
 
 	this.snapToPixel = true;
 	this.bounds = bounds;
 	this.radius = radius;
+	this.eyeOffset = this.radius*0.4;
 	this.vel = vec2.clone(velocity);
 	this.pos = vec2.clone(position);
 	this.acc = vec2.fromValues(0,0);
@@ -39,11 +40,18 @@ function Agent(GLOBAL, bounds, radius, position, velocity, genome) {
 	this.isPregnant = false;
 	this.isDying = false;
 	this.isEaten = false;
+	this.isHiding = false;
+	this.isTweening = false;
 	this.collisionStart = null;
 	
 	this.expressPhenotype();
 	this.grow(this.birthTime);
 
+	this.body = new createjs.Shape();
+	this.addChild(this.body);
+	this.eyes = new createjs.Shape();
+	this.eyes.x = this.eyeOffset;
+	this.addChild(this.eyes);
 	this.drawAgent();
 
 	// create temp vectors we'll need later
@@ -61,7 +69,7 @@ function Agent(GLOBAL, bounds, radius, position, velocity, genome) {
 	});
 }
 
-var agentPrototype = createjs.extend(Agent, createjs.Shape);
+var agentPrototype = createjs.extend(Agent, createjs.Container);
 
 // turns genotype into phenotype
 agentPrototype.expressPhenotype = function () {
@@ -97,6 +105,21 @@ agentPrototype.wander = function (e) {
 																 								 this.GLOBAL.MAX_ACC*(random.number()-0.5)));
 	}
 }
+
+agentPrototype.blink = function (e) {
+	if (this.isHiding || this.isTweening) { return; }
+	if (random.number() < this.GLOBAL.BLINK_PROB*this.GLOBAL.DELTA) {
+		this.isTweening = true;
+		createjs.Tween.get(this.eyes)
+									.to({ scaleX: 0 }, 100)
+									.wait(100)
+									.to({ scaleX: 1}, 100)
+									.call(function () {
+										this.isTweening = false; 
+									}, [], this);
+	}
+}
+
 
 agentPrototype.collide = function (other) {
 	var radii = this.radius*this.scaleX + other.radius*other.scaleX;
@@ -210,22 +233,50 @@ agentPrototype.selectCacheIfExists = function () {
 	}
 	return false;
 }
+
+agentPrototype.updateHiding = function () {
+	if (this.GLOBAL.MODE == 'predator' && !this.isHiding) {
+		this.isHiding = true;
+		this.isTweening = true;
+		createjs.Tween.get(this.eyes, { override: true })
+									.to({ scaleX: 1 }, 100)
+									.wait(250+random.number()*500)
+									.to({ scaleX: 0 }, 100)
+									.call(function () {
+										this.isTweening = false; 
+									}, [], this);
+	} else if (this.GLOBAL.MODE != 'predator' && this.isHiding) {
+		this.isHiding = false;
+		this.isTweening = true;
+		createjs.Tween.get(this.eyes, { override: true })
+									.wait(random.number()*500)
+									.to({ scaleX: 1 }, 100)
+									.call(function () {
+										this.isTweening = false; 
+									}, [], this);
+	}
+}
 	
 // draw the graphical representation of the agent
 agentPrototype.drawAgent = function () {
-	if (this.selectCacheIfExists()) {
+	if (!this.isTweening && this.selectCacheIfExists()) {
 		return;
 	}
-	var g = this.graphics;
-	g.clear();
-
-	g.beginFill(this.color.hex());
 
 	// draw body
+	var g = this.body.graphics;
+	g.clear();
+	g.beginFill(this.color.hex());
 	g.drawCircle(0, 0, this.radius);
 	
 	// draw eyes
-	var eyeContrast;
+	g = this.eyes.graphics;
+	g.clear();
+	var eyeContrast = 0.4;
+	if (this.isEaten) {
+		this.eyes.scaleX = 1;
+	}
+	/*
 	if (this.isEaten) {
 		eyeContrast = 0.4;
 	} else if (this.GLOBAL.MODE == 'predator') {
@@ -233,43 +284,44 @@ agentPrototype.drawAgent = function () {
 	} else {
 		eyeContrast = 0.4;
 	}
+	*/
 	if (this.isEaten) {
 		var lineWidth = this.radius*0.15;
 		g.setStrokeStyle(lineWidth, 'round');
 		g.beginStroke(this.color.brighten(eyeContrast).hex());
 		// left eye
-		g.moveTo(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
-						 this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
-		g.lineTo(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
-						 this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
-		g.moveTo(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
-						 this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
-		g.lineTo(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
-						 this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
+		g.moveTo(-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 this.eyeOffset-Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
+		g.lineTo(Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 this.eyeOffset+Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
+		g.moveTo(-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 this.eyeOffset+Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
+		g.lineTo(Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 this.eyeOffset-Math.sqrt(Math.pow(this.radius*0.22, 2)/2));
 		// right eye
-		g.moveTo(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
-						 -(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
-		g.lineTo(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
-						 -(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
-		g.moveTo(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
-						 -(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
-		g.lineTo(this.radius*0.4+Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
-						 -(this.radius*0.4-Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
+		g.moveTo(-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 -(this.eyeOffset-Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
+		g.lineTo(Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 -(this.eyeOffset+Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
+		g.moveTo(-Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 -(this.eyeOffset+Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
+		g.lineTo(Math.sqrt(Math.pow(this.radius*0.22, 2)/2),
+						 -(this.eyeOffset-Math.sqrt(Math.pow(this.radius*0.22, 2)/2)));
 		g.endStroke();
 	} else {
 		// whites
 		g.beginFill(this.color.brighten(eyeContrast).hex());
 		g.beginStroke(this.color.darken(eyeContrast).hex());
-		g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.3);
+		g.drawCircle(0, -this.radius*0.4, this.radius*0.3);
 		g.endStroke();
 		g.beginStroke(this.color.darken(eyeContrast).hex());
-		g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.3);
+		g.drawCircle(0, this.radius*0.4, this.radius*0.3);
 		g.endStroke();
 		g.endFill();
 		// pupils
 		g.beginFill(this.color.darken(eyeContrast).hex());
-		g.drawCircle(this.radius*0.4, -this.radius*0.4, this.radius*0.12);
-		g.drawCircle(this.radius*0.4, this.radius*0.4, this.radius*0.12);
+		g.drawCircle(0, -this.radius*0.4, this.radius*0.12);
+		g.drawCircle(0, this.radius*0.4, this.radius*0.12);
 		g.endFill();
 	}
 
@@ -283,18 +335,20 @@ agentPrototype.drawAgent = function () {
 	*/
 	
 	this.uncache();
-	this.cache(-this.radius-1, -this.radius-1, 2*this.radius+2, 2*this.radius+2);
+	if (!this.isTweening) {
+		this.cache(-this.radius-1, -this.radius-1, 2*this.radius+2, 2*this.radius+2);
 
-	if (this.isEaten) {
-		this.eatenCacheCanvas = this.cacheCanvas;
-	} else if (this.isPregnant && this.GLOBAL.MODE != 'predator') {
-		this.peCacheCanvas = this.cacheCanvas;
-	} else if (this.isPregnant && this.GLOBAL.MODE != 'predator') {
-		this.neCacheCanvas = this.cacheCanvas;
-	} else if (!this.isPregnant && this.GLOBAL.MODE == 'predator') {
-		this.pnCacheCanvas = this.cacheCanvas;
-	} else if (!this.isPregnant && this.GLOBAL.MODE == 'predator') {
-		this.nnCacheCanvas = this.cacheCanvas;
+		if (this.isEaten) {
+			this.eatenCacheCanvas = this.cacheCanvas;
+		} else if (this.isPregnant && this.GLOBAL.MODE != 'predator') {
+			this.peCacheCanvas = this.cacheCanvas;
+		} else if (this.isPregnant && this.GLOBAL.MODE != 'predator') {
+			this.neCacheCanvas = this.cacheCanvas;
+		} else if (!this.isPregnant && this.GLOBAL.MODE == 'predator') {
+			this.pnCacheCanvas = this.cacheCanvas;
+		} else if (!this.isPregnant && this.GLOBAL.MODE == 'predator') {
+			this.nnCacheCanvas = this.cacheCanvas;
+		}
 	}
 }
 
@@ -319,10 +373,13 @@ agentPrototype.isDead = function () {
 			return false;
 		} else if (this.GLOBAL.TIME-this.deathTime > this.GLOBAL.EATEN_DURATION) {
 			this.uncache();
-			this.graphics.clear();
+			this.body.graphics.clear();
+			this.eyes.graphics.clear();
 			return true;
+		} else {
+			this.alpha = 1-(this.GLOBAL.TIME-this.deathTime)/this.GLOBAL.EATEN_DURATION;
+			return false;
 		}
-		return false;
 	} 
 	// calculate probability of death
 	if (!this.deathTime) {
@@ -337,7 +394,8 @@ agentPrototype.isDead = function () {
 		this.alpha = 1-(this.GLOBAL.TIME-this.deathTime)/this.GLOBAL.DEATH_DURATION;
 		if (this.alpha <= 0) {
 			this.uncache();
-			this.graphics.clear();
+			this.body.graphics.clear();
+			this.eyes.graphics.clear();
 			return true;
 		} else {
 			return false;
@@ -359,6 +417,8 @@ agentPrototype.update = function (e) {
 
 	// exercise free will (acceleration)
 	this.wander(e);
+
+	this.blink();
 
 	// birth if necessary
 	if (this.isPregnant &&
@@ -431,7 +491,9 @@ agentPrototype.update = function (e) {
 	if (e.WILL_DRAW && 
 			((this.wasPregnant != this.isPregnant) ||
 			 this.isEaten ||
+			 this.isTweening ||
 			 this.GLOBAL.AGENTS_DIRTY)) {
+		this.updateHiding();
 		this.drawAgent();
 		this.wasPregnant = this.isPregnant;
 	}
@@ -442,4 +504,4 @@ agentPrototype.update = function (e) {
 	return result;
 }
 
-window.Agent = createjs.promote(Agent, "Shape");
+window.Agent = createjs.promote(Agent, "Container");

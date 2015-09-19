@@ -25,7 +25,8 @@ function main () {
 		MAX_ACC: 4/100000, // pixels per millisecond
 		ACC_DAMPING: 0.999,
 		VEL_DAMPING: 0.9999,
-		MOVEMENT_PROB: 1/10000, // chance per millisecond;
+		MOVEMENT_PROB: 1/10000, // chance per millisecond
+		BLINK_PROB: 1/15000, // chance per millisecond
 
 		AUTOPRED_INTERVAL: 8000, // milliseconds
 		
