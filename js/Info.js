@@ -299,6 +299,7 @@ infoPrototype.setPredatorMode = function () {
 								.call(function () {
 									this.GLOBAL.WORLD_SPEED = this.GLOBAL.PRED_MODE_SPEED;
 									this.drawInfo();
+									this.GLOBAL.AGENTS_DIRTY = true;
 								}, [], this);
 	this.toggleModeTime.alpha = 0;
 	this.overlayContainer.alpha = 1;

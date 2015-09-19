@@ -70,8 +70,8 @@ envPrototype.drawBg = function () {
 		r = random.number();
 		radius = this.GLOBAL.AGENT_RADIUS-(this.GLOBAL.AGENT_RADIUS*r*r);
 		c = new createjs.Shape();
-		c.x = random.number() * (this.bounds.width-2*r) + r;
-		c.y = random.number() * (this.bounds.height-2*r) + r;
+		c.x = random.number() * (this.bounds.width-2*radius) + radius;
+		c.y = random.number() * (this.bounds.height-2*radius) + radius;
 		col = chroma.hcl(this.hue+30*(random.number()-0.5),
 										 this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 		c.graphics.beginFill(col.hex());

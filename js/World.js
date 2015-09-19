@@ -191,7 +191,7 @@ World.prototype = {
 
 			// update the stage
 			if (event.WILL_DRAW) { this.stage.update(event); }
-		} else if (event.WILL_DRAW && this.GLOBAL.DIRTY) {
+		} else if (event.WILL_DRAW && (this.GLOBAL.DIRTY || this.GLOBAL.AGENTS_DIRTY)) {
 		// when the world is paused, only update the
 		// stage (read: draw everything) when we know
 		// that something is dirty. Since the game is
@@ -199,6 +199,7 @@ World.prototype = {
 		// user interaction
 			this.stage.update(event);
 			this.GLOBAL.DIRTY = false;
+			this.GLOBAL.AGENTS_DIRTY = false;
 		}
 
 		// add a tick to the update counter

@@ -204,7 +204,7 @@ function main () {
 													  this.bg.bounds.width, this.bg.bounds.height,
 													  0, 0, this.bg.bounds.width/2, this.bg.bounds.height/2);
 		}
-		if (this.info.round > 1 && !this.after) {
+		if (this.info.round > 10 && !this.after) {
 			setTimeout(function () {
 				this.after = document.querySelector("#selection-after").getContext('2d');
 				this.after.canvas.width = this.bg.bounds.width/2;
