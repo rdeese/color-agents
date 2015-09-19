@@ -240,7 +240,7 @@ agentPrototype.updateHiding = function () {
 		this.isTweening = true;
 		createjs.Tween.get(this.eyes, { override: true })
 									.to({ scaleX: 1 }, 100)
-									.wait(250+random.number()*500)
+									.wait(random.number()*500)
 									.to({ scaleX: 0 }, 100)
 									.call(function () {
 										this.isTweening = false; 
@@ -418,7 +418,7 @@ agentPrototype.update = function (e) {
 	// exercise free will (acceleration)
 	this.wander(e);
 
-	this.blink();
+	// this.blink();
 
 	// birth if necessary
 	if (this.isPregnant &&

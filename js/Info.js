@@ -290,6 +290,7 @@ infoPrototype.setPredatorMode = function () {
 	this.instructions.text = "Eat critters by clicking on them " +
 													 "to increase your health.";
 	this.worldSpeedSlider.setEnabled(false && !this.GLOBAL.PAUSED);
+	this.GLOBAL.MODE = 'predator';
 	createjs.Tween.get(this.worldSpeedSlider, {
 																							ignoreGlobalPause: true,
 																							override: true
@@ -297,9 +298,7 @@ infoPrototype.setPredatorMode = function () {
 								.to({ value: this.GLOBAL.PRED_MODE_SPEED}, 1000)
 								.call(function () {
 									this.GLOBAL.WORLD_SPEED = this.GLOBAL.PRED_MODE_SPEED;
-									this.GLOBAL.MODE = 'predator';
 									this.drawInfo();
-									this.GLOBAL.AGENTS_DIRTY = true;
 								}, [], this);
 	this.toggleModeTime.alpha = 0;
 	this.overlayContainer.alpha = 1;

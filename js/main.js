@@ -89,16 +89,27 @@ function main () {
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
 	world = new World(global, canvas);
-	world.stage.removeChild(world.bg); // hide the background
-	world.stage.removeChild(world.info); // hide the info bar
-	world.tickOnce();
+	world.externalInit = function () {
+		this.stage.removeChild(this.bg); // hide the background
+		this.stage.removeChild(this.info); // hide the info bar
+		this.tickOnce();
+	}.bind(world);
+	world.init();
 	world.start();
 	interactives.push(world);
 	world.externalTick = function () {
-		if (this.agents.length == 0) {
-			this.init();
-			this.stage.removeChild(this.bg); // hide the background
-			this.stage.removeChild(this.info); // hide the info bar
+		if (!createjs.Tween.hasActiveTweens(this.GLOBAL) && this.agents.length == 0) {
+			createjs.Tween.get(this.GLOBAL)
+										.to({ WORLD_SPEED: 0 }, 1000)
+										.call(function () {
+											this.stage.removeAllChildren();
+										}, [], this)
+										.wait(1000)
+										.call(function () {
+											this.init();
+											this.stage.removeChild(this.bg); // hide the background
+											this.stage.removeChild(this.info); // hide the info bar
+										}, [], this);
 		}
 	}.bind(world);
 
@@ -117,25 +128,94 @@ function main () {
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
 	world = new World(global, canvas);
-	world.stage.removeChild(world.bg); // hide the background
-	world.stage.removeChild(world.info); // hide the info bar
-	world.tickOnce();
+	world.externalInit = function () {
+		this.stage.removeChild(this.bg); // hide the background
+		this.stage.removeChild(this.info); // hide the info bar
+		this.tickOnce();
+	}.bind(world);
+	world.init();
 	world.start();
 	interactives.push(world);
 	world.externalTick = function () {
-		if (this.agents.filter(function (x) { return x.isAdult }).length >= 3 ||
-				this.agents.length < 2) {
-			this.init();
-			this.stage.removeChild(this.bg); // hide the background
-			this.stage.removeChild(this.info); // hide the info bar
+		if (!createjs.Tween.hasActiveTweens(this.GLOBAL) &&
+				(this.agents.filter(function (x) { return x.scaleX > 0.7 && x.scaleX < 0.8}).length >= 1 ||
+				this.agents.length < 2)) {
+			createjs.Tween.get(this.GLOBAL)
+										.to({ WORLD_SPEED: 0 }, 1000)
+										.wait(1000)
+										.call(function () {
+											this.stage.removeAllChildren();
+										}, [], this)
+										.wait(1000)
+										.call(function () {
+											this.init();
+										}, [], this);
 		}
 	}.bind(world);
 
+	// critter observation interactive
+	canvas = document.querySelector("#critter-observe");
+	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
+	canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
+	global = globalClone();
+	global.OBSERVER_PERIOD = Infinity; // no predator period
+	// global.INITIAL_AGENT_OFFSET = 0; // same color as controls
+	world = new World(global, canvas);
+	world.externalInit = function () {
+		//this.stage.removeChild(this.bg); // hide the background
+		this.info.removeChild(this.info.toggleMode);
+		this.info.removeChild(this.info.detailViewer);
+		this.tickOnce();
+	}.bind(world);
+	world.externalTick = function () {
+		if (this.GLOBAL.TIME > 0 && !this.before) {
+			this.before = document.querySelector("#critter-observe-before").getContext('2d');
+			this.before.canvas.width = this.bg.bounds.width/2;
+			this.before.canvas.height = this.bg.bounds.height/2;
+			this.before.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
+													  this.bg.bounds.width, this.bg.bounds.height,
+													  0, 0, this.bg.bounds.width/2, this.bg.bounds.height/2);
+		}
+		if (this.GLOBAL.TIME > 10*GLOBAL.OBSERVER_PERIOD && !this.after) {
+			this.after = document.querySelector("#critter-observe-after").getContext('2d');
+			this.after.canvas.width = this.bg.bounds.width/2;
+			this.after.canvas.height = this.bg.bounds.height/2;
+			this.after.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
+													 this.bg.bounds.width, this.bg.bounds.height,
+													 0, 0, this.bg.bounds.width/2, this.bg.bounds.height/2);
+		}
+	}.bind(world);
+
+	world.init();
+	world.start();
+	interactives.push(world);
+
 	// sandbox
-	canvas = document.querySelector("#world");
+	canvas = document.querySelector("#selection");
 	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
 	canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
 	world = new World(globalClone(), canvas);
+	world.externalTick = function () {
+		if (this.GLOBAL.TIME > 0 && !this.before) {
+			this.before = document.querySelector("#selection-before").getContext('2d');
+			this.before.canvas.width = this.bg.bounds.width/2;
+			this.before.canvas.height = this.bg.bounds.height/2;
+			this.before.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
+													  this.bg.bounds.width, this.bg.bounds.height,
+													  0, 0, this.bg.bounds.width/2, this.bg.bounds.height/2);
+		}
+		if (this.info.round > 1 && !this.after) {
+			setTimeout(function () {
+				this.after = document.querySelector("#selection-after").getContext('2d');
+				this.after.canvas.width = this.bg.bounds.width/2;
+				this.after.canvas.height = this.bg.bounds.height/2;
+				this.after.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
+														 this.bg.bounds.width, this.bg.bounds.height,
+														 0, 0, this.bg.bounds.width/2, this.bg.bounds.height/2);
+			}.bind(this), 1000);
+		}
+	}.bind(world);
+	world.init();
 	world.tickOnce();
 	world.start();
 	interactives.push(world);

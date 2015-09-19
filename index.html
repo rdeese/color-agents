@@ -33,19 +33,23 @@
 				margin-bottom: 20px;
 			}
 			.centered {
-				margin-left:auto;
-				margin-right:auto;
+				padding-left: 0;
+				padding-right: 0;
+				margin-left: auto;
+				margin-right: auto;
+				display: block;
+			}
+			.left {
+				float: left;
+			}
+			.right {
+				float: right
 			}
 			.vspace {
 				margin-top: 50px;
 				margin-bottom: 50px;
 			}
 			canvas {
-				padding-left: 0;
-				padding-right: 0;
-				margin-left: auto;
-				margin-right: auto;
-				display: block;
 			}
 		</style>
 	</head>
@@ -55,16 +59,27 @@
 			<p> This is a color critter: </p>
 		</section>
 		<div class="centered vspace">
-			<canvas id=single-critter></canvas>
+			<canvas class="centered" id=single-critter></canvas>
 		</div>
 		<div class="centered vspace">
-			<canvas id=critter-family></canvas>
+			<canvas class="centered" id=critter-family></canvas>
+		</div>
+		<div class="centered vspace">
+			<canvas class="centered" id="critter-observe"></canvas>
+		</div>
+		<div class="centered vspace">
+			<canvas class="left" id="critter-observe-before"></canvas>
+			<canvas class="right" id="critter-observe-after"></canvas>
 		</div>
 		<section class=centered>
 			<p>This is the sandbox.</p>
 		</section>
 		<div class="centered vspace">
-			<canvas id=world></canvas>
+			<canvas class="centered" id=selection></canvas>
+		</div>
+		<div class="centered vspace">
+			<canvas class="left" id="selection-before"></canvas>
+			<canvas class="right" id="selection-after"></canvas>
 		</div>
 		<section class=centered>
 			<p>

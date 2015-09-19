@@ -1,18 +1,15 @@
 var World = function (GLOBAL, canvas) {
-	this.init(GLOBAL, canvas);
+	this.GLOBAL = GLOBAL;
+	this.stage = new createjs.Stage(canvas);
 };
 
 World.prototype = {
-	init: function (GLOBAL, canvas) {
-		if (this.GLOBAL && this.stage) {
-			this.GLOBAL.TIME = 0;
-			this.GLOBAL.UPDATE_COUNTER = 0;
-			this.stage.enableDOMEvents(false);
-			this.stage = new createjs.Stage(this.stage.canvas);
-		} else { 
-			this.GLOBAL = GLOBAL;
-			this.stage = new createjs.Stage(canvas);
-		}
+	init: function () {
+		this.GLOBAL.TIME = 0;
+		this.GLOBAL.UPDATE_COUNTER = 0;
+		this.GLOBAL.WORLD_SPEED = 10;
+		this.stage.enableDOMEvents(false);
+		this.stage = new createjs.Stage(this.stage.canvas);
 
 		this.envHue = random.number()*360;
 		var bounds = new createjs.Rectangle(0, 0, this.stage.canvas.width,
@@ -52,6 +49,10 @@ World.prototype = {
 			this.init();
 			this.tickOnce();
 		}, this);
+		
+		if (this.externalInit) {
+			this.externalInit();
+		}
 	},
 
 	tickOnce: function () {
