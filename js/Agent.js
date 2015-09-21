@@ -185,11 +185,11 @@ agentPrototype.motherChild = function (matingTime, otherGenome) {
 	var thisGene = this.genome[0][0];
 	var otherGene = otherGenome[0][0];
 	// infrequent, significant mutations
-	if (random.number()<this.GLOBAL.MUTATION_PROB) {
+	if (random.number()<this.GLOBAL.MOTHER_MUTATION_PROB) {
 		thisGene += (0.5+0.5*random.number())*this.GLOBAL.MUTATION_RATE*(Math.round(random.number())*2-1);
 		thisGene %= 360;
 	}
-	if (random.number()<this.GLOBAL.MUTATION_PROB) {
+	if (random.number()<this.GLOBAL.FATHER_MUTATION_PROB) {
 		otherGene += (0.5+0.5*random.number())*this.GLOBAL.MUTATION_RATE*(Math.round(random.number())*2-1);
 		otherGene %= 360;
 	}

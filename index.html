@@ -18,14 +18,28 @@
 		<script type="text/javascript" src="js/main.js"></script>
 		<style>
 			* { -webkit-tap-highlight-color:rgba(0,0,0,0); }
-			h3 {
-				font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
-				font-size: 20px;
+			* {
+				font-family: Catamaran, sans-serif;
+			}
+			h1 {
+				font-size: 48px;
 				text-align: center;
 			}
+			h3 {
+				font-size: 24px;
+				text-align: center;
+			}
+			.c-text {
+				text-align: center;
+			}
+			.notopmargin {
+				margin-top: 0;
+			}
+			.nobottommargin {
+				margin-bottom: 0;
+			}
 			p {
-				font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
-				font-size: 20px;
+				font-size: 24px;
 			}
 			section {
 				width: 600px;
@@ -54,15 +68,52 @@
 		</style>
 	</head>
 	<body>
-		<section class=centered>
-			<h3>Color Critters</h3>
-			<p> This is a color critter: </p>
+		<h1 class="nobottommargin">Who Chose the Critters' Color?</h1>
+		<p class="notopmargin c-text">A playable post on the relationship between life and its environment.</p>
+
+		<section class="centered vspace">
+			<h3 class="nobottommargin">This is a story about critters.</h1>
+			<p class="notopmargin">
+				Critters are cute, colorful, and friendly!
+				They have short lives compared to you and me,
+				which they spend wandering around.
+				All critters are the same in every way, 
+				except for their colors. Here's a critter that's
+				<b><span id="single-critter-color">color</span></b>.
+			</p>
 		</section>
-		<div class="centered vspace">
+		<div class="centered">
 			<canvas class="centered" id=single-critter></canvas>
 		</div>
-		<div class="centered vspace">
+		<section class="centered vspace">
+			<h3 class="nobottommargin">A critter gets its color from its parents...</h1>
+			<p class="notopmargin">
+				When two critters get together, one of them will give
+				birth to a baby critter! The baby critter's color is in between
+				its parents' colors. Together, these 
+				<b><span id="critter-family-father">color</span></b>
+				and
+				<b><span id="critter-family-mother">color</span></b>
+				critters will have a child that is 
+				<b><span id="critter-family-child">color</span></b>.
+			</p>
+		</section>
+		<div class="centered">
 			<canvas class="centered" id=critter-family></canvas>
+		</div>
+		<section class="centered vspace">
+			<h3 class="nobottommargin">...but sometimes new critters have a surprising color!</h1>
+			<p class="notopmargin">
+				These two
+				<b><span id="critter-m-family-father">color</span></b>
+				critters have a baby that's a different color than they
+				are! Can you see the difference from the 
+				<b><span id="critter-m-family-child">color</span></b> 
+				child that we were expecting?
+			</p>
+		</section>
+		<div class="centered">
+			<canvas class="centered" id=critter-m-family></canvas>
 		</div>
 		<div class="centered vspace">
 			<canvas class="centered" id="critter-observe"></canvas>

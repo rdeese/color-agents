@@ -19,7 +19,8 @@ function main () {
 
 		MATING_PROB: 0.2,
 		MUTATION_RATE: 60,
-		MUTATION_PROB: 0.2,
+		MOTHER_MUTATION_PROB: 0.2,
+		FATHER_MUTATION_PROB: 0.2,
 		GESTATION_PD: 20000, // milliseconds
 		YOUTH_DURATION: 40000, // milliseconds
 		MAX_ACC: 4/100000, // pixels per millisecond
@@ -62,6 +63,28 @@ function main () {
 	GLOBAL.BABY_SCALE = GLOBAL.BABY_AGENT_RADIUS/GLOBAL.AGENT_RADIUS;
 	GLOBAL.YOUTH_SCALE_STEP = (1-GLOBAL.BABY_SCALE)/GLOBAL.YOUTH_DURATION;
 
+	var chromaColorToHueName = function (color) {
+		var hues = ['pink', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'];
+		var bounds = [0, 10, 35, 85, 100, 190, 280, 325, 361];
+		var colorName;
+		var angle = color.hcl()[0];
+		for (var i = 0; i < 8; i++) {
+			if (angle >= bounds[i] && angle < bounds[i+1]) {
+				colorName = hues[i];
+			}
+		}
+		return colorName;
+	};
+	
+	var intermediateChromaColor = function (c1, c2) {
+		var h1 = c1.hcl()[0];
+		var h2 = c2.hcl()[0];
+		var diff = h1-h2;
+		if (diff > 180) { diff -= 360; }
+		if (diff < -180) { diff += 360; }
+		return chroma.hcl((h2 + diff/2)%360, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
+	};
+
 	// CONFIGURE DEFAULTS
 	// dunno if static typed arrays will play nice so let's keep
 	// it simple for now.
@@ -77,7 +100,7 @@ function main () {
 
 	// single critter interactive
 	canvas = document.querySelector("#single-critter");
-	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
+	canvas.width = Math.min(600, Math.max(window.innerWidth - 20, 200));
 	canvas.height = Math.min(200, Math.max(window.innerHeight - 20, 100));
 	global = globalClone();
 	global.NUM_AGENTS = 1; // just one critter
@@ -92,6 +115,10 @@ function main () {
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
+		var span = document.querySelector("#single-critter-color");
+		var color = this.agents[0].color;
+		span.textContent = chromaColorToHueName(color);
+		span.style.setProperty('color', color.hex());
 		this.tickOnce();
 	}.bind(world);
 	world.init();
@@ -119,11 +146,11 @@ function main () {
 	canvas.height = Math.min(200, Math.max(window.innerHeight - 20, 100));
 	global = globalClone();
 	global.NUM_AGENTS = 2; // two critters!
-	// global.DEATH_THRESHHOLD = 200;
 	global.OBSERVER_PERIOD = Infinity; // no predator period
-	// global.INITIAL_AGENT_OFFSET = 0; // same color as controls
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
-	global.INIT_AGENTS_VARIATION = 360;
+	global.INIT_AGENTS_VARIATION = 120;
+	global.FATHER_MUTATION_PROB = 0;
+	global.MOTHER_MUTATION_PROB = 0;
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
@@ -131,6 +158,18 @@ function main () {
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
+		var fatherSpan = document.querySelector("#critter-family-father");
+		var motherSpan = document.querySelector("#critter-family-mother");
+		var childSpan = document.querySelector("#critter-family-child");
+		var fatherColor = this.agents[0].color;
+		fatherSpan.textContent = chromaColorToHueName(fatherColor);
+		fatherSpan.style.setProperty('color', fatherColor.hex());
+		var motherColor = this.agents[1].color;
+		motherSpan.textContent = chromaColorToHueName(motherColor);
+		motherSpan.style.setProperty('color', motherColor.hex());
+		var childColor = intermediateChromaColor(motherColor, fatherColor);
+		childSpan.textContent = chromaColorToHueName(childColor);
+		childSpan.style.setProperty('color', childColor.hex());
 		this.tickOnce();
 	}.bind(world);
 	world.init();
@@ -147,6 +186,59 @@ function main () {
 											this.stage.removeAllChildren();
 										}, [], this)
 										.wait(1000)
+										.call(function () {
+											this.init();
+										}, [], this);
+		}
+	}.bind(world);
+
+	// critter family interactive with MUTATION
+	canvas = document.querySelector("#critter-m-family");
+	canvas.width = Math.min(300, Math.max(window.innerWidth - 20, 200));
+	canvas.height = Math.min(200, Math.max(window.innerHeight - 20, 100));
+	global = globalClone();
+	global.NUM_AGENTS = 2; // two critters!
+	global.OBSERVER_PERIOD = Infinity; // no predator period
+	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
+	global.INIT_AGENTS_VARIATION = 0;
+	global.FATHER_MUTATION_PROB = 1;
+	global.MOTHER_MUTATION_PROB = 0;
+	global.MUTATION_RATE = 100;
+	// autoplay
+	global.AUTOPLAY = true;
+	global.PAUSED = false;
+	world = new World(global, canvas);
+	world.externalInit = function () {
+		this.stage.removeChild(this.bg); // hide the background
+		this.stage.removeChild(this.info); // hide the info bar
+		var fatherSpan = document.querySelector("#critter-m-family-father");
+		//var motherSpan = document.querySelector("#critter-m-family-mother");
+		var childSpan = document.querySelector("#critter-m-family-child");
+		var fatherColor = this.agents[0].color;
+		fatherSpan.textContent = chromaColorToHueName(fatherColor);
+		fatherSpan.style.setProperty('color', fatherColor.hex());
+		var motherColor = this.agents[1].color;
+		//motherSpan.textContent = chromaColorToHueName(motherColor);
+		//motherSpan.style.setProperty('color', motherColor.hex());
+		var childColor = intermediateChromaColor(motherColor, fatherColor);
+		childSpan.textContent = chromaColorToHueName(childColor);
+		childSpan.style.setProperty('color', childColor.hex());
+		this.tickOnce();
+	}.bind(world);
+	world.init();
+	world.start();
+	interactives.push(world);
+	world.externalTick = function () {
+		if (!createjs.Tween.hasActiveTweens(this.GLOBAL) &&
+				(this.agents.filter(function (x) { return x.scaleX > 0.7 && x.scaleX < 0.8}).length >= 1 ||
+				this.agents.length < 2)) {
+			createjs.Tween.get(this.GLOBAL)
+										.to({ WORLD_SPEED: 0 }, 1000)
+										.wait(1000)
+										.call(function () {
+											this.stage.removeAllChildren();
+										}, [], this)
+										.wait(2000)
 										.call(function () {
 											this.init();
 										}, [], this);
