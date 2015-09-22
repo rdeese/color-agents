@@ -58,7 +58,7 @@ function Info (GLOBAL, bounds, hue) {
 	this.toggleMode = new createjs.Container();
 	this.toggleMode.x = this.resetButton.x+this.resetButton.width+this.GLOBAL.COMPONENT_MARGIN;
 	this.toggleMode.y = 0;
-	this.toggleMode.width = 300;
+	this.toggleMode.width = 200;
 	this.toggleMode.height = 50;
 
 	this.toggleModeBg = new createjs.Shape();
@@ -94,7 +94,7 @@ function Info (GLOBAL, bounds, hue) {
 
 	// AGENT VIEWER
 	this.detailViewer = new createjs.Container();
-	this.detailViewer.width = 300;
+	this.detailViewer.width = 150;
 	this.detailViewer.height = 50;
 	this.detailViewer.x = this.toggleMode.x + this.toggleMode.width + this.GLOBAL.COMPONENT_MARGIN;
 	this.detailViewer.y = 0;

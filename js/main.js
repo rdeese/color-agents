@@ -85,6 +85,17 @@ function main () {
 		return chroma.hcl((h2 + diff/2)%360, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
 	};
 
+	var averageChromaColor = function (arr) {
+		var x = 0;
+		var y = 0;
+		for (var i = 0; i < arr.length; i++) {
+			x += Math.cos(arr[i].hcl()[0]*Math.PI/180);
+			y += Math.sin(arr[i].hcl()[0]*Math.PI/180);
+		}
+		return chroma.hcl((180/Math.PI)*Math.atan2(y,x), GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
+	}
+
+
 	// CONFIGURE DEFAULTS
 	// dunno if static typed arrays will play nice so let's keep
 	// it simple for now.
@@ -111,7 +122,7 @@ function main () {
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas);
+	world = new World(global, canvas, random.number()*360);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
@@ -154,7 +165,7 @@ function main () {
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas);
+	world = new World(global, canvas, random.number()*360);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
@@ -207,7 +218,7 @@ function main () {
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas);
+	world = new World(global, canvas, random.number()*360);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
@@ -247,34 +258,31 @@ function main () {
 
 	// critter observation interactive
 	canvas = document.querySelector("#critter-observe");
-	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
-	canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
+	canvas.width = 800;
+	canvas.height = 400;
+	//canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
+	//canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
 	global = globalClone();
 	global.OBSERVER_PERIOD = Infinity; // no predator period
+	global.NUM_AGENTS = 4;
 	// global.INITIAL_AGENT_OFFSET = 0; // same color as controls
-	world = new World(global, canvas);
+	world = new World(global, canvas, random.number()*360);
 	world.externalInit = function () {
 		//this.stage.removeChild(this.bg); // hide the background
 		this.info.removeChild(this.info.toggleMode);
 		this.info.removeChild(this.info.detailViewer);
+		var startSpan = document.querySelector("#critter-observe-start");
+		var startColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
+		startSpan.textContent = chromaColorToHueName(startColor);
+		startSpan.style.setProperty('color', startColor.hex());
 		this.tickOnce();
 	}.bind(world);
-	world.externalTick = function () {
-		if (this.GLOBAL.TIME > 0 && !this.before) {
-			this.before = document.querySelector("#critter-observe-before").getContext('2d');
-			this.before.canvas.width = this.bg.bounds.width/2;
-			this.before.canvas.height = this.bg.bounds.height/2;
-			this.before.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
-													  this.bg.bounds.width, this.bg.bounds.height,
-													  0, 0, this.bg.bounds.width/2, this.bg.bounds.height/2);
-		}
-		if (this.GLOBAL.TIME > 10*GLOBAL.OBSERVER_PERIOD && !this.after) {
-			this.after = document.querySelector("#critter-observe-after").getContext('2d');
-			this.after.canvas.width = this.bg.bounds.width/2;
-			this.after.canvas.height = this.bg.bounds.height/2;
-			this.after.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
-													 this.bg.bounds.width, this.bg.bounds.height,
-													 0, 0, this.bg.bounds.width/2, this.bg.bounds.height/2);
+	world.externalTick = function (e) {
+		if (e.WILL_DRAW) {
+			var endSpan = document.querySelector("#critter-observe-end");
+			var endColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
+			endSpan.textContent = chromaColorToHueName(endColor);
+			endSpan.style.setProperty('color', endColor.hex());
 		}
 	}.bind(world);
 
@@ -286,7 +294,7 @@ function main () {
 	canvas = document.querySelector("#selection");
 	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
 	canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
-	world = new World(globalClone(), canvas);
+	world = new World(globalClone(), canvas, random.number()*360);
 	world.externalTick = function () {
 		if (this.GLOBAL.TIME > 0 && !this.before) {
 			this.before = document.querySelector("#selection-before").getContext('2d');

@@ -1,6 +1,7 @@
-var World = function (GLOBAL, canvas) {
+var World = function (GLOBAL, canvas, hue) {
 	this.GLOBAL = GLOBAL;
 	this.stage = new createjs.Stage(canvas);
+	this.envHue = hue;
 };
 
 World.prototype = {
@@ -11,7 +12,6 @@ World.prototype = {
 		this.stage.enableDOMEvents(false);
 		this.stage = new createjs.Stage(this.stage.canvas);
 
-		this.envHue = random.number()*360;
 		var bounds = new createjs.Rectangle(0, 0, this.stage.canvas.width,
 																							this.stage.canvas.height);
 		var infoBounds = new createjs.Rectangle(0, 0, this.stage.canvas.width,
@@ -206,7 +206,7 @@ World.prototype = {
 		this.GLOBAL.UPDATE_COUNTER++;
 
 		if (this.externalTick) {
-			this.externalTick();
+			this.externalTick(event);
 		}
 	}
 };
