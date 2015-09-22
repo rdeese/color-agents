@@ -177,7 +177,10 @@ function Info (GLOBAL, bounds, hue) {
 	this.y = 0;
 	this.alpha = 1;
 
+	this.lifetimeHits = 0;
+	this.lifetimeMisses = 0;
 	this.numHits = 0;
+	this.numMisses = 0;
 	this.lifetimeScore = 0;
 	this.round = 1;
 
@@ -202,9 +205,12 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 		if (didHit) {
 			agent.isEaten = true;
 			this.numHits++;
+			this.lifetimeHits++;
 			this.lifetimeScore++;
 			this.drawDetailViewer();
 		} else {
+			this.numMisses++;
+			this.lifetimeMisses++;
 			this.modeEnd -= this.GLOBAL.MISS_TIME_PENALTY;
 		}
 
@@ -259,18 +265,17 @@ infoPrototype.nextMode = function () {
 		this.setObserverMode();
 	}
 	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
-	this.GLOBAL.AGENTS_DIRTY = true;
 	this.drawToggleMode();
 }
 
 infoPrototype.setObserverMode = function () {
 	this.GLOBAL.MODE = 'observer';
 	this.instructions.text = "Click on a critter to get some info about it."; 
-	createjs.Tween.get(this.worldSpeedSlider, {
+	createjs.Tween.get(this.GLOBAL, {
 																							ignoreGlobalPause: true,
 																							override: true
 																						}) 
-								.to({ value: this.worldSpeedSlider.userVal }, 1000);
+								.to({ WORLD_SPEED: this.worldSpeedSlider.userVal }, this.GLOBAL.MODE_SWITCH_SPEED);
 	createjs.Tween.get(this.overlayContainer, {
 																							ignoreGlobalPause: true,
 																							override: true
@@ -284,6 +289,7 @@ infoPrototype.setObserverMode = function () {
 	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null); 
 	this.drawInfo();
+	this.GLOBAL.AGENTS_DIRTY = true;
 }
 
 infoPrototype.setPredatorMode = function () {
@@ -291,11 +297,11 @@ infoPrototype.setPredatorMode = function () {
 													 "to increase your health.";
 	this.worldSpeedSlider.setEnabled(false && !this.GLOBAL.PAUSED);
 	this.GLOBAL.MODE = 'predator';
-	createjs.Tween.get(this.worldSpeedSlider, {
+	createjs.Tween.get(this.GLOBAL, {
 																							ignoreGlobalPause: true,
 																							override: true
 																						}) 
-								.to({ value: this.GLOBAL.PRED_MODE_SPEED}, 1000)
+								.to({ WORLD_SPEED: this.GLOBAL.PRED_MODE_SPEED}, this.GLOBAL.MODE_SWITCH_SPEED)
 								.call(function () {
 									this.GLOBAL.WORLD_SPEED = this.GLOBAL.PRED_MODE_SPEED;
 									this.drawInfo();
@@ -317,7 +323,7 @@ infoPrototype.setAutoPredatorMode = function () {
 																							ignoreGlobalPause: true,
 																							override: true
 																						}) 
-								.to({ value: this.worldSpeedSlider.userVal }, 1000)
+								.to({ value: this.worldSpeedSlider.userVal }, this.GLOBAL.MODE_SWITCH_SPEED)
 	this.worldSpeedSlider.setEnabled(true && !this.GLOBAL.PAUSED);
 	this.setTarget(null); 
 	this.drawInfo();

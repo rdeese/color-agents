@@ -46,6 +46,9 @@
 				margin-top: 20px;
 				margin-bottom: 20px;
 			}
+			.widest {
+				width: 1000px;
+			}
 			.centered {
 				padding-left: 0;
 				padding-right: 0;
@@ -72,7 +75,7 @@
 		<p class="notopmargin c-text">A playable post on the relationship between life and its environment.</p>
 
 		<section class="centered vspace">
-			<h3 class="nobottommargin">This is a story about critters.</h1>
+			<h3 class="nobottommargin">This is a story about critters.</h3>
 			<p class="notopmargin">
 				Critters are cute, colorful, and friendly!
 				They have short lives compared to you and me,
@@ -86,7 +89,7 @@
 			<canvas class="centered" id=single-critter></canvas>
 		</div>
 		<section class="centered vspace">
-			<h3 class="nobottommargin">A critter gets its color from its parents...</h1>
+			<h3 class="nobottommargin">A critter gets its color from its parents...</h3>
 			<p class="notopmargin">
 				When two critters get together, one of them will give
 				birth to a baby critter! The baby critter's color is in between
@@ -102,7 +105,7 @@
 			<canvas class="centered" id=critter-family></canvas>
 		</div>
 		<section class="centered vspace">
-			<h3 class="nobottommargin">...but sometimes new critters have a surprising color!</h1>
+			<h3 class="nobottommargin">...but sometimes new critters have a surprising color!</h3>
 			<p class="notopmargin">
 				These two
 				<b><span id="critter-m-family-father">color</span></b>
@@ -116,7 +119,7 @@
 			<canvas class="centered" id=critter-m-family></canvas>
 		</div>
 		<section class="centered vspace">
-			<h3 class="nobottommargin">Critters in the Wild</h1>
+			<h3 class="nobottommargin">Watch some critters in the wild.</h3>
 			<p class="notopmargin">
 			Let's put some critters in their natural environment. What
 			will happen over time? Press play, and use the speed slider
@@ -130,8 +133,32 @@
 			<p class="notopmargin">
 			The critters took over the whole environment! How is
 			the color of the first few critters related to all the critters
-			alive now? The first critters were <b><span id="critter-observe-start">???</b>,
-			and the living critters now are mostly <b><span id="critter-observe-end">???</b>.
+			alive now? The first critters were <b><span id="critter-observe-start">???</span></b>,
+			and the living critters now are mostly <b><span id="critter-observe-end">???</span></b>.
+			</p>
+		</section>
+		<section class="centered vspace">
+			<h3 class="nobottommargin">Use your mouse to hunt critters in both environments.</h3>
+		</section>
+		<div style="height:600px" class="widest centered vspace">
+			<canvas class="left" id="critter-hunt-left"></canvas>
+			<canvas class="right" id="critter-hunt-right"></canvas>
+		</div>
+		<section class="centered vspace">
+			<p class="notopmargin">
+
+			In the <b><span id="critter-hunt-left-env">???</span></b>
+			environment with <b><span id="critter-hunt-left-critter">???</span></b>
+			critters, you've hunted
+			<b><span id="critter-hunt-left-hits">0</span></b>
+			critters with <b><span id="critter-hunt-left-misses">0</span></b>
+			misses.
+			In the <b><span id="critter-hunt-right-env">???</span></b>
+			environment with <b><span id="critter-hunt-right-critter">???</span></b>
+			critters, you've hunted
+			<b><span id="critter-hunt-right-hits">0</span></b>
+			critters with <b><span id="critter-hunt-right-misses">0</span></b>
+			misses.
 			</p>
 		</section>
 		<section class=centered>

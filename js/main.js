@@ -33,6 +33,7 @@ function main () {
 		
 		OBSERVER_PERIOD: 120000, // milliseconds
 		PREDATOR_PERIOD: 20000, // milliseconds
+		MODE_SWITCH_SPEED: 1000,
 		MISS_TIME_PENALTY: 8000, // milliseconds
 		HIT_THRESHOLD: 15,
 
@@ -265,7 +266,7 @@ function main () {
 	global = globalClone();
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.NUM_AGENTS = 4;
-	// global.INITIAL_AGENT_OFFSET = 0; // same color as controls
+	global.INITIAL_AGENT_OFFSET = 100; // same color as controls
 	world = new World(global, canvas, random.number()*360);
 	world.externalInit = function () {
 		//this.stage.removeChild(this.bg); // hide the background
@@ -285,8 +286,105 @@ function main () {
 			endSpan.style.setProperty('color', endColor.hex());
 		}
 	}.bind(world);
-
 	world.init();
+	world.start();
+	interactives.push(world);
+
+	// critter observation interactive
+	var hue = random.number()*360;
+	// LEFT ONE
+	canvas = document.querySelector("#critter-hunt-left");
+	canvas.width = 450;
+	canvas.height = 600;
+	global = globalClone();
+	global.OBSERVER_PERIOD = Infinity; // no time-based change
+	global.PREDATOR_PERIOD = Infinity; // no time-based change
+	global.NUM_AGENTS = 20;
+	global.WORLD_OFFSET_Y = 0; // no info bar
+	global.INITIAL_AGENT_OFFSET = 180; // v. obvious critters
+	global.MODE_SWITCH_SPEED = 200; // fast mode switch
+	// autoplay
+	global.AUTOPLAY = true;
+	global.PAUSED = false;
+	world = new World(global, canvas, hue);
+	world.externalInit = function () {
+		//this.stage.removeChild(this.bg); // hide the background
+		this.stage.removeChild(this.info);
+		var envSpan = document.querySelector("#critter-hunt-left-env");
+		var envColor = this.bg.color;
+		envSpan.textContent = chromaColorToHueName(envColor);
+		envSpan.style.setProperty('color', envColor.hex());
+		var critterSpan = document.querySelector("#critter-hunt-left-critter");
+		var critterColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
+		critterSpan.textContent = chromaColorToHueName(critterColor);
+		critterSpan.style.setProperty('color', critterColor.hex());
+		this.tickOnce();
+	}.bind(world);
+	world.externalTick = function (e) {
+		if (e.WILL_DRAW) {
+			var hitSpan = document.querySelector("#critter-hunt-left-hits");
+			var missSpan = document.querySelector("#critter-hunt-left-misses");
+			hitSpan.textContent = this.info.lifetimeHits;
+			missSpan.textContent = this.info.lifetimeMisses;
+		}
+	}.bind(world);
+	world.init();
+	world.stage.enableMouseOver();
+	world.stage.on("rollover", function (e) {
+		console.log("mouseover");
+		this.info.setPredatorMode();
+	}, world);
+	world.stage.on("rollout", function (e) {
+		console.log("mouseout");
+		this.info.setObserverMode();
+	}, world);
+	world.start();
+	interactives.push(world);
+	// RIGHT ONE
+	canvas = document.querySelector("#critter-hunt-right");
+	canvas.width = 450;
+	canvas.height = 600;
+	global = globalClone();
+	global.OBSERVER_PERIOD = Infinity; // no time-based change
+	global.PREDATOR_PERIOD = Infinity; // no time-based change
+	global.NUM_AGENTS = 20;
+	global.WORLD_OFFSET_Y = 0; // no info bar
+	global.INITIAL_AGENT_OFFSET = 0; // v. hidden critters
+	global.MODE_SWITCH_SPEED = 100; // fast mode switch
+	// autoplay
+	global.AUTOPLAY = true;
+	global.PAUSED = false;
+	world = new World(global, canvas, hue);
+	world.externalInit = function () {
+		this.stage.removeChild(this.info);
+		var envSpan = document.querySelector("#critter-hunt-right-env");
+		var envColor = this.bg.color;
+		envSpan.textContent = chromaColorToHueName(envColor);
+		envSpan.style.setProperty('color', envColor.hex());
+		var critterSpan = document.querySelector("#critter-hunt-right-critter");
+		var critterColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
+		critterSpan.textContent = chromaColorToHueName(critterColor);
+		critterSpan.style.setProperty('color', critterColor.hex());
+		this.tickOnce();
+	}.bind(world);
+	world.externalTick = function (e) {
+		if (e.WILL_DRAW) {
+			var hitSpan = document.querySelector("#critter-hunt-right-hits");
+			var missSpan = document.querySelector("#critter-hunt-right-misses");
+			hitSpan.textContent = this.info.lifetimeHits;
+			missSpan.textContent = this.info.lifetimeMisses;
+		}
+	}.bind(world);
+	world.init();
+	world.stage.enableMouseOver();
+	world.stage.on("rollover", function (e) {
+		console.log("mouseover");
+		this.info.setPredatorMode();
+	}, world);
+	world.stage.on("rollout", function (e) {
+		console.log("mouseout");
+		this.info.setObserverMode();
+	}, world);
 	world.start();
 	interactives.push(world);
 
