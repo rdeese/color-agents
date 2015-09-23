@@ -34,7 +34,7 @@ function main () {
 		OBSERVER_PERIOD: 120000, // milliseconds
 		PREDATOR_PERIOD: 20000, // milliseconds
 		MODE_SWITCH_SPEED: 1000,
-		MISS_TIME_PENALTY: 8000, // milliseconds
+		MISS_TIME_PENALTY: 20000, // milliseconds
 		HIT_THRESHOLD: 15,
 
 		INITIAL_AGENT_OFFSET: 40,
@@ -44,6 +44,8 @@ function main () {
 
 		CHROMA: 55,
 		LIGHTNESS: 70,
+		HUES: ['pink', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'],
+		BOUNDS: [0, 10, 35, 85, 100, 190, 280, 325, 361],
 
 		FONT: "Catamaran",
 
@@ -65,13 +67,11 @@ function main () {
 	GLOBAL.YOUTH_SCALE_STEP = (1-GLOBAL.BABY_SCALE)/GLOBAL.YOUTH_DURATION;
 
 	var chromaColorToHueName = function (color) {
-		var hues = ['pink', 'red', 'orange', 'yellow', 'green', 'blue', 'purple', 'pink'];
-		var bounds = [0, 10, 35, 85, 100, 190, 280, 325, 361];
 		var colorName;
 		var angle = color.hcl()[0];
 		for (var i = 0; i < 8; i++) {
-			if (angle >= bounds[i] && angle < bounds[i+1]) {
-				colorName = hues[i];
+			if (angle >= GLOBAL.BOUNDS[i] && angle < GLOBAL.BOUNDS[i+1]) {
+				colorName = GLOBAL.HUES[i];
 			}
 		}
 		return colorName;
@@ -84,6 +84,15 @@ function main () {
 		if (diff > 180) { diff -= 360; }
 		if (diff < -180) { diff += 360; }
 		return chroma.hcl((h2 + diff/2)%360, GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
+	};
+
+	var chromaColorDist = function (c1, c2) {
+		var h1 = c1.hcl()[0];
+		var h2 = c2.hcl()[0];
+		var diff = h1-h2;
+		if (diff > 180) { diff -= 360; }
+		if (diff < -180) { diff += 360; }
+		return diff;
 	};
 
 	var averageChromaColor = function (arr) {
@@ -392,29 +401,111 @@ function main () {
 	canvas = document.querySelector("#selection");
 	canvas.width = 1000;
 	canvas.height = 800;
-	//canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
-	//canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
-	world = new World(globalClone(), canvas, random.number()*360);
+	global = globalClone();
+	global.INIT_AGENTS_VARIATION = 50;
+	
+	world = new World(global, canvas,
+										GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)], true)
+									
+	var decadeCounter = 1;
 	world.externalTick = function () {
-		if (this.GLOBAL.TIME > 0 && !this.before) {
+		if (this.info.round <= 10 && this.info.round == decadeCounter) {
+			var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
+			var span = document.querySelector("#critter-decade-"+decadeCounter);
+			span.textContent = chromaColorToHueName(avgColor);
+			span.style.setProperty('color', avgColor.hex());
+			decadeCounter++;
+		}
+		if (!this.before) {
 			this.before = document.querySelector("#selection-before").getContext('2d');
-			this.before.canvas.width = this.bg.bounds.width/2;
-			this.before.canvas.height = this.bg.bounds.height/2;
+			this.before.canvas.width = this.bg.bounds.width/2.105;
+			this.before.canvas.height = this.bg.bounds.height/2.105;
 			this.before.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
 													  this.bg.bounds.width, this.bg.bounds.height,
-													  0, 0, this.bg.bounds.width/2, this.bg.bounds.height/2);
+													  0, 0, this.bg.bounds.width/2.105,
+														this.bg.bounds.height/2.105);
 		}
-		if (this.info.round > 10 && !this.after) {
+		if (this.info.round >= 10 && !this.after) {
+			var spans = document.querySelectorAll("#critter-decade-end-critter");
+			for (var i = 0; i < spans.length; i++) {
+				var span = spans[i];
+				var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
+				span.textContent = chromaColorToHueName(avgColor);
+				span.style.setProperty('color', avgColor.hex());
+			}
 			setTimeout(function () {
 				this.after = document.querySelector("#selection-after").getContext('2d');
-				this.after.canvas.width = this.bg.bounds.width/2;
-				this.after.canvas.height = this.bg.bounds.height/2;
+				this.after.canvas.width = this.bg.bounds.width/2.105;
+				this.after.canvas.height = this.bg.bounds.height/2.105;
 				this.after.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
 														 this.bg.bounds.width, this.bg.bounds.height,
-														 0, 0, this.bg.bounds.width/2, this.bg.bounds.height/2);
+														 0, 0, this.bg.bounds.width/2.105,
+														 this.bg.bounds.height/2.105);
 			}.bind(this), 1000);
 		}
 	}.bind(world);
+	world.externalInit = function () {
+		for (var i = 1; i <= 10; i++) {
+			var span = document.querySelector("#critter-decade-"+i);
+			span.textContent = "???";
+			span.style.setProperty('color', "#000000");
+		}
+		var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
+		var envColor = this.bg.color;
+		var lmColor = chroma.hcl(avgColor.hcl()[0]-0.75*this.GLOBAL.MUTATION_RATE,
+														 this.GLOBAL.CHROMA,
+														 this.GLOBAL.LIGHTNESS);
+		var rmColor = chroma.hcl(avgColor.hcl()[0]+0.75*this.GLOBAL.MUTATION_RATE,
+														 this.GLOBAL.CHROMA,
+														 this.GLOBAL.LIGHTNESS);
+		var closerMColor, furtherMColor;
+		if (Math.abs(chromaColorDist(lmColor, envColor)) >
+				Math.abs(chromaColorDist(rmColor, envColor))) {
+			closerMColor = rmColor;
+			furtherMColor = lmColor;
+		} else {
+			closerMColor = lmColor;
+			furtherMColor = rmColor;
+		}
+		spans = document.querySelectorAll("#critter-decade-env");
+		for (var i = 0; i < spans.length; i++) {
+			var span = spans[i];
+			span.textContent = chromaColorToHueName(envColor);
+			span.style.setProperty('color', envColor.hex());
+		}
+		var spans = document.querySelectorAll("#critter-decade-start-critter");
+		for (var i = 0; i < spans.length; i++) {
+			var span = spans[i];
+			span.textContent = chromaColorToHueName(avgColor);
+			span.style.setProperty('color', avgColor.hex());
+		}
+		var spans = document.querySelectorAll("#critter-decade-closer-m-critter");
+		for (var i = 0; i < spans.length; i++) {
+			var span = spans[i];
+			span.textContent = chromaColorToHueName(closerMColor);
+			span.style.setProperty('color', closerMColor.hex());
+		}
+		var spans = document.querySelectorAll("#critter-decade-further-m-critter");
+		for (var i = 0; i < spans.length; i++) {
+			var span = spans[i];
+			span.textContent = chromaColorToHueName(furtherMColor);
+			span.style.setProperty('color', furtherMColor.hex());
+		}
+		var spans = document.querySelectorAll("#critter-decade-end-critter");
+		for (var i = 0; i < spans.length; i++) {
+			var span = spans[i];
+			span.textContent = "???";
+			span.style.setProperty('color', "#000000");
+		}
+		if (this.before) {
+			this.before.clearRect(0, 0, this.before.width, this.before.height);
+		}
+		this.before = null;
+		if (this.after) {
+			this.after.clearRect(0, 0, this.after.width, this.after.height);
+		}
+		this.after = null;
+	}
 	world.init();
 	world.tickOnce();
 	world.start();

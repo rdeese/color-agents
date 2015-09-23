@@ -58,7 +58,7 @@ function Info (GLOBAL, bounds, hue) {
 	this.toggleMode = new createjs.Container();
 	this.toggleMode.x = this.resetButton.x+this.resetButton.width+this.GLOBAL.COMPONENT_MARGIN;
 	this.toggleMode.y = 0;
-	this.toggleMode.width = 200;
+	this.toggleMode.width = 300;
 	this.toggleMode.height = 50;
 
 	this.toggleModeBg = new createjs.Shape();
@@ -91,8 +91,8 @@ function Info (GLOBAL, bounds, hue) {
 	this.addChild(this.toggleMode);
 	// END MODE TOGGLE
 
-
 	// AGENT VIEWER
+	/*
 	this.detailViewer = new createjs.Container();
 	this.detailViewer.width = 150;
 	this.detailViewer.height = 50;
@@ -117,7 +117,8 @@ function Info (GLOBAL, bounds, hue) {
 	this.phenotypeCircle.y = this.detailViewer.height/2;
 	this.detailViewer.addChild(this.phenotypeCircle);
 
-	this.addChild(this.detailViewer);
+	//this.addChild(this.detailViewer);
+	*/
 	// END AGENT VIEWER
 
 	// INSTRUCTIONS
@@ -127,8 +128,8 @@ function Info (GLOBAL, bounds, hue) {
 														this.togglePause.width -
 														this.resetButton.width -
 														this.toggleMode.width -
-														this.detailViewer.width -
-														4*this.GLOBAL.COMPONENT_MARGIN;
+														//this.detailViewer.width -
+														3*this.GLOBAL.COMPONENT_MARGIN;
 	this.instructions.lineWidth = this.instructions.width;
 	this.instructions.height = 50;
 	this.instructions.x = this.togglePause.width +
@@ -143,8 +144,8 @@ function Info (GLOBAL, bounds, hue) {
 	// BEGIN SLIDER
 	this.worldSpeedSlider = new Slider(this.GLOBAL, 1, 30, this.instructions.width, 50,
 																		 "World Speed", hue);
-	this.worldSpeedSlider.x = this.detailViewer.x +
-														this.detailViewer.width +
+	this.worldSpeedSlider.x = this.toggleMode.x +
+														this.toggleMode.width +
 														this.GLOBAL.COMPONENT_MARGIN;
 	this.worldSpeedSlider.y = 0;
 	this.addChild(this.worldSpeedSlider);
@@ -207,7 +208,7 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 			this.numHits++;
 			this.lifetimeHits++;
 			this.lifetimeScore++;
-			this.drawDetailViewer();
+			//this.drawDetailViewer();
 		} else {
 			this.numMisses++;
 			this.lifetimeMisses++;
@@ -307,11 +308,11 @@ infoPrototype.setPredatorMode = function () {
 									this.drawInfo();
 									this.GLOBAL.AGENTS_DIRTY = true;
 								}, [], this);
-	this.toggleModeTime.alpha = 0;
+	this.toggleModeTime.text = "HUNT";
 	this.overlayContainer.alpha = 1;
 	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null);
-	this.detailViewer.alpha = 1;
+	//this.detailViewer.alpha = 1;
 }
 
 infoPrototype.setAutoPredatorMode = function () {
@@ -331,7 +332,7 @@ infoPrototype.setAutoPredatorMode = function () {
 
 infoPrototype.setTarget = function (target) {
 	this.target = target;
-	this.drawDetailViewer();
+	//this.drawDetailViewer();
 }
 
 infoPrototype.drawTogglePause = function () {
@@ -356,6 +357,8 @@ infoPrototype.drawToggleMode = function () {
 	this.toggleModeBg.graphics.beginFill(this.lightColor.hex());
 	this.toggleModeBg.graphics.drawRoundRect(0,0,this.toggleMode.width,
 																						this.togglePause.height,20);
+	this.toggleModeLabel.text = "Year " + this.round;
+	/*
 	if (this.GLOBAL.MODE == 'observer') {
 		this.toggleModeLabel.text = "Observer";
 	} else if (this.GLOBAL.MODE == 'predator') {
@@ -363,6 +366,7 @@ infoPrototype.drawToggleMode = function () {
 	} else if (this.GLOBAL.MODE == 'autopredator') {
 		this.toggleModeLabel.text = "AUTO Predator";
 	}
+	*/
 	this.GLOBAL.DIRTY = true;
 }
 
@@ -421,10 +425,12 @@ infoPrototype.update = function () {
 		}
 	}
 
-	var time = Math.ceil((this.modeEnd-this.GLOBAL.TIME)/1000);
-	var timeStr = ('0' + Math.floor((time%3600)/60)).slice(-1) + ":" +
-							 ('0' + Math.ceil(time%60)).slice(-2);
-	this.toggleModeTime.text = timeStr;
+	if (this.GLOBAL.MODE == 'observer') {
+		var time = Math.ceil((this.modeEnd-this.GLOBAL.TIME)/1000);
+		var timeStr = ('0' + Math.floor((time%3600)/60)).slice(-1) + ":" +
+								 ('0' + Math.ceil(time%60)).slice(-2);
+		this.toggleModeTime.text = timeStr;
+	} 
 
 	// update the play/pause character
 	if (this.GLOBAL.PAUSED) {

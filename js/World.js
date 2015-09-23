@@ -1,7 +1,18 @@
-var World = function (GLOBAL, canvas, hue) {
+var World = function (GLOBAL, canvas, hue, splitDiff) {
 	this.GLOBAL = GLOBAL;
 	this.stage = new createjs.Stage(canvas);
-	this.envHue = hue;
+	if (splitDiff) {
+		if (random.number() < 0.5) {
+			this.agentStartCol = hue + this.GLOBAL.INITIAL_AGENT_OFFSET/2;
+			this.envHue = hue - this.GLOBAL.INITIAL_AGENT_OFFSET/2;
+		} else {
+			this.agentStartCol = hue - this.GLOBAL.INITIAL_AGENT_OFFSET/2;
+			this.envHue = hue + this.GLOBAL.INITIAL_AGENT_OFFSET/2;
+		}
+	} else {
+		this.envHue = hue;
+		this.agentStartCol = hue + this.GLOBAL.INITIAL_AGENT_OFFSET*(random.integer(2)*2-1);
+	}
 };
 
 World.prototype = {
@@ -33,7 +44,7 @@ World.prototype = {
 		this.agentContainer.y = this.GLOBAL.WORLD_OFFSET_Y;
 		this.agentContainer.GLOBAL = this.GLOBAL;
 		this.stage.addChild(this.agentContainer);
-		this.initAgents(this.envHue, this.GLOBAL.NUM_AGENTS);
+		this.initAgents(this.GLOBAL.NUM_AGENTS);
 
 		// send world clicks to the info obj
 		this.stage.on("worldClick", function (e) {
@@ -62,14 +73,7 @@ World.prototype = {
 		this.GLOBAL.PAUSED = temp;
 	},
 
-	initAgents: function (hue, num) {
-		var agentStartCol = hue;
-		if (random.number() < 0.5) {
-			agentStartCol += this.GLOBAL.INITIAL_AGENT_OFFSET;
-		} else {
-			agentStartCol -= this.GLOBAL.INITIAL_AGENT_OFFSET;
-		}
-
+	initAgents: function (num) {
 		this.agents = [];
 		this.newAgents = [];
 
@@ -82,7 +86,7 @@ World.prototype = {
 										vec2.fromValues(random.number() * (worldBounds.width-2*radius) + radius,
 																		random.number() * (worldBounds.height-2*radius) + radius),
 										vec2.create(),
-										[[agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [random.number()*180]]);
+										[[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [random.number()*180]]);
 			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 			a.update({ WILL_DRAW: true });
 			this.agentContainer.addChild(a);
