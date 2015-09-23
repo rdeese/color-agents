@@ -32,6 +32,9 @@
 			.c-text {
 				text-align: center;
 			}
+			.caption {
+				font-size: 36px;
+			}
 			.notopmargin {
 				margin-top: 0;
 			}
@@ -133,54 +136,59 @@
 			<p class="notopmargin">
 			The critters took over the whole environment! How is
 			the color of the first few critters related to all the critters
-			alive now? The first critters were <b><span id="critter-observe-start">???</span></b>,
-			and the living critters now are mostly <b><span id="critter-observe-end">???</span></b>.
+			alive now? The first critters were
+			<b><span id="critter-observe-start">???</span></b>,
+			and the living critters now are mostly
+			<b><span id="critter-observe-end">???</span></b>.
 			</p>
 		</section>
 		<section class="centered vspace">
-			<h3 class="nobottommargin">Use your mouse to hunt critters in both environments.</h3>
+			<h3 class="nobottommargin">In the wild, critters are hunted.</h3>
+			<p class="notopmargin">
+			You'll be a predator that eats critters. When critters sense that
+			they're being hunted, they hide by staying still, and closing their eyes!
+			Practice hunting critters in these two environments by clicking on them
+			with your mouse.
+			</p>
 		</section>
-		<div style="height:600px" class="widest centered vspace">
-			<canvas class="left" id="critter-hunt-left"></canvas>
-			<canvas class="right" id="critter-hunt-right"></canvas>
+		<div style="height:660px" class="widest centered vspace">
+			<div class="left">
+				<canvas id="critter-hunt-left"></canvas>
+				<p class="c-text caption notopmargin">
+				<b><span id="critter-hunt-left-hits">0</span></b> kills,
+				<b><span id="critter-hunt-left-misses">0</span></b> misses.
+				</p>
+			</div>
+			<div class="right">
+				<canvas id="critter-hunt-right"></canvas>
+				<p class="c-text caption notopmargin">
+				<b><span id="critter-hunt-right-hits">0</span></b> kills,
+				<b><span id="critter-hunt-right-misses">0</span></b> misses.
+				</p>
+			</div>
 		</div>
 		<section class="centered vspace">
 			<p class="notopmargin">
-
-			In the <b><span id="critter-hunt-left-env">???</span></b>
-			environment with <b><span id="critter-hunt-left-critter">???</span></b>
-			critters, you've hunted
-			<b><span id="critter-hunt-left-hits">0</span></b>
-			critters with <b><span id="critter-hunt-left-misses">0</span></b>
-			misses.
-			In the <b><span id="critter-hunt-right-env">???</span></b>
-			environment with <b><span id="critter-hunt-right-critter">???</span></b>
-			critters, you've hunted
-			<b><span id="critter-hunt-right-hits">0</span></b>
-			critters with <b><span id="critter-hunt-right-misses">0</span></b>
-			misses.
+			Depending on the environment, the color of a critter can help it hide
+			better. In these <b><span id="critter-hunt-left-env">???</span></b>
+			environments, are the <b><span id="critter-hunt-left-critter">???</span></b>
+			critters easy to hunt? What about the
+			<b><span id="critter-hunt-right-critter">???</span></b>
+			critters?
 			</p>
 		</section>
-		<section class=centered>
-			<p>This is the sandbox.</p>
+		<section class="centered vspace">
+			<h3 class="nobottommargin">Explore a decade of hunting.</h3>
+			<p class="notopmargin">
+			
+			</p>
 		</section>
 		<div class="centered vspace">
 			<canvas class="centered" id=selection></canvas>
 		</div>
-		<div class="centered vspace">
+		<div class="widest centered vspace">
 			<canvas class="left" id="selection-before"></canvas>
 			<canvas class="right" id="selection-after"></canvas>
 		</div>
-		<section class=centered>
-			<p>
-				What happenned in your critters' world? Was hunting them easy? What did your critter
-				population look like before and after hunting?
-			</p>
-			<p>
-				Were you bored? Is anything broken? Any bugs to report or features to request?
-				Thoughts and feelings? Help make color critters better by sending me an email
-				at hartdeese@mac.com.
-			</p>
-		</section>
 	</body>
 </html>

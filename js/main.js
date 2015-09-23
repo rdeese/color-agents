@@ -294,7 +294,7 @@ function main () {
 	var hue = random.number()*360;
 	// LEFT ONE
 	canvas = document.querySelector("#critter-hunt-left");
-	canvas.width = 450;
+	canvas.width = 480;
 	canvas.height = 600;
 	global = globalClone();
 	global.OBSERVER_PERIOD = Infinity; // no time-based change
@@ -342,7 +342,7 @@ function main () {
 	interactives.push(world);
 	// RIGHT ONE
 	canvas = document.querySelector("#critter-hunt-right");
-	canvas.width = 450;
+	canvas.width = 480;
 	canvas.height = 600;
 	global = globalClone();
 	global.OBSERVER_PERIOD = Infinity; // no time-based change
@@ -357,10 +357,10 @@ function main () {
 	world = new World(global, canvas, hue);
 	world.externalInit = function () {
 		this.stage.removeChild(this.info);
-		var envSpan = document.querySelector("#critter-hunt-right-env");
-		var envColor = this.bg.color;
-		envSpan.textContent = chromaColorToHueName(envColor);
-		envSpan.style.setProperty('color', envColor.hex());
+		//var envSpan = document.querySelector("#critter-hunt-right-env");
+		//var envColor = this.bg.color;
+		//envSpan.textContent = chromaColorToHueName(envColor);
+		//envSpan.style.setProperty('color', envColor.hex());
 		var critterSpan = document.querySelector("#critter-hunt-right-critter");
 		var critterColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
 		critterSpan.textContent = chromaColorToHueName(critterColor);
@@ -390,8 +390,10 @@ function main () {
 
 	// sandbox
 	canvas = document.querySelector("#selection");
-	canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
-	canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
+	canvas.width = 1000;
+	canvas.height = 800;
+	//canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
+	//canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
 	world = new World(globalClone(), canvas, random.number()*360);
 	world.externalTick = function () {
 		if (this.GLOBAL.TIME > 0 && !this.before) {
