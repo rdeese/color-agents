@@ -3,7 +3,7 @@ function main () {
 		WORLD_OFFSET_Y: 58, // pixels
 		COMPONENT_MARGIN: 8, // pixels
 		NUM_AGENTS: 40,
-		INIT_AGENTS_VARIATION: 30,
+		INIT_AGENTS_VARIATION: 20,
 		NUM_PLANTS: 500,
 		DEATH_THRESHHOLD: 800,
 		DEATH_DURATION: 2000, // milliseconds
@@ -18,9 +18,9 @@ function main () {
 		DELTA: 0, // just in case
 
 		MATING_PROB: 0.2,
-		MUTATION_RATE: 60,
-		MOTHER_MUTATION_PROB: 0.2,
-		FATHER_MUTATION_PROB: 0.2,
+		MUTATION_RATE: 100,
+		MOTHER_MUTATION_PROB: 0.1,
+		FATHER_MUTATION_PROB: 0.1,
 		GESTATION_PD: 20000, // milliseconds
 		YOUTH_DURATION: 40000, // milliseconds
 		MAX_ACC: 4/100000, // pixels per millisecond
@@ -31,13 +31,14 @@ function main () {
 
 		AUTOPRED_INTERVAL: 8000, // milliseconds
 		
-		OBSERVER_PERIOD: 120000, // milliseconds
+		OBSERVER_PERIOD: 240000, // milliseconds
 		PREDATOR_PERIOD: 20000, // milliseconds
-		MODE_SWITCH_SPEED: 1000,
+		MODE_SWITCH_SPEED: 500,
 		MISS_TIME_PENALTY: 20000, // milliseconds
-		HIT_THRESHOLD: 15,
+		HIT_THRESHOLD: 30,
 
-		INITIAL_AGENT_OFFSET: 40,
+		INITIAL_AGENT_OFFSET: 60,
+		ENV_VARIATION: 30,
 
 		AGENT_RADIUS: 30,
 		BABY_AGENT_RADIUS: 1, // change this once scaling is introduced
@@ -414,18 +415,9 @@ function main () {
 			var span = document.querySelector("#critter-decade-"+decadeCounter);
 			span.textContent = chromaColorToHueName(avgColor);
 			span.style.setProperty('color', avgColor.hex());
+			span = document.querySelector("#last-year");
+			span.textContent = decadeCounter.toString();
 			decadeCounter++;
-		}
-		if (!this.before) {
-			this.before = document.querySelector("#selection-before").getContext('2d');
-			this.before.canvas.width = this.bg.bounds.width/2.105;
-			this.before.canvas.height = this.bg.bounds.height/2.105;
-			this.before.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
-													  this.bg.bounds.width, this.bg.bounds.height,
-													  0, 0, this.bg.bounds.width/2.105,
-														this.bg.bounds.height/2.105);
-		}
-		if (this.info.round >= 10 && !this.after) {
 			var spans = document.querySelectorAll("#critter-decade-end-critter");
 			for (var i = 0; i < spans.length; i++) {
 				var span = spans[i];
@@ -442,6 +434,15 @@ function main () {
 														 0, 0, this.bg.bounds.width/2.105,
 														 this.bg.bounds.height/2.105);
 			}.bind(this), 1000);
+		}
+		if (!this.before) {
+			this.before = document.querySelector("#selection-before").getContext('2d');
+			this.before.canvas.width = this.bg.bounds.width/2.105;
+			this.before.canvas.height = this.bg.bounds.height/2.105;
+			this.before.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
+													  this.bg.bounds.width, this.bg.bounds.height,
+													  0, 0, this.bg.bounds.width/2.105,
+														this.bg.bounds.height/2.105);
 		}
 	}.bind(world);
 	world.externalInit = function () {

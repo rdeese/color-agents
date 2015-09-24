@@ -208,10 +208,12 @@
 		<section class="centered vspace">
 			<h3 class="nobottommargin">A decade of critters.</h3>
 			<p class="notopmargin">
-			Let's observe a critter population for 10 years.
+			Let's observe a critter population.
 			At the end of each year when the critters go
-			into hiding, hunt <b>15</b> of them
+			into hiding, hunt <b>30</b> of them
 			<i>without missing</i> to get to the next year.
+			See if you can make it to the 10th year! Once
+			you can't go any further, just keep reading.
 			</p>
 		</section>
 		<div style="height:800px" class="centered vspace">
@@ -282,7 +284,7 @@
 		<section class="centered vspace">
 			<p class="notopmargin">
 				Did you notice that the critters changed color over the years?
-				By the 10th year, the critters blend in with their environment
+				The critters start to blend in with their environment
 				much better. They are harder to hunt! How did that happen?
 			</p>
 		</section>
@@ -292,7 +294,9 @@
 				<canvas id="selection-before"></canvas>
 			</div>
 			<div style="width:475px; height:380px;" class="right">
-				<p class="c-text caption notopmargin nobottommargin">Year 10</p>
+				<p class="c-text caption notopmargin nobottommargin">
+					Year <span id="last-year">10</span>
+				</p>
 				<canvas id="selection-after"></canvas>
 			</div>
 		</div>
@@ -305,9 +309,9 @@
 			We started with a <b><span id="critter-decade-env">???</span></b>
 			environment, and mostly 
 			<b><span id="critter-decade-start-critter">???</span></b>
-			critters. Now, the criters are
+			critters. Now, the criters are mostly
 			<b><span id="critter-decade-end-critter">???</span></b>,
-			just like the environment! How can this be? Let's think
+			which is closer to the environment. How can this be? Let's think
 			about what we already know:
 			</p>
 			<ol>

@@ -72,7 +72,7 @@ envPrototype.drawBg = function () {
 		c = new createjs.Shape();
 		c.x = random.number() * (this.bounds.width-2*radius) + radius;
 		c.y = random.number() * (this.bounds.height-2*radius) + radius;
-		col = chroma.hcl(this.hue+30*(random.number()-0.5),
+		col = chroma.hcl(this.hue+this.GLOBAL.ENV_VARIATION*(random.number()-0.5),
 										 this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 		c.graphics.beginFill(col.hex());
 		c.graphics.drawCircle(0,0,radius);

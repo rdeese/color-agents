@@ -3,11 +3,11 @@ var World = function (GLOBAL, canvas, hue, splitDiff) {
 	this.stage = new createjs.Stage(canvas);
 	if (splitDiff) {
 		if (random.number() < 0.5) {
-			this.agentStartCol = hue + this.GLOBAL.INITIAL_AGENT_OFFSET/2;
-			this.envHue = hue - this.GLOBAL.INITIAL_AGENT_OFFSET/2;
+			this.agentStartCol = hue + this.GLOBAL.INITIAL_AGENT_OFFSET/3;
+			this.envHue = hue - 2*this.GLOBAL.INITIAL_AGENT_OFFSET/3;
 		} else {
-			this.agentStartCol = hue - this.GLOBAL.INITIAL_AGENT_OFFSET/2;
-			this.envHue = hue + this.GLOBAL.INITIAL_AGENT_OFFSET/2;
+			this.agentStartCol = hue - this.GLOBAL.INITIAL_AGENT_OFFSET/3;
+			this.envHue = hue + 2*this.GLOBAL.INITIAL_AGENT_OFFSET/3;
 		}
 	} else {
 		this.envHue = hue;

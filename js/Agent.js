@@ -7,7 +7,7 @@ function Agent(GLOBAL, bounds, radius, position, velocity, genome) {
 
 	this.snapToPixel = true;
 	this.bounds = bounds;
-	this.radius = radius;
+	this.radius = radius-radius*(random.number()/5);
 	this.eyeOffset = this.radius*0.4;
 	this.vel = vec2.clone(velocity);
 	this.pos = vec2.clone(position);
@@ -186,11 +186,15 @@ agentPrototype.motherChild = function (matingTime, otherGenome) {
 	var otherGene = otherGenome[0][0];
 	// infrequent, significant mutations
 	if (random.number()<this.GLOBAL.MOTHER_MUTATION_PROB) {
-		thisGene += (0.5+0.5*random.number())*this.GLOBAL.MUTATION_RATE*(Math.round(random.number())*2-1);
+		thisGene += (0.8+0.2*random.number())*
+								this.GLOBAL.MUTATION_RATE*
+								(Math.round(random.number())*2-1);
 		thisGene %= 360;
 	}
 	if (random.number()<this.GLOBAL.FATHER_MUTATION_PROB) {
-		otherGene += (0.5+0.5*random.number())*this.GLOBAL.MUTATION_RATE*(Math.round(random.number())*2-1);
+		otherGene += (0.8+0.2*random.number())*
+								 this.GLOBAL.MUTATION_RATE*
+								 (Math.round(random.number())*2-1);
 		otherGene %= 360;
 	}
 	var diff = thisGene-otherGene;
@@ -428,12 +432,15 @@ agentPrototype.update = function (e) {
 		// put the baby behind the mama, touching. 
 		var newPos = vec2.clone(this.pos);
 		vec2.normalize(this.subResult, this.vel);
-		vec2.scale(this.subResult, this.subResult, -(this.radius*this.scaleX+this.GLOBAL.BABY_AGENT_RADIUS));
+		vec2.scale(this.subResult, this.subResult,
+							 -(this.radius*this.scaleX+this.GLOBAL.BABY_AGENT_RADIUS));
 		vec2.add(newPos, this.pos, this.subResult);
 		// with the same speed
 		var newVel = vec2.clone(this.vel);
 
-		result.push(new Agent(this.GLOBAL, this.bounds, this.radius, newPos, newVel, this.childGenome));
+		result.push(new Agent(this.GLOBAL, this.bounds,
+													this.GLOBAL.AGENT_RADIUS,
+													newPos, newVel, this.childGenome));
 		this.isPregnant = false;
 		this.childGenome = null;
 		this.matingTime = null;
