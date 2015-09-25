@@ -41,7 +41,8 @@ function main () {
 		ENV_VARIATION: 30,
 
 		AGENT_RADIUS: 30,
-		BABY_AGENT_RADIUS: 1, // change this once scaling is introduced
+		BABY_AGENT_RADIUS: 5,
+		PREGNANT_SCALE: 1.2,
 
 		CHROMA: 55,
 		LIGHTNESS: 70,

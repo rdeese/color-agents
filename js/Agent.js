@@ -204,6 +204,8 @@ agentPrototype.motherChild = function (matingTime, otherGenome) {
 	this.childGenome[0][0] = (otherGene + diff/2)%360;
 	// small, frequent mutations (unrealistic)
 	// this.childGenome[0][0] += (random.number()-0.5)*this.GLOBAL.MUTATION_RATE;
+	createjs.Tween.get(this, { override: true })
+								.to({ scaleX: this.GLOBAL.PREGNANT_SCALE, scaleY: this.GLOBAL.PREGNANT_SCALE }, 400);
 }
 
 agentPrototype.selectCacheIfExists = function () {
@@ -442,11 +444,12 @@ agentPrototype.update = function (e) {
 		result.push(new Agent(this.GLOBAL, this.bounds,
 													this.GLOBAL.AGENT_RADIUS,
 													newPos, newVel, this.childGenome));
+		createjs.Tween.get(this, { override: true })
+									.to({ scaleX: 1, scaleY: 1 }, 400);
+
 		this.isPregnant = false;
 		this.childGenome = null;
 		this.matingTime = null;
-		this.cpCacheCanvas = null;
-		this.npCacheCanvas = null;
 	}
 
 	// Iterate internal kinematics
