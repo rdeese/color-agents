@@ -63,6 +63,16 @@ World.prototype = {
 			this.info.handleWorldClick(e.mouseEvent, e.onAgent, e.agent);
 		}, this);
 
+		/*
+		this.stage.on("nextRound", function () {
+			this.saveState();
+		});
+
+		this.stage.on("resetRound", function () {
+			this.restoreState();
+		});
+		*/
+
 		// create info
 		this.info = new Info(this.GLOBAL, infoBounds, this.envHue);
 		this.stage.addChild(this.info);
@@ -70,12 +80,26 @@ World.prototype = {
 		// handle reset from UI
 		this.info.on('reset', function () {
 			this.init();
-			this.tickOnce();
 		}, this);
 		
 		if (this.externalInit) {
 			this.externalInit();
 		}
+
+		this.tickOnce();
+		//this.saveState();
+	},
+
+	// FIXME doesn't work
+	saveState: function () {
+		this.savedTime = this.GLOBAL.TIME;
+		this.savedAgents = clone(this.agents);
+	},
+
+	// FIXME doesn't work
+	restoreState: function () {
+		this.GLOBAL.TIME = this.savedTime;
+		this.agents = this.savedAgents;
 	},
 
 	tickOnce: function () {

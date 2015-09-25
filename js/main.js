@@ -142,7 +142,6 @@ function main () {
 		var color = this.agents[0].color;
 		span.textContent = chromaColorToHueName(color);
 		span.style.setProperty('color', color.hex());
-		this.tickOnce();
 	}.bind(world);
 	world.init();
 	world.start();
@@ -171,6 +170,7 @@ function main () {
 	global.NUM_AGENTS = 2; // two critters!
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
+	global.DEATH_THRESHHOLD = Infinity; // can't die!
 	global.INIT_AGENTS_VARIATION = 160;
 	global.FATHER_MUTATION_PROB = 0;
 	global.MOTHER_MUTATION_PROB = 0;
@@ -193,7 +193,6 @@ function main () {
 		var childColor = intermediateChromaColor(motherColor, fatherColor);
 		childSpan.textContent = chromaColorToHueName(childColor);
 		childSpan.style.setProperty('color', childColor.hex());
-		this.tickOnce();
 	}.bind(world);
 	world.init();
 	world.start();
@@ -223,6 +222,7 @@ function main () {
 	global.NUM_AGENTS = 2; // two critters!
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
+	global.DEATH_THRESHHOLD = Infinity; // can't die!
 	global.INIT_AGENTS_VARIATION = 0;
 	global.FATHER_MUTATION_PROB = 1;
 	global.MOTHER_MUTATION_PROB = 0;
@@ -246,7 +246,6 @@ function main () {
 		var childColor = intermediateChromaColor(motherColor, fatherColor);
 		childSpan.textContent = chromaColorToHueName(childColor);
 		childSpan.style.setProperty('color', childColor.hex());
-		this.tickOnce();
 	}.bind(world);
 	world.init();
 	world.start();
@@ -287,7 +286,6 @@ function main () {
 		var startColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
 		startSpan.textContent = chromaColorToHueName(startColor);
 		startSpan.style.setProperty('color', startColor.hex());
-		this.tickOnce();
 	}.bind(world);
 	world.externalTick = function (e) {
 		if (e.WILL_DRAW) {
@@ -329,7 +327,6 @@ function main () {
 		var critterColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
 		critterSpan.textContent = chromaColorToHueName(critterColor);
 		critterSpan.style.setProperty('color', critterColor.hex());
-		this.tickOnce();
 	}.bind(world);
 	world.externalTick = function (e) {
 		if (e.WILL_DRAW) {
@@ -376,7 +373,6 @@ function main () {
 		var critterColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
 		critterSpan.textContent = chromaColorToHueName(critterColor);
 		critterSpan.style.setProperty('color', critterColor.hex());
-		this.tickOnce();
 	}.bind(world);
 	world.externalTick = function (e) {
 		if (e.WILL_DRAW) {
@@ -409,16 +405,16 @@ function main () {
 	world = new World(global, canvas,
 										GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)], true);
 									
-	world.decadeCounter = 1;
+	world.yearCounter = 1;
 	world.externalTick = function () {
-		if (this.info.round <= 10 && this.info.round == this.decadeCounter) {
+		if (this.info.year <= 10 && this.info.year == this.yearCounter) {
 			var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-			var span = document.querySelector("#critter-decade-"+this.decadeCounter);
+			var span = document.querySelector("#critter-decade-"+this.yearCounter);
 			span.textContent = chromaColorToHueName(avgColor);
 			span.style.setProperty('color', avgColor.hex());
-			if (this.info.round > 1) {
+			if (this.info.year > 1) {
 				span = document.querySelector("#last-year");
-				span.textContent = this.decadeCounter.toString();
+				span.textContent = this.yearCounter.toString();
 				var spans = document.querySelectorAll("#critter-decade-end-critter");
 				for (var i = 0; i < spans.length; i++) {
 					var span = spans[i];
@@ -436,7 +432,7 @@ function main () {
 															 this.bg.bounds.height/2.1);
 				}.bind(this), 1000);
 			}
-			this.decadeCounter++;
+			this.yearCounter++;
 		}
 		if (!this.before) {
 			this.before = document.querySelector("#selection-before").getContext('2d');
@@ -449,7 +445,7 @@ function main () {
 		}
 	}.bind(world);
 	world.externalInit = function () {
-		this.decadeCounter = 1;
+		this.yearCounter = 1;
 		for (var i = 1; i <= 10; i++) {
 			var span = document.querySelector("#critter-decade-"+i);
 			span.textContent = "???";
@@ -521,7 +517,6 @@ function main () {
 		this.after = null;
 	}.bind(world);
 	world.init();
-	world.tickOnce();
 	world.start();
 	interactives.push(world);
 

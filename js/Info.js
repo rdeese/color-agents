@@ -183,6 +183,7 @@ function Info (GLOBAL, bounds, hue) {
 	this.numMisses = 0;
 	this.lifetimeScore = 0;
 	this.round = 1;
+	this.year = 1;
 
 	this.drawInfo();
 
@@ -240,12 +241,14 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 									}, [], this);
 	} else if (this.GLOBAL.MODE == 'observer') {
 		return;
+		/*
 		if (didHit) {
 			this.setTarget(agent);
 		} else {
 			this.setTarget(null);
 		}
 		this.GLOBAL.DIRTY = true;
+		*/
 	}
 }
 
@@ -255,11 +258,16 @@ infoPrototype.nextMode = function () {
 		this.setPredatorMode();
 	} else if (this.GLOBAL.MODE == 'predator') {
 		this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.OBSERVER_PERIOD;
+		this.year += 1;
 		// reset lifetime score if hits from last Pred round are below threshold
 		if (this.numHits < this.GLOBAL.HIT_THRESHOLD) {
 			this.lifetimeScore = 0;
+			var evt = new createjs.Event('resetRound', true);
+			this.dispatchEvent(evt);
 		} else {
 			this.round += 1;
+			var evt = new createjs.Event('nextRound', true);
+			this.dispatchEvent(evt);
 		}
 		this.numHits = 0;
 		this.setObserverMode();
@@ -356,7 +364,7 @@ infoPrototype.drawToggleMode = function () {
 	this.toggleModeBg.graphics.beginFill(this.lightColor.hex());
 	this.toggleModeBg.graphics.drawRoundRect(0,0,this.toggleMode.width,
 																						this.togglePause.height,20);
-	this.toggleModeLabel.text = "Year " + this.round;
+	this.toggleModeLabel.text = "Year " + this.year;
 	/*
 	if (this.GLOBAL.MODE == 'observer') {
 		this.toggleModeLabel.text = "Observer";
