@@ -126,9 +126,6 @@ agentPrototype.collide = function (other) {
 	var totalMass = this.mass + other.mass;
 	var collisionDepth = radii - vec2.distance(this.pos, other.pos);
 	if (collisionDepth > 0) {
-		//vec2.set(this.acc, 0, 0);
-		//vec2.set(other.acc, 0, 0);
-
 		vec2.subtract(this.velDiff, this.vel, other.vel);
 		vec2.subtract(this.posDiff, this.pos, other.pos);
 

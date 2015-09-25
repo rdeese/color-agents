@@ -171,7 +171,7 @@ function main () {
 	global.NUM_AGENTS = 2; // two critters!
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
-	global.INIT_AGENTS_VARIATION = 120;
+	global.INIT_AGENTS_VARIATION = 160;
 	global.FATHER_MUTATION_PROB = 0;
 	global.MOTHER_MUTATION_PROB = 0;
 	// autoplay
@@ -226,7 +226,7 @@ function main () {
 	global.INIT_AGENTS_VARIATION = 0;
 	global.FATHER_MUTATION_PROB = 1;
 	global.MOTHER_MUTATION_PROB = 0;
-	global.MUTATION_RATE = 100;
+	global.MUTATION_RATE = 120;
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
@@ -407,7 +407,7 @@ function main () {
 	global.INIT_AGENTS_VARIATION = 50;
 	
 	world = new World(global, canvas,
-										GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)], true)
+										GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)], true);
 									
 	world.decadeCounter = 1;
 	world.externalTick = function () {

@@ -22,7 +22,7 @@ World.prototype = {
 																						 this.stage.canvas.height-this.GLOBAL.WORLD_OFFSET_Y);
 
 		// COLOR SETUP
-		if (this.hue) {
+		if (this.hue != null) {
 			if (this.splitDiff) {
 				if (random.number() < 0.5) {
 					this.agentStartCol = this.hue + this.GLOBAL.INITIAL_AGENT_OFFSET/3;
