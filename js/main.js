@@ -453,7 +453,7 @@ function main () {
 		for (var i = 1; i <= 10; i++) {
 			var span = document.querySelector("#critter-decade-"+i);
 			span.textContent = "???";
-			span.style.setProperty('color', "#000000");
+			span.style.setProperty('color', chroma.hcl(0, 0, this.GLOBAL.LIGHTNESS).hex());
 		}
 		var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
 		var envColor = this.bg.color;
@@ -500,7 +500,7 @@ function main () {
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
 			span.textContent = "???";
-			span.style.setProperty('color', "#000000");
+			span.style.setProperty('color', chroma.hcl(0, 0, this.GLOBAL.LIGHTNESS).hex());
 		}
 		var spans = document.querySelectorAll("#last-year");
 		for (var i = 0; i < spans.length; i++) {
