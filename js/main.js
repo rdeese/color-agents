@@ -6,8 +6,8 @@ function main () {
 		INIT_AGENTS_VARIATION: 20,
 		NUM_PLANTS: 500,
 		DEATH_THRESHHOLD: 800,
-		DEATH_DURATION: 2000, // milliseconds
-		EATEN_DURATION: 2000, // milliseconds
+		DEATH_DURATION: 4000, // milliseconds
+		EATEN_DURATION: 4000, // milliseconds
 		COLLISION_PENALTY: 8,
 
 		WORLD_SPEED: 10, // virtual milliseconds per real millisecond

@@ -393,6 +393,7 @@ agentPrototype.isDead = function () {
 								this.GLOBAL.COLLISION_PENALTY*this.collisionCount;
 		if (score > this.GLOBAL.DEATH_THRESHHOLD) {
 			this.isDying = true;
+			this.isEaten = true;
 			this.deathTime = this.GLOBAL.TIME;
 		}
 		return false;
