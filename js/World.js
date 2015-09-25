@@ -1,18 +1,8 @@
 var World = function (GLOBAL, canvas, hue, splitDiff) {
 	this.GLOBAL = GLOBAL;
 	this.stage = new createjs.Stage(canvas);
-	if (splitDiff) {
-		if (random.number() < 0.5) {
-			this.agentStartCol = hue + this.GLOBAL.INITIAL_AGENT_OFFSET/3;
-			this.envHue = hue - 2*this.GLOBAL.INITIAL_AGENT_OFFSET/3;
-		} else {
-			this.agentStartCol = hue - this.GLOBAL.INITIAL_AGENT_OFFSET/3;
-			this.envHue = hue + 2*this.GLOBAL.INITIAL_AGENT_OFFSET/3;
-		}
-	} else {
-		this.envHue = hue;
-		this.agentStartCol = hue + this.GLOBAL.INITIAL_AGENT_OFFSET*(random.integer(2)*2-1);
-	}
+	this.hue = hue;
+	this.splitDiff = splitDiff;
 };
 
 World.prototype = {
@@ -30,6 +20,28 @@ World.prototype = {
 		var worldBounds = new createjs.Rectangle(0, 0,
 																						 this.stage.canvas.width,
 																						 this.stage.canvas.height-this.GLOBAL.WORLD_OFFSET_Y);
+
+		// COLOR SETUP
+		if (this.hue) {
+			if (this.splitDiff) {
+				if (random.number() < 0.5) {
+					this.agentStartCol = this.hue + this.GLOBAL.INITIAL_AGENT_OFFSET/3;
+					this.envHue = this.hue - 2*this.GLOBAL.INITIAL_AGENT_OFFSET/3;
+				} else {
+					this.agentStartCol = this.hue - this.GLOBAL.INITIAL_AGENT_OFFSET/3;
+					this.envHue = this.hue + 2*this.GLOBAL.INITIAL_AGENT_OFFSET/3;
+				}
+			} else {
+				this.envHue = this.hue;
+				this.agentStartCol = this.envHue +
+														 this.GLOBAL.INITIAL_AGENT_OFFSET*(random.integer(2)*2-1);
+			}
+		} else {
+			this.envHue = random.number()*360;
+			this.agentStartCol = this.envHue +
+													 this.GLOBAL.INITIAL_AGENT_OFFSET*(random.integer(2)*2-1);
+		}
+
 		// QuadTree setup
 		// give it the world bounds, false means shapes not points, and a depth of 7
 		this.tree = new QuadTree(worldBounds, false, 7);

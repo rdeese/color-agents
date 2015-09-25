@@ -133,7 +133,7 @@ function main () {
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas, random.number()*360);
+	world = new World(global, canvas);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
@@ -176,7 +176,7 @@ function main () {
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas, random.number()*360);
+	world = new World(global, canvas);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
@@ -229,7 +229,7 @@ function main () {
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas, random.number()*360);
+	world = new World(global, canvas);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
@@ -277,7 +277,7 @@ function main () {
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.NUM_AGENTS = 4;
 	global.INITIAL_AGENT_OFFSET = 100; // same color as controls
-	world = new World(global, canvas, random.number()*360);
+	world = new World(global, canvas);
 	world.externalInit = function () {
 		//this.stage.removeChild(this.bg); // hide the background
 		this.info.removeChild(this.info.toggleMode);
@@ -408,32 +408,34 @@ function main () {
 	world = new World(global, canvas,
 										GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)], true)
 									
-	var decadeCounter = 1;
+	world.decadeCounter = 1;
 	world.externalTick = function () {
-		if (this.info.round <= 10 && this.info.round == decadeCounter) {
+		if (this.info.round <= 10 && this.info.round == this.decadeCounter) {
 			var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-			var span = document.querySelector("#critter-decade-"+decadeCounter);
+			var span = document.querySelector("#critter-decade-"+this.decadeCounter);
 			span.textContent = chromaColorToHueName(avgColor);
 			span.style.setProperty('color', avgColor.hex());
-			span = document.querySelector("#last-year");
-			span.textContent = decadeCounter.toString();
-			decadeCounter++;
-			var spans = document.querySelectorAll("#critter-decade-end-critter");
-			for (var i = 0; i < spans.length; i++) {
-				var span = spans[i];
-				var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-				span.textContent = chromaColorToHueName(avgColor);
-				span.style.setProperty('color', avgColor.hex());
+			if (this.info.round > 1) {
+				span = document.querySelector("#last-year");
+				span.textContent = this.decadeCounter.toString();
+				var spans = document.querySelectorAll("#critter-decade-end-critter");
+				for (var i = 0; i < spans.length; i++) {
+					var span = spans[i];
+					var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
+					span.textContent = chromaColorToHueName(avgColor);
+					span.style.setProperty('color', avgColor.hex());
+				}
+				setTimeout(function () {
+					this.after = document.querySelector("#selection-after").getContext('2d');
+					this.after.canvas.width = this.bg.bounds.width/2.105;
+					this.after.canvas.height = this.bg.bounds.height/2.105;
+					this.after.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
+															 this.bg.bounds.width, this.bg.bounds.height,
+															 0, 0, this.bg.bounds.width/2.105,
+															 this.bg.bounds.height/2.105);
+				}.bind(this), 1000);
 			}
-			setTimeout(function () {
-				this.after = document.querySelector("#selection-after").getContext('2d');
-				this.after.canvas.width = this.bg.bounds.width/2.105;
-				this.after.canvas.height = this.bg.bounds.height/2.105;
-				this.after.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
-														 this.bg.bounds.width, this.bg.bounds.height,
-														 0, 0, this.bg.bounds.width/2.105,
-														 this.bg.bounds.height/2.105);
-			}.bind(this), 1000);
+			this.decadeCounter++;
 		}
 		if (!this.before) {
 			this.before = document.querySelector("#selection-before").getContext('2d');
@@ -446,6 +448,7 @@ function main () {
 		}
 	}.bind(world);
 	world.externalInit = function () {
+		this.decadeCounter = 1;
 		for (var i = 1; i <= 10; i++) {
 			var span = document.querySelector("#critter-decade-"+i);
 			span.textContent = "???";
@@ -498,15 +501,24 @@ function main () {
 			span.textContent = "???";
 			span.style.setProperty('color', "#000000");
 		}
+		var spans = document.querySelectorAll("#last-year");
+		for (var i = 0; i < spans.length; i++) {
+			var span = spans[i];
+			span.textContent = "???";
+		}
 		if (this.before) {
-			this.before.clearRect(0, 0, this.before.width, this.before.height);
+			this.before.clearRect(0, 0, this.before.canvas.width,
+														this.before.canvas.height);
+			console.log("clearing rect");
 		}
 		this.before = null;
 		if (this.after) {
-			this.after.clearRect(0, 0, this.after.width, this.after.height);
+			this.after.clearRect(0, 0, this.after.canvas.width,
+													 this.after.canvas.height);
+			console.log("clearing after rect");
 		}
 		this.after = null;
-	}
+	}.bind(world);
 	world.init();
 	world.tickOnce();
 	world.start();
