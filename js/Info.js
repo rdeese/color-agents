@@ -165,7 +165,6 @@ function Info (GLOBAL, bounds, hue) {
 
 	this.togglePause.on('click', function (e) {
 		this.GLOBAL.PAUSED = !this.GLOBAL.PAUSED;
-		this.worldSpeedSlider.setEnabled(!this.GLOBAL.PAUSED && this.GLOBAL.MODE == 'observer');
 		this.GLOBAL.DIRTY = true;
 	}, this);
 
@@ -286,7 +285,7 @@ infoPrototype.setObserverMode = function () {
 									this.overlayContainer.removeAllChildren();
 								}, [], this);
 	this.toggleModeTime.alpha = 1;
-	this.worldSpeedSlider.setEnabled(true && !this.GLOBAL.PAUSED);
+	this.worldSpeedSlider.setEnabled(true);
 	this.toggleMode.mouseEnabled = false;
 	this.setTarget(null); 
 	this.drawInfo();
@@ -296,7 +295,7 @@ infoPrototype.setObserverMode = function () {
 infoPrototype.setPredatorMode = function () {
 	this.instructions.text = "Eat critters by clicking on them " +
 													 "to increase your health.";
-	this.worldSpeedSlider.setEnabled(false && !this.GLOBAL.PAUSED);
+	this.worldSpeedSlider.setEnabled(false);
 	this.GLOBAL.MODE = 'predator';
 	createjs.Tween.get(this.GLOBAL, {
 																							ignoreGlobalPause: true,
@@ -325,7 +324,7 @@ infoPrototype.setAutoPredatorMode = function () {
 																							override: true
 																						}) 
 								.to({ value: this.worldSpeedSlider.userVal }, this.GLOBAL.MODE_SWITCH_SPEED)
-	this.worldSpeedSlider.setEnabled(true && !this.GLOBAL.PAUSED);
+	this.worldSpeedSlider.setEnabled(true);
 	this.setTarget(null); 
 	this.drawInfo();
 }

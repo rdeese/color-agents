@@ -123,8 +123,8 @@ function main () {
 
 	// single critter interactive
 	canvas = document.querySelector("#single-critter");
-	canvas.width = Math.min(600, Math.max(window.innerWidth - 20, 200));
-	canvas.height = Math.min(200, Math.max(window.innerHeight - 20, 100));
+	canvas.width = 600;
+	canvas.height = 200;
 	global = globalClone();
 	global.NUM_AGENTS = 1; // just one critter
 	global.DEATH_THRESHHOLD = 200; // lower death threshhold so things happen faster
@@ -165,8 +165,8 @@ function main () {
 
 	// critter family interactive
 	canvas = document.querySelector("#critter-family");
-	canvas.width = Math.min(300, Math.max(window.innerWidth - 20, 200));
-	canvas.height = Math.min(200, Math.max(window.innerHeight - 20, 100));
+	canvas.width = 300;
+	canvas.height = 200;
 	global = globalClone();
 	global.NUM_AGENTS = 2; // two critters!
 	global.OBSERVER_PERIOD = Infinity; // no predator period
@@ -217,8 +217,8 @@ function main () {
 
 	// critter family interactive with MUTATION
 	canvas = document.querySelector("#critter-m-family");
-	canvas.width = Math.min(300, Math.max(window.innerWidth - 20, 200));
-	canvas.height = Math.min(200, Math.max(window.innerHeight - 20, 100));
+	canvas.width = 300;
+	canvas.height = 200;
 	global = globalClone();
 	global.NUM_AGENTS = 2; // two critters!
 	global.OBSERVER_PERIOD = Infinity; // no predator period
@@ -305,7 +305,7 @@ function main () {
 	var hue = random.number()*360;
 	// LEFT ONE
 	canvas = document.querySelector("#critter-hunt-left");
-	canvas.width = 480;
+	canvas.width = 530;
 	canvas.height = 600;
 	global = globalClone();
 	global.OBSERVER_PERIOD = Infinity; // no time-based change
@@ -353,7 +353,7 @@ function main () {
 	interactives.push(world);
 	// RIGHT ONE
 	canvas = document.querySelector("#critter-hunt-right");
-	canvas.width = 480;
+	canvas.width = 530;
 	canvas.height = 600;
 	global = globalClone();
 	global.OBSERVER_PERIOD = Infinity; // no time-based change
@@ -401,7 +401,7 @@ function main () {
 
 	// sandbox
 	canvas = document.querySelector("#selection");
-	canvas.width = 1000;
+	canvas.width = 1100;
 	canvas.height = 800;
 	global = globalClone();
 	global.INIT_AGENTS_VARIATION = 50;
@@ -428,24 +428,24 @@ function main () {
 				}
 				setTimeout(function () {
 					this.after = document.querySelector("#selection-after").getContext('2d');
-					this.after.canvas.width = this.bg.bounds.width/2.105;
-					this.after.canvas.height = this.bg.bounds.height/2.105;
+					this.after.canvas.width = this.bg.bounds.width/2.1;
+					this.after.canvas.height = this.bg.bounds.height/2.1;
 					this.after.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
 															 this.bg.bounds.width, this.bg.bounds.height,
-															 0, 0, this.bg.bounds.width/2.105,
-															 this.bg.bounds.height/2.105);
+															 0, 0, this.bg.bounds.width/2.1,
+															 this.bg.bounds.height/2.1);
 				}.bind(this), 1000);
 			}
 			this.decadeCounter++;
 		}
 		if (!this.before) {
 			this.before = document.querySelector("#selection-before").getContext('2d');
-			this.before.canvas.width = this.bg.bounds.width/2.105;
-			this.before.canvas.height = this.bg.bounds.height/2.105;
+			this.before.canvas.width = this.bg.bounds.width/2.1;
+			this.before.canvas.height = this.bg.bounds.height/2.1;
 			this.before.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
 													  this.bg.bounds.width, this.bg.bounds.height,
-													  0, 0, this.bg.bounds.width/2.105,
-														this.bg.bounds.height/2.105);
+													  0, 0, this.bg.bounds.width/2.1,
+														this.bg.bounds.height/2.1);
 		}
 	}.bind(world);
 	world.externalInit = function () {
