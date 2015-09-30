@@ -257,14 +257,14 @@ infoPrototype.nextMode = function () {
 		this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.PREDATOR_PERIOD;
 		this.setPredatorMode();
 	} else if (this.GLOBAL.MODE == 'predator') {
-		this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.OBSERVER_PERIOD;
-		this.year += 1;
 		// reset lifetime score if hits from last Pred round are below threshold
 		if (this.numHits < this.GLOBAL.HIT_THRESHOLD) {
 			this.lifetimeScore = 0;
 			var evt = new createjs.Event('resetRound', true);
 			this.dispatchEvent(evt);
 		} else {
+			this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.OBSERVER_PERIOD;
+			this.year += 1;
 			this.round += 1;
 			var evt = new createjs.Event('nextRound', true);
 			this.dispatchEvent(evt);

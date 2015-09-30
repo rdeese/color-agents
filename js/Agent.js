@@ -1,48 +1,77 @@
 // constructor
-function Agent(GLOBAL, bounds, radius, position, velocity, genome) {
+function Agent(GLOBAL, bounds, radius, position, velocity, genome, encoding) {
 	// call inherited shape constructor
 	this.Container_constructor();
 
 	this.GLOBAL = GLOBAL;
 
-	this.snapToPixel = true;
+	// copy the genome, don't just get a reference to the array
+	this.genome = [[0], [0]];
+	this.genome[0][0] = genome[0][0];
+	this.genome[1][0] = genome[1][0];
+
 	this.bounds = bounds;
 	this.radius = radius-radius*(random.number()/5);
-	this.eyeOffset = this.radius*0.4;
 	this.vel = vec2.clone(velocity);
 	this.pos = vec2.clone(position);
-	this.acc = vec2.fromValues(0,0);
-	if (this.vel[0] == 0 && this.vel[1] == 0) {
-		this.heading = random.number()*360;
+	
+	this.init(encoding);
+}
+
+var agentPrototype = createjs.extend(Agent, createjs.Container);
+
+agentPrototype.init = function (encoding) {
+	if (encoding != null) {
+		this.acc = vec2.clone(encoding.acc);
+		this.heading = encoding.heading;
+		this.birthTime = encoding.birthTime;
+		this.isAdult = encoding.isAdult;
+		this.collisionCount = encoding.collisionCount;
+		this.wasColliding = encoding.wasColliding;
+		this.isColliding = encoding.isColliding;
+		this.wasPregnant = encoding.wasPregnant;
+		this.isPregnant = encoding.isPregnant;
+		this.isDying = encoding.isDying;
+		this.isEaten = encoding.isEaten;
+		this.isHiding = encoding.isHiding;
+		if (encoding.childGenome) {
+			this.childGenome = [[encoding.childGenome[0][0]], [0]];
+		}
+		this.matingTime = encoding.matingTime;
+		this.deathTime = encoding.deathTime;
 	} else {
-		this.heading = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
+		this.acc = vec2.fromValues(0,0);
+		if (this.vel[0] == 0 && this.vel[1] == 0) {
+			this.heading = random.number()*360;
+		} else {
+			this.heading = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
+		}
+		this.birthTime = this.GLOBAL.TIME;
+		this.isAdult = false;
+		this.collisionCount = 0;
+		this.wasColliding = false;
+		this.isColliding = false;
+		this.wasPregnant = false;
+		this.isPregnant = false;
+		this.isDying = false;
+		this.isEaten = false;
+		this.isHiding = false;
+		this.deathTime = null;
+		this.matingTime = null;
+		this.childGenome = null;
 	}
+
+	this.snapToPixel = true;
 
 	// set createjs position & rotation vars based on internals
 	this.rotation = this.heading;
 	this.x = this.pos[0];
 	this.y = this.pos[1];
-	
-	// copy the genome, don't just get a reference to the array
-	// which will be deleted by the parent
-	this.genome = [[0], [0]];
-	this.genome[0][0] = genome[0][0];
-	this.genome[1][0] = genome[1][0];
-
-	this.birthTime = this.GLOBAL.TIME;
-	this.isAdult = false;
-	this.collisionCount = 0;
+	this.eyeOffset = this.radius*0.4;
 	this.height = this.width = this.radius * 2;
+
 	this.cached = false;
-	this.wasColliding = false;
-	this.isColliding = false;
-	this.wasPregnant = false;
-	this.isPregnant = false;
-	this.isDying = false;
-	this.isEaten = false;
-	this.isHiding = false;
 	this.isTweening = false;
-	this.collisionStart = null;
 	
 	this.expressPhenotype();
 	this.grow(this.birthTime);
@@ -69,7 +98,42 @@ function Agent(GLOBAL, bounds, radius, position, velocity, genome) {
 	});
 }
 
-var agentPrototype = createjs.extend(Agent, createjs.Container);
+agentPrototype.encode = function (a) {
+	var out = {};
+	out.GLOBAL = a.GLOBAL;
+	out.bounds = a.bounds;
+	out.pos = vec2.clone(a.pos);
+	out.vel = vec2.clone(a.vel);
+	out.acc = vec2.clone(a.acc);
+	out.x = a.x;
+	out.y = a.y;
+	out.heading = a.heading;
+	out.rotation = a.rotation;
+	out.radius = a.radius;
+	out.genome = [[a.genome[0][0]], [0]];
+	out.birthTime = a.birthTime;
+	out.isAdult = a.isAdult;
+	out.collisionCount = a.collisionCount;
+	out.wasColliding = a.wasColliding;
+	out.isColliding = a.isColliding;
+	out.wasPregnant = a.wasPregnant;
+	out.isPregnant = a.isPregnant;
+	out.isDying = a.isDying;
+	out.isEaten = a.isEaten;
+	out.isHiding = a.isHiding;
+	if (a.childGenome) {
+		out.childGenome = [[a.childGenome[0][0]], [0]];
+	}
+	out.matingTime = a.matingTime;
+	out.deathTime = a.deathTime;
+	return out;
+}
+
+agentPrototype.agentFromEncoding = function (encoding) {
+	return new Agent(encoding.GLOBAL, encoding.bounds, encoding.radius,
+									 encoding.pos, encoding.vel,
+									 encoding.genome, encoding);
+}
 
 // turns genotype into phenotype
 agentPrototype.expressPhenotype = function () {

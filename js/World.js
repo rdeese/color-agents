@@ -63,15 +63,13 @@ World.prototype = {
 			this.info.handleWorldClick(e.mouseEvent, e.onAgent, e.agent);
 		}, this);
 
-		/*
 		this.stage.on("nextRound", function () {
 			this.saveState();
-		});
+		}, this);
 
 		this.stage.on("resetRound", function () {
 			this.restoreState();
-		});
-		*/
+		}, this);
 
 		// create info
 		this.info = new Info(this.GLOBAL, infoBounds, this.envHue);
@@ -87,19 +85,25 @@ World.prototype = {
 		}
 
 		this.tickOnce();
-		//this.saveState();
+		this.saveState();
 	},
 
-	// FIXME doesn't work
 	saveState: function () {
 		this.savedTime = this.GLOBAL.TIME;
-		this.savedAgents = clone(this.agents);
+		this.encodedAgents = [];
+		for (var i = 0; i < this.agents.length; i++) {
+			this.encodedAgents.push(Agent.prototype.encode(this.agents[i]));
+		}
 	},
 
-	// FIXME doesn't work
 	restoreState: function () {
 		this.GLOBAL.TIME = this.savedTime;
-		this.agents = this.savedAgents;
+		this.agentContainer.removeAllChildren();
+		this.agents = this.encodedAgents.map(Agent.prototype.agentFromEncoding);
+		for (var i = 0; i < this.agents.length; i++) {
+			this.agentContainer.addChild(this.agents[i]);
+		}
+		this.updateTree();
 	},
 
 	tickOnce: function () {
