@@ -1,8 +1,9 @@
-function Info (GLOBAL, bounds, hue) {
+function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.Container_constructor();
 	this.GLOBAL = GLOBAL;
 	this.target = null;
-	this.bounds = bounds;
+	this.bounds = infoBounds;
+	this.worldBounds = worldBounds;
 
 	this.lightColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
 	this.darkColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS).darken(-5);
@@ -260,12 +261,32 @@ infoPrototype.nextMode = function () {
 		// reset lifetime score if hits from last Pred round are below threshold
 		if (this.numHits < this.GLOBAL.HIT_THRESHOLD) {
 			this.lifetimeScore = 0;
+			
+			var overlay = new createjs.Text("TRY AGAIN",
+																			"bold 150px "+this.GLOBAL.FONT,
+																			this.overlayHitColorHex);
+			overlay.alpha = 0.7;
+			overlay.textAlign = "center";
+			overlay.x = this.worldBounds.width/2;
+			overlay.y = this.worldBounds.height/2-100;
+			this.overlayContainer.addChild(overlay);
+
 			var evt = new createjs.Event('resetRound', true);
 			this.dispatchEvent(evt);
 		} else {
 			this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.OBSERVER_PERIOD;
 			this.year += 1;
 			this.round += 1;
+			
+			var overlay = new createjs.Text("YEAR "+this.year,
+																			"bold 200px "+this.GLOBAL.FONT,
+																			this.overlayHitColorHex);
+			overlay.alpha = 0.7;
+			overlay.textAlign = "center";
+			overlay.x = this.bounds.width/2;
+			overlay.y = this.bounds.height + 100;
+			this.overlayContainer.addChild(overlay);
+
 			var evt = new createjs.Event('nextRound', true);
 			this.dispatchEvent(evt);
 		}
@@ -288,7 +309,7 @@ infoPrototype.setObserverMode = function () {
 																							ignoreGlobalPause: true,
 																							override: true
 																						})
-								.to({ alpha: 0 }, 500)
+								.to({ alpha: 0 }, 2000)
 								.call(function () {
 									this.overlayContainer.removeAllChildren();
 								}, [], this);

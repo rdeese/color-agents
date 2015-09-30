@@ -72,7 +72,7 @@ World.prototype = {
 		}, this);
 
 		// create info
-		this.info = new Info(this.GLOBAL, infoBounds, this.envHue);
+		this.info = new Info(this.GLOBAL, bounds, infoBounds, this.envHue);
 		this.stage.addChild(this.info);
 
 		// handle reset from UI
