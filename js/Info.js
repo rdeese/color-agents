@@ -268,7 +268,7 @@ infoPrototype.nextMode = function () {
 			overlay.alpha = 0.7;
 			overlay.textAlign = "center";
 			overlay.x = this.worldBounds.width/2;
-			overlay.y = this.worldBounds.height/2-100;
+			overlay.y = this.worldBounds.height/2-75;
 			this.overlayContainer.addChild(overlay);
 
 			var evt = new createjs.Event('resetRound', true);

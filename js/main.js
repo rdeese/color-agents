@@ -17,7 +17,7 @@ function main () {
 		TIME: 0, // starts at 0
 		DELTA: 0, // just in case
 
-		MATING_PROB: 0.2,
+		MATING_PROB: 0.25,
 		MUTATION_RATE: 100,
 		MOTHER_MUTATION_PROB: 0.1,
 		FATHER_MUTATION_PROB: 0.1,
@@ -339,11 +339,9 @@ function main () {
 	world.init();
 	world.stage.enableMouseOver();
 	world.stage.on("rollover", function (e) {
-		console.log("mouseover");
 		this.info.setPredatorMode();
 	}, world);
 	world.stage.on("rollout", function (e) {
-		console.log("mouseout");
 		this.info.setObserverMode();
 	}, world);
 	world.start();
@@ -385,11 +383,9 @@ function main () {
 	world.init();
 	world.stage.enableMouseOver();
 	world.stage.on("rollover", function (e) {
-		console.log("mouseover");
 		this.info.setPredatorMode();
 	}, world);
 	world.stage.on("rollout", function (e) {
-		console.log("mouseout");
 		this.info.setObserverMode();
 	}, world);
 	world.start();
@@ -430,7 +426,7 @@ function main () {
 															 this.bg.bounds.width, this.bg.bounds.height,
 															 0, 0, this.bg.bounds.width/2.1,
 															 this.bg.bounds.height/2.1);
-				}.bind(this), 1000);
+				}.bind(this), 2500);
 			}
 			this.yearCounter++;
 		}
@@ -506,13 +502,11 @@ function main () {
 		if (this.before) {
 			this.before.clearRect(0, 0, this.before.canvas.width,
 														this.before.canvas.height);
-			console.log("clearing rect");
 		}
 		this.before = null;
 		if (this.after) {
 			this.after.clearRect(0, 0, this.after.canvas.width,
 													 this.after.canvas.height);
-			console.log("clearing after rect");
 		}
 		this.after = null;
 	}.bind(world);
