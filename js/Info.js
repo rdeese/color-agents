@@ -268,7 +268,7 @@ infoPrototype.nextMode = function () {
 			overlay.alpha = 0.7;
 			overlay.textAlign = "center";
 			overlay.x = this.worldBounds.width/2;
-			overlay.y = this.worldBounds.height/2-100;
+			overlay.y = this.worldBounds.height/2-75;
 			this.overlayContainer.addChild(overlay);
 
 			var evt = new createjs.Event('resetRound', true);
@@ -279,12 +279,12 @@ infoPrototype.nextMode = function () {
 			this.round += 1;
 			
 			var overlay = new createjs.Text("YEAR "+this.year,
-																			"bold 200px "+this.GLOBAL.FONT,
+																			"bold 150px "+this.GLOBAL.FONT,
 																			this.overlayHitColorHex);
 			overlay.alpha = 0.7;
 			overlay.textAlign = "center";
 			overlay.x = this.bounds.width/2;
-			overlay.y = this.bounds.height + 100;
+			overlay.y = this.worldBounds.height/2-75;
 			this.overlayContainer.addChild(overlay);
 
 			var evt = new createjs.Event('nextRound', true);
