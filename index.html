@@ -10,7 +10,6 @@
 		<script type="text/javascript" src="js/lib/QuadTree.js"></script>
 		<script type="text/javascript" src="js/lib/gl-matrix.js"></script>
 		<script type="text/javascript" src="js/lib/Slider.js"></script>
-		<script type="text/javascript" src="js/lib/clone.js"></script>
 		<script type="text/javascript" src="js/Environment.js"></script>
 		<script type="text/javascript" src="js/Plant.js"></script>
 		<script type="text/javascript" src="js/Agent.js"></script>
@@ -66,6 +65,9 @@
 				font-weight: bold;
 				text-align: right;
 				content: counter(item) ".";
+			}
+			ul {
+				font-size: 24px;
 			}
 			ol > li * {
 				text-indent: 0;
@@ -319,18 +321,18 @@
 			<b><span id="critter-decade-start-critter">???</span></b>
 			critters. Now, the criters are mostly
 			<b><span id="critter-decade-end-critter">???</span></b>,
-			which is closer to the environment. How can this be? Let's think
+			which is closer to the environment. How can this be? Remember
+			that a critter can't change its own color! Let's think
 			about what we already know:
 			</p>
 			<ol>
 				<li>
-					Most of the time,
+					Most of the time, critters get their color from their parents.
+				</li>
+				<li>
+					Sometimes,
 					<b><span id="critter-decade-start-critter">???</span></b>
-					critters have 
-					<b><span id="critter-decade-start-critter">???</span></b>
-					children. But sometimes,
-					<b><span id="critter-decade-start-critter">???</span></b>
-					critters have 
+					critters have surprisingly
 					<b><span id="critter-decade-further-m-critter">???</span></b>
 					or
 					<b><span id="critter-decade-closer-m-critter">???</span></b>
@@ -344,31 +346,83 @@
 					<b><span id="critter-decade-start-critter">???</span></b>
 					critters, and
 					<b><span id="critter-decade-further-m-critter">???</span></b>
-					critters are especially easy to see.
-				</li>
-				<li>
-					You hunted more 
-					<b><span id="critter-decade-start-critter">???</span></b>
-					and 
-					<b><span id="critter-decade-further-m-critter">???</span></b>
-					critters than
+					critters are especially easy to see. You didn't hunt
+					many
 					<b><span id="critter-decade-closer-m-critter">???</span></b>
-					critters, because of how well you could see each type.
+					critters, because they were the hardest to see.
 				</li>
 			</ol>
 			<p class="">
-				Each time you hunted, more 
+				Each year after you hunted, more 
 				<b><span id="critter-decade-closer-m-critter">???</span></b>
-				critters were left alive. The children of the
+				critters were left alive. They passed their
+				color to their children, who were a little more 
 				<b><span id="critter-decade-closer-m-critter">???</span></b>
-				critters were more
+				than last year's critters. Getting more
 				<b><span id="critter-decade-closer-m-critter">???</span></b>
-				than the previous year's children. We started with
+				each year, the critters went from mostly
 				<b><span id="critter-decade-start-critter">???</span></b>
-				critters but over time, the critters in this 
-				<b><span id="critter-decade-env">???</span></b>
-				environment became mostly
+				to mostly
 				<b><span id="critter-decade-end-critter">???</span></b>.
+			</p>
+		</section>
+		<section class="centered vspace">
+			<h3 class="nobottommargin">
+				What's important?
+			</h3>
+			<p class="notopmargin">
+				Now we understand how the critters changed color.
+				It happened because of three ways that color behaves
+				in critters:
+			</p>
+			<ol>
+				<li>Color passes from parent to child.</li>
+				<li>Color of children is sometimes surprising.</li>
+				<li>Color affects how long a critter will probably live.</li>
+			</ol>
+			<p>
+				This is really important! If these three facts are true for
+				any part of any living thing, then that part will change
+				in the same way that the critters changed color. It could be
+				size or shape, strength or speed, anything at all!
+			</p>
+		</section>
+		<section class="centered vspace">
+			<h3 class="nobottommargin">
+				Who chose the critters' color?
+			</h3>
+			<p class="notopmargin">
+				Was it the critters? Critters can't change their own color,
+				choose who they mate with, or choose what color their
+				children will be. Critters don't even know what
+				color their environment is!
+			</p>
+			<p>
+				Was it you? Maybe you think so. If you do, reset the
+				critters and play again. This time, try to change their
+				color to something other than the environment's color.
+				I don't think you'll succeed!
+			</p>
+		</section>
+		<section class="centered vspace">
+			<h3 class="nobottommargin">
+				Changes are part of nature.
+			</h3>
+			<p class="notopmargin">
+				For the critters in the wild, color
+			</p>
+			<ul>
+				<li>is passed from parent to child.</li>
+				<li>isn't always predictable.</li> 
+				<li>affects how long the critter will probably live.</li> 
+			</ul>
+			<p>
+				Because these three things are true, the color of the
+				critters changed naturally. First, unpredicable new colors of
+				critter were born. Some of them had colors that fit better
+				with the environment, and so you were less likely to hunt them.
+				Then, all the critters that you didn't hunt passed on their
+				colors to their children.
 			</p>
 		</section>
 	</body>
