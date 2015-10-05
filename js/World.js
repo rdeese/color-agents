@@ -99,7 +99,10 @@ World.prototype = {
 	restoreState: function () {
 		this.GLOBAL.TIME = this.savedTime;
 		this.agentContainer.removeAllChildren();
-		this.agents = this.encodedAgents.map(Agent.prototype.agentFromEncoding);
+		var self = this;
+		this.agents = this.encodedAgents.map(function (e) {
+			return Agent.prototype.agentFromEncoding(e, self.GLOBAL);
+		});
 		for (var i = 0; i < this.agents.length; i++) {
 			this.agentContainer.addChild(this.agents[i]);
 		}

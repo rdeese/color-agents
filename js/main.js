@@ -599,18 +599,21 @@ function main () {
 	global.INITIAL_AGENT_OFFSET = 0;
 	global.PAUSED = true;
 
-	selectionWorldAgentHue = world.agentStartCol;
-	world = new World(global, canvas, selectionWorldAgentHue);
+	var selectionWorldAgentHue = world.agentStartCol;
+	var selectionWorldHue = world.envHue;
+	world = new World(global, canvas, selectionWorldHue);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
+		
+		this.agentStartCol = selectionWorldAgentHue;
 
 		// create agents and replace old ones!
 		this.agentContainer.removeAllChildren();
 		this.agents = [];
 		var sample = poissonDiscSampler(canvas.width, canvas.height,
 																		2*this.GLOBAL.AGENT_RADIUS,
-																		canvas.height/2.2);
+																		canvas.height/2.5);
 		var father = new Agent(this.GLOBAL, this.bg.bounds,
 													 this.GLOBAL.AGENT_RADIUS,
 													 sample(), vec2.create(),
@@ -648,6 +651,57 @@ function main () {
 		// reset mother size
 		createjs.Tween.get(mother, { override: true })
 									.to({ scaleX: 1, scaleY: 1 }, 10);
+	}.bind(world);
+	world.init();
+	world.start();
+	interactives.push(world);
+
+	canvas = document.querySelector("#triptych-selection");
+	canvas.width = 600;
+	canvas.height = 600;
+	global = globalClone();
+	global.NUM_AGENTS = 70; // doesn't matter
+	global.OBSERVER_PERIOD = Infinity; // no predator period
+	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
+	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
+	global.INIT_AGENTS_VARIATION = 0;
+	global.INITIAL_AGENT_OFFSET = 0;
+	global.PAUSED = true;
+
+	var mutationWorldAgentsEncoding = world.encodedAgents;
+	var mutationWorldSavedTime = world.savedTime;
+	world = new World(global, canvas, selectionWorldHue);
+	world.externalInit = function () {
+		this.stage.removeChild(this.bg); // hide the background
+		this.stage.removeChild(this.info); // hide the info bar
+
+		this.agentStartCol = selectionWorldAgentHue;
+
+		// get agents from mutation pane
+		this.savedTime = mutationWorldSavedTime;
+		this.encodedAgents = mutationWorldAgentsEncoding;
+		this.restoreState();
+
+		// autopredator vars
+		var a;
+		var max = 0;
+		var target = null;
+		var diff = 0;
+		var safe = 20;
+
+		// kill a bunch of them with the autopredator
+		for (var i = 0; i < this.agents.length; i++) {
+			a = this.agents[i];
+			diff = a.genome[0][0]-this.envHue;
+			if (diff > 180) { diff -= 360; }
+			if (diff < -180) { diff += 360; }
+			diff = Math.abs(diff);
+			if (diff > safe && random.number() < 0.8) {
+				a.isEaten = true;
+			}
+		}
+
+		this.GLOBAL.TIME += this.GLOBAL.YOUTH_DURATION;
 	}.bind(world);
 	world.init();
 	world.start();

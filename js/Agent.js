@@ -22,6 +22,7 @@ var agentPrototype = createjs.extend(Agent, createjs.Container);
 
 agentPrototype.init = function (encoding) {
 	if (encoding != null) {
+		this.radius = encoding.radius;
 		this.acc = vec2.clone(encoding.acc);
 		this.heading = encoding.heading;
 		this.birthTime = encoding.birthTime;
@@ -100,7 +101,6 @@ agentPrototype.init = function (encoding) {
 
 agentPrototype.encode = function (a) {
 	var out = {};
-	out.GLOBAL = a.GLOBAL;
 	out.bounds = a.bounds;
 	out.pos = vec2.clone(a.pos);
 	out.vel = vec2.clone(a.vel);
@@ -129,8 +129,8 @@ agentPrototype.encode = function (a) {
 	return out;
 }
 
-agentPrototype.agentFromEncoding = function (encoding) {
-	return new Agent(encoding.GLOBAL, encoding.bounds, encoding.radius,
+agentPrototype.agentFromEncoding = function (encoding, global) {
+	return new Agent(global, encoding.bounds, encoding.radius,
 									 encoding.pos, encoding.vel,
 									 encoding.genome, encoding);
 }
