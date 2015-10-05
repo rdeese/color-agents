@@ -107,6 +107,77 @@ function main () {
 		return chroma.hcl((180/Math.PI)*Math.atan2(y,x), GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
 	}
 
+	var poissonDiscSampler = function (width, height, radius, boundRadius) {
+		var k = 30, // maximum number of samples before rejection
+				radius2 = radius * radius,
+				R = 3 * radius2,
+				cellSize = radius * Math.SQRT1_2,
+				gridWidth = Math.ceil(width / cellSize),
+				gridHeight = Math.ceil(height / cellSize),
+				grid = new Array(gridWidth * gridHeight),
+				queue = [],
+				queueSize = 0,
+				sampleSize = 0;
+
+		return function() {
+			if (!sampleSize) return sample(0.5 * width, 0.5 * height);
+
+			// Pick a random existing sample and remove it from the queue.
+			while (queueSize) {
+				var i = Math.random() * queueSize | 0,
+						s = queue[i];
+				
+				// Make a new candidate between [radius, 2 * radius] from the existing sample.
+				for (var j = 0; j < k; ++j) {
+					var a = 2 * Math.PI * Math.random(),
+							r = Math.sqrt(Math.random() * R + radius2),
+							x = s[0] + r * Math.cos(a),
+							y = s[1] + r * Math.sin(a);
+					
+					// Reject candidates that are outside the allowed extent,
+					// or closer than 2 * radius to any existing sample.
+					var dist = Math.pow(x-(0.5*width), 2)+Math.pow(y-0.5*height, 2); 
+					if (boundRadius*boundRadius > dist &&
+							far(x, y)) return sample(x, y);
+				}
+				
+				queue[i] = queue[--queueSize];
+				queue.length = queueSize;
+			}
+		};
+		
+		function far(x, y) {
+			var i = x / cellSize | 0,
+					j = y / cellSize | 0,
+					i0 = Math.max(i - 2, 0),
+					j0 = Math.max(j - 2, 0),
+					i1 = Math.min(i + 3, gridWidth),
+					j1 = Math.min(j + 3, gridHeight);
+			
+			for (j = j0; j < j1; ++j) {
+				var o = j * gridWidth;
+				for (i = i0; i < i1; ++i) {
+					if (s = grid[o + i]) {
+						var s,
+								dx = s[0] - x,
+								dy = s[1] - y;
+						if (dx * dx + dy * dy < radius2) return false;
+					}
+				}
+			}
+			
+			return true;
+		}
+		
+		function sample(x, y) {
+			var s = [x, y];
+			queue.push(s);
+			grid[gridWidth * (y / cellSize | 0) + (x / cellSize | 0)] = s;
+			++sampleSize;
+			++queueSize;
+			return s;
+		}
+	}
 
 	// CONFIGURE DEFAULTS
 	// dunno if static typed arrays will play nice so let's keep
@@ -449,10 +520,10 @@ function main () {
 		}
 		var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
 		var envColor = this.bg.color;
-		var lmColor = chroma.hcl(avgColor.hcl()[0]-0.75*this.GLOBAL.MUTATION_RATE,
+		var lmColor = chroma.hcl(avgColor.hcl()[0]-0.45*this.GLOBAL.MUTATION_RATE,
 														 this.GLOBAL.CHROMA,
 														 this.GLOBAL.LIGHTNESS);
-		var rmColor = chroma.hcl(avgColor.hcl()[0]+0.75*this.GLOBAL.MUTATION_RATE,
+		var rmColor = chroma.hcl(avgColor.hcl()[0]+0.45*this.GLOBAL.MUTATION_RATE,
 														 this.GLOBAL.CHROMA,
 														 this.GLOBAL.LIGHTNESS);
 		var closerMColor, furtherMColor;
@@ -509,6 +580,74 @@ function main () {
 													 this.after.canvas.height);
 		}
 		this.after = null;
+	}.bind(world);
+	world.init();
+	world.start();
+	interactives.push(world);
+
+	// TRIPTYCH OF MUTATION, SELECTION, INHERITANCE
+	// MUTATION
+	canvas = document.querySelector("#triptych-mutation");
+	canvas.width = 600;
+	canvas.height = 600;
+	global = globalClone();
+	global.NUM_AGENTS = 1; // doesn't matter
+	global.OBSERVER_PERIOD = Infinity; // no predator period
+	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
+	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
+	global.INIT_AGENTS_VARIATION = 0;
+	global.INITIAL_AGENT_OFFSET = 0;
+	global.PAUSED = true;
+
+	selectionWorldAgentHue = world.agentStartCol;
+	world = new World(global, canvas, selectionWorldAgentHue);
+	world.externalInit = function () {
+		this.stage.removeChild(this.bg); // hide the background
+		this.stage.removeChild(this.info); // hide the info bar
+
+		// create agents and replace old ones!
+		this.agentContainer.removeAllChildren();
+		this.agents = [];
+		var sample = poissonDiscSampler(canvas.width, canvas.height,
+																		2*this.GLOBAL.AGENT_RADIUS,
+																		canvas.height/2.2);
+		var father = new Agent(this.GLOBAL, this.bg.bounds,
+													 this.GLOBAL.AGENT_RADIUS,
+													 sample(), vec2.create(),
+													 [[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [0]]);
+		father.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
+		father.update({WILL_DRAW: true});
+		this.agentContainer.addChild(father);
+		this.agents.push(father);
+		var mother = new Agent(this.GLOBAL, this.bg.bounds,
+													 this.GLOBAL.AGENT_RADIUS,
+													 sample(), vec2.create(),
+													 [[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [0]]);
+		mother.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
+		mother.update({WILL_DRAW: true});
+		this.agentContainer.addChild(mother);
+		this.agents.push(mother);
+
+		// make children
+		for (var i = 0; i < 100; i++) {
+			var pos = sample();
+			if (!pos) { break; }
+
+			mother.motherChild(null, father.genome);
+			var a = new Agent(this.GLOBAL, this.bg.bounds,
+														 this.GLOBAL.AGENT_RADIUS,
+														 pos, vec2.create(),
+														 [[mother.childGenome[0][0]], [0]]);
+			mother.isPregnant = false;
+			mother.childGenome = null;
+			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION/2;
+			a.update({WILL_DRAW: true});
+			this.agentContainer.addChild(a);
+			this.agents.push(a);
+		}
+		// reset mother size
+		createjs.Tween.get(mother, { override: true })
+									.to({ scaleX: 1, scaleY: 1 }, 10);
 	}.bind(world);
 	world.init();
 	world.start();
