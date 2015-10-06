@@ -83,6 +83,19 @@
 			.ten-across {
 				width: 92px;
 			}
+			.three-across {
+				width: 365px;
+			}
+			.height-160 {
+				height: 160px;
+				display: table-cell;
+			}
+			.bottom-text {
+				vertical-align: middle;
+			}
+			.top-text {
+				vertical-align: middle;
+			}
 			.centered {
 				padding-left: 0;
 				padding-right: 0;
@@ -321,44 +334,63 @@
 			<b><span id="critter-decade-start-critter">???</span></b>
 			critters. Now, the criters are mostly
 			<b><span id="critter-decade-end-critter">???</span></b>,
-			which is closer to the environment. How can this be? Remember
-			that a critter can't change its own color! Let's think
-			about what we already know:
+			which is closer to the environment. How can this be?
+			To understand what happened, let's break it into three
+			steps.
 			</p>
-			<ol>
-				<li>
-					Most of the time, critters get their color from their parents.
-					<div class="centered">
-						<canvas class="centered" id="triptych-mutation"></canvas>
-					</div>
-				</li>
-				<li>
-					Sometimes,
+		</section>
+		<div style="height:930px" class="widest centered vspace">
+			<div class="left three-across">
+				<p class="c-text height-160 three-across bottom-text">
+					Some of the children of
 					<b><span id="critter-decade-start-critter">???</span></b>
-					critters have surprisingly
+					critters were
 					<b><span id="critter-decade-further-m-critter">???</span></b>
 					or
+					<b><span id="critter-decade-closer-m-critter">???</span></b>.
+				</p>
+				<canvas class="centered" id="triptych-mutation"></canvas>
+				<p class="c-text height-160 three-across top-text">
+				These surprising 
+				<b><span id="critter-decade-further-m-critter">???</span></b>
+				and
+				<b><span id="critter-decade-closer-m-critter">???</span></b>
+				colors are called <b>mutations</b>.
+				</p>
+			</div>
+			<div class="left three-across">
+				<div style="height:100px"></div>
+				<p class="c-text height-160 three-across bottom-text">
+					The <b><span id="critter-decade-env">???</span></b>
+					environment made
 					<b><span id="critter-decade-closer-m-critter">???</span></b>
-					children.
-					<div class="centered">
-						<canvas class="centered" id="triptych-selection"></canvas>
-					</div>
-				</li>
-				<li>
-					In a <b><span id="critter-decade-env">???</span></b>
-					environment, 
-					<b><span id="critter-decade-closer-m-critter">???</span></b>
-					critters are better hidden than
+					critters hard to see. Instead, you hunted
 					<b><span id="critter-decade-start-critter">???</span></b>
-					critters, and
+					and
 					<b><span id="critter-decade-further-m-critter">???</span></b>
-					critters are especially easy to see. You didn't hunt
-					many
+					critters.
+				</p>
+				<canvas class="centered" id="triptych-selection"></canvas>
+				<p class="c-text height-160 three-across top-text">
+					Hunting critters based on their color is called
+					<b>selection</b>.
+				</p>
+			</div>
+			<div class="left three-across">
+				<div style="height:200px"></div>
+				<p class="c-text height-160 three-across bottom-text">
+					The
 					<b><span id="critter-decade-closer-m-critter">???</span></b>
-					critters, because they were the hardest to see.
-				</li>
-			</ol>
-			<p class="">
+					critters you didn't hunt passed their color to their children. 
+				</p>
+				<canvas class="centered" id="triptych-inheritance"></canvas>
+				<p class="c-text height-160 three-across top-text">
+					This is called <b>inheritance</b>.
+				</p>
+			</div>
+		</div>
+		<section class="centered vspace">
+			<p>
 				Each year after you hunted, more 
 				<b><span id="critter-decade-closer-m-critter">???</span></b>
 				critters were left alive. They passed their

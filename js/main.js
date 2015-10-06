@@ -107,9 +107,10 @@ function main () {
 		return chroma.hcl((180/Math.PI)*Math.atan2(y,x), GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
 	}
 
-	var poissonDiscSampler = function (width, height, radius, boundRadius) {
+	var poissonDiscSampler = function (width, height, radius, edge) {
 		var k = 30, // maximum number of samples before rejection
 				radius2 = radius * radius,
+				boundRadius = height/2-edge;
 				R = 3 * radius2,
 				cellSize = radius * Math.SQRT1_2,
 				gridWidth = Math.ceil(width / cellSize),
@@ -136,8 +137,13 @@ function main () {
 					
 					// Reject candidates that are outside the allowed extent,
 					// or closer than 2 * radius to any existing sample.
-					var dist = Math.pow(x-(0.5*width), 2)+Math.pow(y-0.5*height, 2); 
-					if (boundRadius*boundRadius > dist &&
+					// CIRCLE
+					//var dist = Math.pow(x-(0.5*width), 2)+Math.pow(y-0.5*height, 2); 
+					//if (boundRadius*boundRadius > dist &&
+					//		far(x, y)) return sample(x, y);
+					// SQUARE
+					if (edge <= x && x < width-edge &&
+							edge <= y && y < height-edge &&
 							far(x, y)) return sample(x, y);
 				}
 				
@@ -588,7 +594,7 @@ function main () {
 	// TRIPTYCH OF MUTATION, SELECTION, INHERITANCE
 	// MUTATION
 	canvas = document.querySelector("#triptych-mutation");
-	canvas.width = 600;
+	canvas.width = 350;
 	canvas.height = 600;
 	global = globalClone();
 	global.NUM_AGENTS = 1; // doesn't matter
@@ -597,13 +603,15 @@ function main () {
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
 	global.INIT_AGENTS_VARIATION = 0;
 	global.INITIAL_AGENT_OFFSET = 0;
+	global.MOTHER_MUTATION_PROB = 0.15;
+	global.FATHER_MUTATION_PROB = 0.15;
 	global.PAUSED = true;
 
 	var selectionWorldAgentHue = world.agentStartCol;
 	var selectionWorldHue = world.envHue;
 	world = new World(global, canvas, selectionWorldHue);
 	world.externalInit = function () {
-		this.stage.removeChild(this.bg); // hide the background
+		// this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
 		
 		this.agentStartCol = selectionWorldAgentHue;
@@ -613,7 +621,7 @@ function main () {
 		this.agents = [];
 		var sample = poissonDiscSampler(canvas.width, canvas.height,
 																		2*this.GLOBAL.AGENT_RADIUS,
-																		canvas.height/2.5);
+																		this.GLOBAL.AGENT_RADIUS);
 		var father = new Agent(this.GLOBAL, this.bg.bounds,
 													 this.GLOBAL.AGENT_RADIUS,
 													 sample(), vec2.create(),
@@ -657,7 +665,7 @@ function main () {
 	interactives.push(world);
 
 	canvas = document.querySelector("#triptych-selection");
-	canvas.width = 600;
+	canvas.width = 350;
 	canvas.height = 600;
 	global = globalClone();
 	global.NUM_AGENTS = 70; // doesn't matter
@@ -672,7 +680,7 @@ function main () {
 	var mutationWorldSavedTime = world.savedTime;
 	world = new World(global, canvas, selectionWorldHue);
 	world.externalInit = function () {
-		this.stage.removeChild(this.bg); // hide the background
+		// this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
 
 		this.agentStartCol = selectionWorldAgentHue;
@@ -696,12 +704,78 @@ function main () {
 			if (diff > 180) { diff -= 360; }
 			if (diff < -180) { diff += 360; }
 			diff = Math.abs(diff);
-			if (diff > safe && random.number() < 0.8) {
+			if (diff > safe && random.number() < diff/70) {
 				a.isEaten = true;
 			}
 		}
 
 		this.GLOBAL.TIME += this.GLOBAL.YOUTH_DURATION;
+	}.bind(world);
+	world.init();
+	world.start();
+	interactives.push(world);
+
+	canvas = document.querySelector("#triptych-inheritance");
+	canvas.width = 350;
+	canvas.height = 600;
+	global = globalClone();
+	global.NUM_AGENTS = 70; // doesn't matter
+	global.OBSERVER_PERIOD = Infinity; // no predator period
+	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
+	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
+	global.INIT_AGENTS_VARIATION = 0;
+	global.INITIAL_AGENT_OFFSET = 0;
+	global.PAUSED = true;
+
+	var mutationWorldAgentsEncoding = world.encodedAgents;
+	var mutationWorldSavedTime = world.savedTime;
+	world = new World(global, canvas, selectionWorldHue);
+	world.externalInit = function () {
+		// this.stage.removeChild(this.bg); // hide the background
+		this.stage.removeChild(this.info); // hide the info bar
+
+		this.agentStartCol = selectionWorldAgentHue;
+
+		// get agents from mutation pane
+		this.savedTime = mutationWorldSavedTime;
+		this.encodedAgents = mutationWorldAgentsEncoding;
+		this.restoreState();
+
+		var livingAdults = this.agents.filter(function (a) {
+			return (a.isAdult && !a.isEaten);
+		});
+
+		// variables for making babies
+		var j, k, a, father, mother;
+
+		for (var i = 0; i < this.agents.length; i++) {
+			if (this.agents[i].isEaten) {
+				j = random.integer(livingAdults.length);
+				k = random.integer(livingAdults.length);
+				while (k == j) {
+					k = random.integer(livingAdults.length);
+				}
+				mother = livingAdults[j];
+				father = livingAdults[k];
+				mother.motherChild(null, father.genome);
+				a = new Agent(this.GLOBAL, this.bg.bounds,
+															 this.GLOBAL.AGENT_RADIUS,
+															 vec2.clone(this.agents[i].pos), vec2.create(),
+															 [[mother.childGenome[0][0]], [0]]);
+				mother.isPregnant = false;
+				mother.childGenome = null;
+				a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION/2;
+				a.update({WILL_DRAW: true});
+
+				this.agentContainer.removeChild(this.agents[i]);
+				this.agents[i] = a;
+				this.agentContainer.addChild(a);
+
+				// reset mother size
+				createjs.Tween.get(mother, { override: true })
+											.to({ scaleX: 1, scaleY: 1 }, 10);
+			}
+		}
 	}.bind(world);
 	world.init();
 	world.start();
