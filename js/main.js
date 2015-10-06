@@ -598,6 +598,7 @@ function main () {
 	canvas.height = 600;
 	global = globalClone();
 	global.NUM_AGENTS = 1; // doesn't matter
+	global.WORLD_SPEED = 0;
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
@@ -605,6 +606,7 @@ function main () {
 	global.INITIAL_AGENT_OFFSET = 0;
 	global.MOTHER_MUTATION_PROB = 0.15;
 	global.FATHER_MUTATION_PROB = 0.15;
+	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
 	var selectionWorldAgentHue = world.agentStartCol;
@@ -669,11 +671,13 @@ function main () {
 	canvas.height = 600;
 	global = globalClone();
 	global.NUM_AGENTS = 70; // doesn't matter
+	global.WORLD_SPEED = 0;
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
 	global.INIT_AGENTS_VARIATION = 0;
 	global.INITIAL_AGENT_OFFSET = 0;
+	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
 	var mutationWorldAgentsEncoding = world.encodedAgents;
@@ -720,11 +724,13 @@ function main () {
 	canvas.height = 600;
 	global = globalClone();
 	global.NUM_AGENTS = 70; // doesn't matter
+	global.WORLD_SPEED = 0;
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
 	global.INIT_AGENTS_VARIATION = 0;
 	global.INITIAL_AGENT_OFFSET = 0;
+	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
 	var mutationWorldAgentsEncoding = world.encodedAgents;

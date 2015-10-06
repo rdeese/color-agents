@@ -86,6 +86,9 @@
 			.three-across {
 				width: 365px;
 			}
+			.three-across-text {
+				width: 330px;
+			}
 			.height-160 {
 				height: 160px;
 				display: table-cell;
@@ -306,9 +309,15 @@
 		</div>
 		<section class="centered vspace">
 			<p class="notopmargin">
-				Did you notice that the critters changed color over the years?
-				The critters start to blend in with their environment
-				much better. They are harder to hunt! How did that happen?
+				We started with a 
+				<b><span id="critter-decade-env">???</span></b>
+				environment, and mostly
+				<b><span id="critter-decade-start-critter">???</span></b>
+				critters. Now, the critters are
+				<b><span id="critter-decade-end-critter">???</span></b>,
+				which makes them a lot harder to see.
+				Look at the difference between the first year
+				and now. How did that happen?
 			</p>
 		</section>
 		<div style="height: 431px" class="widest centered vspace">
@@ -325,42 +334,37 @@
 		</div>
 		<section class="centered vspace">
 			<h3 class="nobottommargin">
-				The critters changed color because
-				of how you hunted them!
+				Color change in three steps.
 			</h3>
 			<p class="notopmargin">
-			We started with a <b><span id="critter-decade-env">???</span></b>
-			environment, and mostly 
-			<b><span id="critter-decade-start-critter">???</span></b>
-			critters. Now, the criters are mostly
-			<b><span id="critter-decade-end-critter">???</span></b>,
-			which is closer to the environment. How can this be?
-			To understand what happened, let's break it into three
-			steps.
+			What happened to make the critters change color? It's a simple
+			process with three parts. Each of these parts is
+			something you've already seen, but together they did something
+			unexpected!
 			</p>
 		</section>
-		<div style="height:930px" class="widest centered vspace">
+		<div style="height:1060px" class="widest centered vspace">
 			<div class="left three-across">
-				<p class="c-text height-160 three-across bottom-text">
-					Some of the children of
+				<p class="c-text caption three-across notopmargin">
+					<b>1. Mutation</b>
+				</p>
+				<canvas class="centered" id="triptych-mutation"></canvas>
+				<p class="c-text centered three-across-text">
+					Some of the
 					<b><span id="critter-decade-start-critter">???</span></b>
-					critters were
+					critters' children were surprisingly
 					<b><span id="critter-decade-further-m-critter">???</span></b>
 					or
 					<b><span id="critter-decade-closer-m-critter">???</span></b>.
 				</p>
-				<canvas class="centered" id="triptych-mutation"></canvas>
-				<p class="c-text height-160 three-across top-text">
-				These surprising 
-				<b><span id="critter-decade-further-m-critter">???</span></b>
-				and
-				<b><span id="critter-decade-closer-m-critter">???</span></b>
-				colors are called <b>mutations</b>.
-				</p>
 			</div>
 			<div class="left three-across">
 				<div style="height:100px"></div>
-				<p class="c-text height-160 three-across bottom-text">
+				<p class="c-text caption three-across notopmargin">
+					<b>2. Selection</b>
+				</p>
+				<canvas class="centered" id="triptych-selection"></canvas>
+				<p class="c-text centered three-across-text">
 					The <b><span id="critter-decade-env">???</span></b>
 					environment made
 					<b><span id="critter-decade-closer-m-critter">???</span></b>
@@ -370,97 +374,65 @@
 					<b><span id="critter-decade-further-m-critter">???</span></b>
 					critters.
 				</p>
-				<canvas class="centered" id="triptych-selection"></canvas>
-				<p class="c-text height-160 three-across top-text">
-					Hunting critters based on their color is called
-					<b>selection</b>.
-				</p>
 			</div>
 			<div class="left three-across">
 				<div style="height:200px"></div>
-				<p class="c-text height-160 three-across bottom-text">
-					The
-					<b><span id="critter-decade-closer-m-critter">???</span></b>
-					critters you didn't hunt passed their color to their children. 
+				<p class="c-text caption three-across notopmargin">
+					<b>3. Inheritance</b>
 				</p>
 				<canvas class="centered" id="triptych-inheritance"></canvas>
-				<p class="c-text height-160 three-across top-text">
-					This is called <b>inheritance</b>.
+				<p class="c-text centered three-across-text">
+					The
+					<b><span id="critter-decade-closer-m-critter">???</span></b>
+					critters you didn't hunt passed that
+					<b><span id="critter-decade-closer-m-critter">???</span></b>
+					color to their children. 
 				</p>
 			</div>
 		</div>
 		<section class="centered vspace">
+			<h3 class="nobottommargin">
+				Natural Selection.
+			</h3>
+			<p class="notopmargin">
+				The combination of mutation, selection, and inheritance is called
+				natural selection. Natural selection happens every time all
+				three things are present, and it can't happen without all three of
+				them.
+			</p>
 			<p>
-				Each year after you hunted, more 
-				<b><span id="critter-decade-closer-m-critter">???</span></b>
-				critters were left alive. They passed their
-				color to their children, who were a little more 
-				<b><span id="critter-decade-closer-m-critter">???</span></b>
-				than last year's critters. Getting more
-				<b><span id="critter-decade-closer-m-critter">???</span></b>
-				each year, the critters went from mostly
-				<b><span id="critter-decade-start-critter">???</span></b>
-				to mostly
-				<b><span id="critter-decade-end-critter">???</span></b>.
+				Natural selection always causes some kind of change. You saw it
+				change the critters' color, so they would
+				blend in better with the environment.
+				But there are no rules about what kinds of things natural selection
+				can change.
 			</p>
 		</section>
 		<section class="centered vspace">
 			<h3 class="nobottommargin">
-				What's important?
+				Selection in control.
 			</h3>
 			<p class="notopmargin">
-				Now we understand how the critters changed color.
-				It happened because of three ways that color behaves
-				in critters:
-			</p>
-			<ol>
-				<li>Color passes from parent to child.</li>
-				<li>Color of children is sometimes surprising.</li>
-				<li>Color affects how long a critter will probably live.</li>
-			</ol>
-			<p>
-				This is really important! If these three facts are true for
-				any part of any living thing, then that part will change
-				in the same way that the critters changed color. It could be
-				size or shape, strength or speed, anything at all!
-			</p>
-		</section>
-		<section class="centered vspace">
-			<h3 class="nobottommargin">
-				Who chose the critters' color?
-			</h3>
-			<p class="notopmargin">
-				Was it the critters? Critters can't change their own color,
-				choose who they mate with, or choose what color their
-				children will be. Critters don't even know what
-				color their environment is!
+				Mutation and inheritance are just part of the way
+				critters are. Selection was the missing piece, and
+				you caused selection by hunting the critters. In natural
+				selection, the selection part controls what changes, and how.
+				You hunted differently based on color, so that's what changed.
 			</p>
 			<p>
-				Was it you? Maybe you think so. If you do, reset the
-				critters and play again. This time, try to change their
-				color to something other than the environment's color.
-				I don't think you'll succeed!
+				But when you're not hunting critters, their color doesn't matter.
+				No selection means no natural selection, and no color change.
 			</p>
-		</section>
-		<section class="centered vspace">
-			<h3 class="nobottommargin">
-				Changes are part of nature.
-			</h3>
-			<p class="notopmargin">
-				For the critters in the wild, color
-			</p>
-			<ul>
-				<li>is passed from parent to child.</li>
-				<li>isn't always predictable.</li> 
-				<li>affects how long the critter will probably live.</li> 
-			</ul>
 			<p>
-				Because these three things are true, the color of the
-				critters changed naturally. First, unpredicable new colors of
-				critter were born. Some of them had colors that fit better
-				with the environment, and so you were less likely to hunt them.
-				Then, all the critters that you didn't hunt passed on their
-				colors to their children.
+				So it was you who changed the critters' color!
+			</p>
+			<p>
+				But you didn't <i>choose</i> it&mdash;natural selection did.
+			</p>
+			<p>
+				Don't believe it? Want more? Why dont you
+				<a href="javascript:window.scrollTo(0,0); window.location.reload();">play again with
+				different colors?</a>
 			</p>
 		</section>
 	</body>

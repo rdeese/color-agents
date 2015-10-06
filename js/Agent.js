@@ -522,11 +522,13 @@ agentPrototype.update = function (e) {
 	
 	// update the heading properly
 	// bounded by -180 to 180 
-	var velDir = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
-	velDir = velDir - this.heading;
-	if (velDir < -180) { velDir += 360; }
-	else if (velDir > 180) { velDir -= 360; }
-	this.heading = this.heading + velDir/100*this.GLOBAL.WORLD_SPEED;
+	if (this.vel[0] != 0 || this.vel[1] != 0) {
+		var velDir = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
+		velDir = velDir - this.heading;
+		if (velDir < -180) { velDir += 360; }
+		else if (velDir > 180) { velDir -= 360; }
+		this.heading = this.heading + velDir/100*this.GLOBAL.WORLD_SPEED;
+	}
 	
 	// elastically collide with walls
 	if (this.pos[0] + this.scaleX*this.radius > this.bounds.width) {
