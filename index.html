@@ -41,6 +41,9 @@
 			.nobottommargin {
 				margin-bottom: 0;
 			}
+			a:link {
+				text-decoration: none;
+			}
 			p {
 				font-size: 24px;
 			}
@@ -173,7 +176,7 @@
 			<h3 class="nobottommargin">Watch some critters in the wild.</h3>
 			<p class="notopmargin">
 			Let's put some critters in their natural environment. What
-			will happen over time? Press play, and use the speed slider
+			will happen to their color over time? Press play, and use the speed slider
 			to control how fast time goes.
 			</p>
 		</section>
@@ -182,12 +185,13 @@
 		</div>
 		<section class="centered vspace">
 			<p class="notopmargin">
-			The critters took over the whole environment! How is
-			the color of the first few critters related to all the critters
-			alive now? The first critters were
+			The first critters were
 			<b><span id="critter-observe-start">???</span></b>,
 			and the living critters now are mostly
 			<b><span id="critter-observe-end">???</span></b>.
+			Even though some critters with different colors are born,
+			most critters get their color from their parents,
+			so the color of the critters doesn't change much over time.
 			</p>
 		</section>
 		<section class="centered vspace">
@@ -217,19 +221,27 @@
 		</div>
 		<section class="centered vspace">
 			<p class="notopmargin">
-			Depending on the environment, the color of a critter can help it hide
-			better. In these <b><span id="critter-hunt-left-env">???</span></b>
+			In these <b><span id="critter-hunt-left-env">???</span></b>
 			environments, are the <b><span id="critter-hunt-left-critter">???</span></b>
 			critters easy to hunt? What about the
 			<b><span id="critter-hunt-right-critter">???</span></b>
 			critters?
 			</p>
+			<p>
+				Critters that are the same color as their environment 
+				are harder to hunt, and more likely to keep living.
+			</p>
 		</section>
-		<section class="centered vspace">
+		<section id="decade" class="centered vspace">
 			<h3 class="nobottommargin">A decade of critters.</h3>
 			<p class="notopmargin">
 			For these critters, hunting season comes at the
-			end of each year. When the critters go
+			end of each year. What will happen to their
+			color over a long time? Will it stay the same,
+			like you saw before?
+			</p>
+			<p>
+			When the critters go
 			into hiding, hunt <b>30</b> of them
 			<i>without missing</i> to get to the next year.
 			See if you can make it to the 10th year! Once
@@ -308,16 +320,24 @@
 			</div>
 		</div>
 		<section class="centered vspace">
+			<h3 class="nobottommargin">
+				The critters changed color to match the environment.
+			</h3>
 			<p class="notopmargin">
-				We started with a 
+				The critters changed color!
+				They started out
+				<b><span id="critter-decade-start-critter">???</span></b>,
+				and now they are
+				<b><span id="critter-decade-end-critter">???</span></b>.
+				That's a bigger change than we saw before, without hunting.
+			</p>
+			<p>
+				Strangely, these
+				<b><span id="critter-decade-end-critter">???</span></b>
+				critters are almost the same color as the
 				<b><span id="critter-decade-env">???</span></b>
-				environment, and mostly
-				<b><span id="critter-decade-start-critter">???</span></b>
-				critters. Now, the critters are
-				<b><span id="critter-decade-end-critter">???</span></b>,
-				which makes them a lot harder to see.
-				Look at the difference between the first year
-				and now. How did that happen?
+				environment. Did you notice that they got harder to
+				hunt every year?
 			</p>
 		</section>
 		<div style="height: 431px" class="widest centered vspace">
@@ -334,13 +354,12 @@
 		</div>
 		<section class="centered vspace">
 			<h3 class="nobottommargin">
-				Color change in three steps.
+				How did the critters change color?
 			</h3>
 			<p class="notopmargin">
-			What happened to make the critters change color? It's a simple
-			process with three parts. Each of these parts is
-			something you've already seen, but together they did something
-			unexpected!
+				The critters changed color in a three
+				stage process, that happened over and over while you
+				were watching and hunting them.
 			</p>
 		</section>
 		<div style="height:1060px" class="widest centered vspace">
@@ -361,18 +380,20 @@
 			<div class="left three-across">
 				<div style="height:100px"></div>
 				<p class="c-text caption three-across notopmargin">
-					<b>2. Selection</b>
+					<b>2. Survival</b>
 				</p>
 				<canvas class="centered" id="triptych-selection"></canvas>
 				<p class="c-text centered three-across-text">
 					The <b><span id="critter-decade-env">???</span></b>
 					environment made
 					<b><span id="critter-decade-closer-m-critter">???</span></b>
-					critters hard to see. Instead, you hunted
+					critters hard to see. You hunted
 					<b><span id="critter-decade-start-critter">???</span></b>
 					and
 					<b><span id="critter-decade-further-m-critter">???</span></b>
-					critters.
+					critters, but 
+					<b><span id="critter-decade-closer-m-critter">???</span></b>
+					critters stayed alive.
 				</p>
 			</div>
 			<div class="left three-across">
@@ -384,55 +405,46 @@
 				<p class="c-text centered three-across-text">
 					The
 					<b><span id="critter-decade-closer-m-critter">???</span></b>
-					critters you didn't hunt passed that
+					critters that you didn't hunt passed that
 					<b><span id="critter-decade-closer-m-critter">???</span></b>
 					color to their children. 
 				</p>
 			</div>
 		</div>
+		
 		<section class="centered vspace">
-			<h3 class="nobottommargin">
-				Natural Selection.
-			</h3>
-			<p class="notopmargin">
-				The combination of mutation, selection, and inheritance is called
-				natural selection. Natural selection happens every time all
-				three things are present, and it can't happen without all three of
-				them.
-			</p>
 			<p>
-				Natural selection always causes some kind of change. You saw it
-				change the critters' color, so they would
-				blend in better with the environment.
-				But there are no rules about what kinds of things natural selection
-				can change.
+			Together, these three stages are called <i>natural selection</i>.
+			Natural selection is a process that causes slow changes to
+			living things.
 			</p>
 		</section>
 		<section class="centered vspace">
 			<h3 class="nobottommargin">
-				Selection in control.
+				Why did hunting make a difference?
 			</h3>
 			<p class="notopmargin">
-				Mutation and inheritance are just part of the way
-				critters are. Selection was the missing piece, and
-				you caused selection by hunting the critters. In natural
-				selection, the selection part controls what changes, and how.
-				You hunted differently based on color, so that's what changed.
+				All groups of critters have mutation and inheritance. But
+				without a survival stage, natural selection can't happen!
 			</p>
 			<p>
-				But when you're not hunting critters, their color doesn't matter.
-				No selection means no natural selection, and no color change.
+				By hunting critters, you made a surivival stage where
+				color mattered for survival. Critters with a color like the
+				environment stayed alive, and all other critters got hunted.
 			</p>
-			<p>
-				So it was you who changed the critters' color!
-			</p>
-			<p>
-				But you didn't <i>choose</i> it&mdash;natural selection did.
-			</p>
-			<p>
-				Don't believe it? Want more? Why dont you
-				<a href="javascript:window.scrollTo(0,0); window.location.reload();">play again with
-				different colors?</a>
+		</section>
+		<section class="centered vspace">
+			<h3 class="nobottommargin">
+				Will natural selection do this every time?
+			</h3>
+			<p class="notopmargin">
+				Yes! No matter what color the environment is, or what
+				color the critters start out with, they will become
+				the same color as the environment if you hunt them.
+				<a href="javascript:
+									window.scroll(0, document.querySelector('#decade').offsetTop-10);
+									window.location.reload();">See for yourself by starting again with
+									different colors.</a>
 			</p>
 		</section>
 	</body>
