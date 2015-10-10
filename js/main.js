@@ -198,6 +198,52 @@ function main () {
 	var world;
 	var global;
 
+	// TOP CONFETTI
+	canvas = document.querySelector("#confetti-top");
+	canvas.width = 1100;
+	canvas.height = 200;
+	global = globalClone();
+	global.NUM_AGENTS = 1; // doesn't matter
+	global.WORLD_SPEED = 0;
+	global.OBSERVER_PERIOD = Infinity; // no predator period
+	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
+	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
+	global.INIT_AGENTS_VARIATION = 360;
+	global.INITIAL_AGENT_OFFSET = 0;
+	global.MOTHER_MUTATION_PROB = 0.15;
+	global.FATHER_MUTATION_PROB = 0.15;
+	global.PREGNANT_SCALE = 1;
+	global.PAUSED = true;
+
+	world = new World(global, canvas);
+	world.externalInit = function () {
+		this.stage.removeChild(this.bg); // hide the background
+		this.stage.removeChild(this.info); // hide the info bar
+		
+		this.agentContainer.removeAllChildren();
+		this.agents = [];
+		var sample = poissonDiscSampler(canvas.width, canvas.height,
+																		2*this.GLOBAL.AGENT_RADIUS,
+																		this.GLOBAL.AGENT_RADIUS);
+		// make children
+		for (var i = 0; i < 100; i++) {
+			var pos = sample();
+			if (!pos) { break; }
+
+			var a = new Agent(this.GLOBAL, this.bg.bounds,
+														 this.GLOBAL.AGENT_RADIUS,
+														 pos, vec2.create(),
+														 [[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [0]]);
+			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION*Math.sqrt(random.number());
+			a.update({WILL_DRAW: true});
+			this.agentContainer.addChild(a);
+			this.agents.push(a);
+		}
+	}.bind(world);
+	world.init();
+	world.start();
+	interactives.push(world);
+
 	// single critter interactive
 	canvas = document.querySelector("#single-critter");
 	canvas.width = 600;
@@ -782,6 +828,79 @@ function main () {
 											.to({ scaleX: 1, scaleY: 1 }, 10);
 			}
 		}
+	}.bind(world);
+	world.init();
+	world.start();
+	interactives.push(world);
+
+	canvas = document.querySelector("#confetti-bottom");
+	canvas.width = 1100;
+	canvas.height = 200;
+	global = globalClone();
+	global.NUM_AGENTS = 1; // doesn't matter
+	global.WORLD_SPEED = 0;
+	global.OBSERVER_PERIOD = Infinity; // no predator period
+	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
+	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
+	global.INIT_AGENTS_VARIATION = 0;
+	global.INITIAL_AGENT_OFFSET = 0;
+	global.MOTHER_MUTATION_PROB = 0.15;
+	global.FATHER_MUTATION_PROB = 0.15;
+	global.PREGNANT_SCALE = 1;
+	global.PAUSED = true;
+
+	var selectionWorldAgentHue = world.agentStartCol;
+	var selectionWorldHue = world.envHue;
+	world = new World(global, canvas, selectionWorldHue);
+	world.externalInit = function () {
+		this.stage.removeChild(this.bg); // hide the background
+		this.stage.removeChild(this.info); // hide the info bar
+		
+		//this.agentStartCol = selectionWorldAgentHue;
+
+		// create agents and replace old ones!
+		this.agentContainer.removeAllChildren();
+		this.agents = [];
+		var sample = poissonDiscSampler(canvas.width, canvas.height,
+																		2*this.GLOBAL.AGENT_RADIUS,
+																		this.GLOBAL.AGENT_RADIUS);
+		var father = new Agent(this.GLOBAL, this.bg.bounds,
+													 this.GLOBAL.AGENT_RADIUS,
+													 sample(), vec2.create(),
+													 [[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [0]]);
+		father.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
+		father.update({WILL_DRAW: true});
+		this.agentContainer.addChild(father);
+		this.agents.push(father);
+		var mother = new Agent(this.GLOBAL, this.bg.bounds,
+													 this.GLOBAL.AGENT_RADIUS,
+													 sample(), vec2.create(),
+													 [[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [0]]);
+		mother.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
+		mother.update({WILL_DRAW: true});
+		this.agentContainer.addChild(mother);
+		this.agents.push(mother);
+
+		// make children
+		for (var i = 0; i < 100; i++) {
+			var pos = sample();
+			if (!pos) { break; }
+
+			mother.motherChild(null, father.genome);
+			var a = new Agent(this.GLOBAL, this.bg.bounds,
+														 this.GLOBAL.AGENT_RADIUS,
+														 pos, vec2.create(),
+														 [[mother.childGenome[0][0]], [0]]);
+			mother.isPregnant = false;
+			mother.childGenome = null;
+			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION*Math.sqrt(random.number());
+			a.update({WILL_DRAW: true});
+			this.agentContainer.addChild(a);
+			this.agents.push(a);
+		}
+		// reset mother size
+		createjs.Tween.get(mother, { override: true })
+									.to({ scaleX: 1, scaleY: 1 }, 10);
 	}.bind(world);
 	world.init();
 	world.start();

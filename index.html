@@ -42,7 +42,13 @@
 				margin-bottom: 0;
 			}
 			a:link {
-				text-decoration: none;
+				color: #000099;
+			}
+			a:visited {
+				color: #000099;
+			}
+			a:hover {
+				color: #0000EE;
 			}
 			p {
 				font-size: 24px;
@@ -119,6 +125,9 @@
 				margin-top: 50px;
 				margin-bottom: 50px;
 			}
+			.signature {
+				color: #888888;
+			}
 			canvas {
 			}
 		</style>
@@ -126,7 +135,9 @@
 	<body>
 		<h1 class="nobottommargin">Who Chose the Critters' Color?</h1>
 		<p class="notopmargin c-text">A playable post on the relationship between life and its environment.</p>
-
+		<div style="height:200px" class="widest centered vspace">
+			<canvas class="centered" id="confetti-top"></canvas>
+		</div>
 		<section class="centered vspace">
 			<h3 class="nobottommargin">This is a story about critters.</h3>
 			<p class="notopmargin">
@@ -428,6 +439,25 @@
 									window.scroll(0, document.querySelector('#decade').offsetTop-10);
 									window.location.reload();">See for yourself by starting again with
 									different colors.</a>
+			</p>
+		</section>
+		<div style="height:200px" class="widest centered vspace">
+			<canvas class="centered" id="confetti-bottom"></canvas>
+		</div>
+		<section class="centered vspace signature">
+			<h3>
+				Thank you for reading this post!
+			</h3>
+			<p>
+				I'm <a href="http://rupertdeese.com/">Rupert Deese</a>.
+				I wrote this post while working at <a href="http://www.cdglabs.org/">CDG Labs</a>
+				in 2015.
+			</p>
+			<p>
+				The "playable" format was inspired by Bret Victor's
+				<a href="http://worrydream.com/ExplorableExplanations/">Explorable
+					Explanations</a>, and Vi Hart and Nicky Case's
+				<a href="http://ncase.me/polygons/">Parable of the Polygons</a>.
 			</p>
 		</section>
 	</body>
