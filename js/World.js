@@ -28,7 +28,9 @@ World.prototype = {
 												random.number()*360;
 		this.envGenome[1] = this.initEnvGenome[1] != null ?
 												this.initEnvGenome[1] :
-												15+random.number()*25; 
+												this.GLOBAL.MIN_AGENT_RADIUS+
+												random.number()*(this.GLOBAL.MAX_AGENT_RADIUS-
+																				 this.GLOBAL.MIN_AGENT_RADIUS); 
 
 		this.critterGenome = [null, null];
 		this.critterGenome[0] = this.initCritterGenome[0] != null ?
@@ -36,7 +38,9 @@ World.prototype = {
 														random.number()*360;
 		this.critterGenome[1] = this.initCritterGenome[1] != null ?
 														this.initCritterGenome[1] :
-														15+random.number()*25; 
+														this.GLOBAL.MIN_AGENT_RADIUS+
+														random.number()*(this.GLOBAL.MAX_AGENT_RADIUS-
+																						 this.GLOBAL.MIN_AGENT_RADIUS); 
 
 		if (this.critterGenome[0] == 'relative') {
 			this.critterGenome[0] = this.envGenome[0] +
@@ -156,7 +160,7 @@ World.prototype = {
 										[this.critterGenome[0]+
 										 this.GLOBAL.INIT_AGENTS_VARIATIONS[0]*(random.number()-0.5),
 										 this.critterGenome[1]+
-										 this.GLOBAL.INIT_AGENTS_VARIATIONS[1]]);
+										 this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 			a.update({ WILL_DRAW: true });
 			this.agentContainer.addChild(a);

@@ -2,8 +2,8 @@ function Environment (GLOBAL,bounds,envGenome) {
 	this.Container_constructor();
 	this.GLOBAL = GLOBAL;
 	this.bounds = bounds;
-	this.hue = envGenome[0];
-	this.color = chroma.hcl(this.hue,this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
+	this.envGenome = envGenome;
+	this.color = chroma.hcl(this.envGenome[0],this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 	this.colorHasChanged = false;
 
 	this.plants = [];
@@ -38,11 +38,15 @@ function Environment (GLOBAL,bounds,envGenome) {
 var envPrototype = createjs.extend(Environment, createjs.Container);
 
 envPrototype.drawBg = function () {
-	var colorFill = new createjs.Shape();
-	this.bg.addChild(colorFill);
-	var g = colorFill.graphics;
-	g.clear();
-	g.beginFill(this.color.hex()).drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
+		var colorFill = new createjs.Shape();
+		this.bg.addChild(colorFill);
+		var g = colorFill.graphics;
+		g.clear();
+	if (this.GLOBAL.DRAW_ENV_BACKGROUND) {
+		g.beginFill(this.color.hex()).drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
+	} else {
+		g.beginFill("#FFFFFF").drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
+	}
 	
 	// body like things
 	var c;
@@ -50,11 +54,11 @@ envPrototype.drawBg = function () {
 	var radius;
 	for (var i = 0; i < this.GLOBAL.NUM_PLANTS; i++) {
 		r = random.number();
-		radius = this.GLOBAL.AGENT_RADIUS+(random.number()-0.5)*this.GLOBAL.ENV_VARIATIONS[1];
+		radius = this.envGenome[1]+(random.number()-0.5)*this.GLOBAL.ENV_VARIATIONS[1];
 		c = new createjs.Shape();
 		c.x = random.number() * (this.bounds.width-2*radius) + radius;
 		c.y = random.number() * (this.bounds.height-2*radius) + radius;
-		col = chroma.hcl(this.hue+this.GLOBAL.ENV_VARIATIONS[0]*(random.number()-0.5),
+		col = chroma.hcl(this.envGenome[0]+this.GLOBAL.ENV_VARIATIONS[0]*(random.number()-0.5),
 										 this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 		c.graphics.beginFill(col.hex());
 		c.graphics.drawCircle(0,0,radius);

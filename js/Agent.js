@@ -266,8 +266,8 @@ agentPrototype.motherChild = function (matingTime, otherGenome) {
 	this.childGenome[0] = (otherGene + diff/2)%360;
 
 	// RADIUS
-	var thisGene = this.genome[1];
-	var otherGene = otherGenome[1];
+	thisGene = this.genome[1];
+	otherGene = otherGenome[1];
 	if (random.number()<this.GLOBAL.MOTHER_MUTATION_PROBS[1]) {
 		thisGene += (0.8+0.2*random.number())*
 								this.GLOBAL.MUTATION_RATES[1]*
@@ -278,7 +278,9 @@ agentPrototype.motherChild = function (matingTime, otherGenome) {
 								 this.GLOBAL.MUTATION_RATES[1]*
 								 (Math.round(random.number())*2-1);
 	}
-	this.childGenome[1] = (thisGene + otherGene)/2
+	this.childGenome[1] = Math.min(Math.max((thisGene + otherGene)/2,
+																 					this.GLOBAL.MIN_AGENT_RADIUS),
+																 this.GLOBAL.MAX_AGENT_RADIUS);
 
 	createjs.Tween.get(this, { override: true })
 								.to({ scaleX: this.GLOBAL.PREGNANT_SCALE, scaleY: this.GLOBAL.PREGNANT_SCALE }, 400);
