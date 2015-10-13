@@ -517,7 +517,7 @@ function main () {
 	// sandbox
 	canvas = document.querySelector("#selection");
 	canvas.width = 1100;
-	canvas.height = 800;
+	canvas.height = 750;
 	global = globalClone();
 	global.INIT_AGENTS_VARIATION = 50;
 	

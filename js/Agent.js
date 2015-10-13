@@ -172,16 +172,14 @@ agentPrototype.wander = function (e) {
 
 agentPrototype.blink = function (e) {
 	if (this.isHiding || this.isTweening) { return; }
-	if (random.number() < this.GLOBAL.BLINK_PROB*this.GLOBAL.DELTA) {
-		this.isTweening = true;
-		createjs.Tween.get(this.eyes)
-									.to({ scaleX: 0 }, 100)
-									.wait(100)
-									.to({ scaleX: 1}, 100)
-									.call(function () {
-										this.isTweening = false; 
-									}, [], this);
-	}
+	this.isTweening = true;
+	createjs.Tween.get(this.eyes)
+								.to({ scaleX: 0 }, 100)
+								.wait(100)
+								.to({ scaleX: 1}, 100)
+								.call(function () {
+									this.isTweening = false; 
+								}, [], this);
 }
 
 

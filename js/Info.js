@@ -241,15 +241,9 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 										this.removeChild(overlay)
 									}, [], this);
 	} else if (this.GLOBAL.MODE == 'observer') {
-		return;
-		/*
-		if (didHit) {
-			this.setTarget(agent);
-		} else {
-			this.setTarget(null);
+		if (didHit && !this.GLOBAL.PAUSED) {
+			agent.blink();
 		}
-		this.GLOBAL.DIRTY = true;
-		*/
 	}
 }
 
