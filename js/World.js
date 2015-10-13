@@ -1,8 +1,8 @@
-var World = function (GLOBAL, canvas, hue, splitDiff) {
+var World = function (GLOBAL, canvas, envGenome, critterGenome) {
 	this.GLOBAL = GLOBAL;
 	this.stage = new createjs.Stage(canvas);
-	this.hue = hue;
-	this.splitDiff = splitDiff;
+	this.initEnvGenome = envGenome;
+	this.initCritterGenome = critterGenome;
 };
 
 World.prototype = {
@@ -22,24 +22,48 @@ World.prototype = {
 																						 this.stage.canvas.height-this.GLOBAL.WORLD_OFFSET_Y);
 
 		// COLOR SETUP
-		if (this.hue != null) {
-			if (this.splitDiff) {
-				if (random.number() < 0.5) {
-					this.agentStartCol = this.hue + this.GLOBAL.INITIAL_AGENT_OFFSET/3;
-					this.envHue = this.hue - 2*this.GLOBAL.INITIAL_AGENT_OFFSET/3;
-				} else {
-					this.agentStartCol = this.hue - this.GLOBAL.INITIAL_AGENT_OFFSET/3;
-					this.envHue = this.hue + 2*this.GLOBAL.INITIAL_AGENT_OFFSET/3;
-				}
+		this.envGenome = [null, null];
+		this.envGenome[0] = this.initEnvGenome[0] != null ?
+												this.initEnvGenome[0] :
+												random.number()*360;
+		this.envGenome[1] = this.initEnvGenome[1] != null ?
+												this.initEnvGenome[1] :
+												15+random.number()*25; 
+
+		this.critterGenome = [null, null];
+		this.critterGenome[0] = this.initCritterGenome[0] != null ?
+														this.initCritterGenome[0] :
+														random.number()*360;
+		this.critterGenome[1] = this.initCritterGenome[1] != null ?
+														this.initCritterGenome[1] :
+														15+random.number()*25; 
+
+		if (this.critterGenome[0] == 'relative') {
+			this.critterGenome[0] = this.envGenome[0] +
+															this.GLOBAL.INITIAL_AGENT_OFFSETS[0]*(random.integer(2)*2-1);
+		} else if (this.critterGenome[0] == 'split') {
+			this.critterGenome[0] = this.envGenome[0];
+			if (random.number() < 0.5) {
+				this.critterGenome[0] += this.GLOBAL.INITIAL_AGENT_OFFSETS[0]/3;
+				this.envGenome[0] -= 2*this.GLOBAL.INITIAL_AGENT_OFFSETS[0]/3;
 			} else {
-				this.envHue = this.hue;
-				this.agentStartCol = this.envHue +
-														 this.GLOBAL.INITIAL_AGENT_OFFSET*(random.integer(2)*2-1);
+				this.critterGenome[0] -= this.GLOBAL.INITIAL_AGENT_OFFSETS[0]/3;
+				this.envGenome[0] += 2*this.GLOBAL.INITIAL_AGENT_OFFSETS[0]/3;
 			}
-		} else {
-			this.envHue = random.number()*360;
-			this.agentStartCol = this.envHue +
-													 this.GLOBAL.INITIAL_AGENT_OFFSET*(random.integer(2)*2-1);
+		}
+
+		if (this.critterGenome[1] == 'relative') {
+			this.critterGenome[1] = this.envGenome[1] +
+															this.GLOBAL.INITIAL_AGENT_OFFSETS[1]*(random.integer(2)*2-1);
+		} else if (this.critterGenome[1] == 'split') {
+			this.critterGenome[1] = this.envGenome[1];
+			if (random.number() < 0.5) {
+				this.critterGenome[1] += this.GLOBAL.INITIAL_AGENT_OFFSETS[1]/3;
+				this.envGenome[1] -= 2*this.GLOBAL.INITIAL_AGENT_OFFSETS[1]/3;
+			} else {
+				this.critterGenome[1] -= this.GLOBAL.INITIAL_AGENT_OFFSETS[1]/3;
+				this.envGenome[1] += 2*this.GLOBAL.INITIAL_AGENT_OFFSETS[1]/3;
+			}
 		}
 
 		// QuadTree setup
@@ -47,7 +71,7 @@ World.prototype = {
 		this.tree = new QuadTree(worldBounds, false, 7);
 
 		// create the environment
-		this.bg = new Environment(this.GLOBAL, worldBounds, this.envHue);
+		this.bg = new Environment(this.GLOBAL, worldBounds, this.envGenome);
 		this.bg.y = this.GLOBAL.WORLD_OFFSET_Y;
 		this.stage.addChild(this.bg);
 
@@ -72,7 +96,7 @@ World.prototype = {
 		}, this);
 
 		// create info
-		this.info = new Info(this.GLOBAL, bounds, infoBounds, this.envHue);
+		this.info = new Info(this.GLOBAL, bounds, infoBounds, this.envGenome[0]);
 		this.stage.addChild(this.info);
 
 		// handle reset from UI
@@ -124,12 +148,15 @@ World.prototype = {
 		var radius;
 		var a;
 		for (var i = 0; i < num; i++) {
-			radius = this.GLOBAL.AGENT_RADIUS;
-			a = new Agent(this.GLOBAL, worldBounds, radius,
+			radius = this.critterGenome[1];
+			a = new Agent(this.GLOBAL, worldBounds,
 										vec2.fromValues(random.number() * (worldBounds.width-2*radius) + radius,
 																		random.number() * (worldBounds.height-2*radius) + radius),
 										vec2.create(),
-										[[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [random.number()*180]]);
+										[this.critterGenome[0]+
+										 this.GLOBAL.INIT_AGENTS_VARIATIONS[0]*(random.number()-0.5),
+										 this.critterGenome[1]+
+										 this.GLOBAL.INIT_AGENTS_VARIATIONS[1]]);
 			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 			a.update({ WILL_DRAW: true });
 			this.agentContainer.addChild(a);

@@ -3,7 +3,7 @@ function main () {
 		WORLD_OFFSET_Y: 58, // pixels
 		COMPONENT_MARGIN: 8, // pixels
 		NUM_AGENTS: 40,
-		INIT_AGENTS_VARIATION: 20,
+		INIT_AGENTS_VARIATIONS: [20, 0],
 		NUM_PLANTS: 500,
 		DEATH_THRESHHOLD: 800,
 		DEATH_DURATION: 4000, // milliseconds
@@ -18,9 +18,9 @@ function main () {
 		DELTA: 0, // just in case
 
 		MATING_PROB: 0.25,
-		MUTATION_RATE: 100,
-		MOTHER_MUTATION_PROB: 0.1,
-		FATHER_MUTATION_PROB: 0.1,
+		MUTATION_RATES: [100, 0],
+		MOTHER_MUTATION_PROBS: [0.1, 0],
+		FATHER_MUTATION_PROBS: [0.1, 0],
 		GESTATION_PD: 20000, // milliseconds
 		YOUTH_DURATION: 40000, // milliseconds
 		MAX_ACC: 4/100000, // pixels per millisecond
@@ -37,10 +37,11 @@ function main () {
 		MISS_TIME_PENALTY: 20000, // milliseconds
 		HIT_THRESHOLD: 30,
 
-		INITIAL_AGENT_OFFSET: 60,
-		ENV_VARIATION: 30,
+		INITIAL_AGENT_OFFSETS: [60, 0],
+		ENV_VARIATIONS: [30, 0],
+		RAND_AGENT_VARIATIONS: [0, 5],
 
-		AGENT_RADIUS: 30,
+		AGENT_RADIUS: 25,
 		BABY_AGENT_RADIUS: 5,
 		PREGNANT_SCALE: 1.2,
 
@@ -67,6 +68,7 @@ function main () {
 	// define derivative globals
 	GLOBAL.BABY_SCALE = GLOBAL.BABY_AGENT_RADIUS/GLOBAL.AGENT_RADIUS;
 	GLOBAL.YOUTH_SCALE_STEP = (1-GLOBAL.BABY_SCALE)/GLOBAL.YOUTH_DURATION;
+	GLOBAL.MAX_AGENT_RADIUS = GLOBAL.AGENT_RADIUS + GLOBAL.RAND_AGENT_VARIATIONS[1];
 
 	var chromaColorToHueName = function (color) {
 		var colorName;
@@ -208,14 +210,15 @@ function main () {
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
-	global.INIT_AGENTS_VARIATION = 360;
-	global.INITIAL_AGENT_OFFSET = 0;
-	global.MOTHER_MUTATION_PROB = 0.15;
-	global.FATHER_MUTATION_PROB = 0.15;
+	global.INIT_AGENTS_VARIATIONS[0] = 360;
+	global.INITIAL_AGENT_OFFSETS[0] = 0;
+	global.MOTHER_MUTATION_PROBS[0] = 0.15;
+	global.FATHER_MUTATION_PROBS[0] = 0.15;
 	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
-	world = new World(global, canvas);
+	world = new World(global, canvas, [null, GLOBAL.AGENT_RADIUS],
+																		[null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
@@ -223,17 +226,19 @@ function main () {
 		this.agentContainer.removeAllChildren();
 		this.agents = [];
 		var sample = poissonDiscSampler(canvas.width, canvas.height,
-																		2*this.GLOBAL.AGENT_RADIUS,
-																		this.GLOBAL.AGENT_RADIUS);
+																		2*this.GLOBAL.MAX_AGENT_RADIUS,
+																		this.GLOBAL.MAX_AGENT_RADIUS);
 		// make children
 		for (var i = 0; i < 100; i++) {
 			var pos = sample();
 			if (!pos) { break; }
 
 			var a = new Agent(this.GLOBAL, this.bg.bounds,
-														 this.GLOBAL.AGENT_RADIUS,
 														 pos, vec2.create(),
-														 [[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [0]]);
+														 [this.critterGenome[0]+
+														  this.GLOBAL.INIT_AGENTS_VARIATIONS[0]*(random.number()-0.5),
+															this.critterGenome[1]+
+															this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION*Math.sqrt(random.number());
 			a.update({WILL_DRAW: true});
 			this.agentContainer.addChild(a);
@@ -250,14 +255,14 @@ function main () {
 	canvas.height = 200;
 	global = globalClone();
 	global.NUM_AGENTS = 1; // just one critter
-	global.DEATH_THRESHHOLD = 200; // lower death threshhold so things happen faster
+	global.DEATH_THRESHHOLD = 150; // lower death threshhold so things happen faster
 	global.OBSERVER_PERIOD = Infinity; // no predator period
-	// global.INITIAL_AGENT_OFFSET = 0; // same color as controls
+	// global.INITIAL_AGENT_OFFSETS[0] = 0; // same color as controls
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas);
+	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
@@ -276,11 +281,9 @@ function main () {
 										.call(function () {
 											this.stage.removeAllChildren();
 										}, [], this)
-										.wait(1000)
+										.wait(500)
 										.call(function () {
 											this.init();
-											this.stage.removeChild(this.bg); // hide the background
-											this.stage.removeChild(this.info); // hide the info bar
 										}, [], this);
 		}
 	}.bind(world);
@@ -294,13 +297,13 @@ function main () {
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // can't die!
-	global.INIT_AGENTS_VARIATION = 160;
-	global.FATHER_MUTATION_PROB = 0;
-	global.MOTHER_MUTATION_PROB = 0;
+	global.INIT_AGENTS_VARIATIONS[0] = 160;
+	global.FATHER_MUTATION_PROBS[0] = 0;
+	global.MOTHER_MUTATION_PROBS[0] = 0;
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas);
+	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
@@ -346,14 +349,14 @@ function main () {
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // can't die!
-	global.INIT_AGENTS_VARIATION = 0;
-	global.FATHER_MUTATION_PROB = 1;
-	global.MOTHER_MUTATION_PROB = 0;
-	global.MUTATION_RATE = 120;
+	global.INIT_AGENTS_VARIATIONS[0] = 0;
+	global.FATHER_MUTATION_PROBS[0] = 1;
+	global.MOTHER_MUTATION_PROBS[0] = 0;
+	global.MUTATION_RATES[0] = 120;
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas);
+	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
@@ -399,8 +402,9 @@ function main () {
 	global = globalClone();
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.NUM_AGENTS = 4;
-	global.INITIAL_AGENT_OFFSET = 100; // same color as controls
-	world = new World(global, canvas);
+	global.INITIAL_AGENT_OFFSETS[0] = 100;
+	world = new World(global, canvas, [null, GLOBAL.AGENT_RADIUS],
+																		['relative', 'relative']);
 	world.externalInit = function () {
 		//this.stage.removeChild(this.bg); // hide the background
 		this.info.removeChild(this.info.toggleMode);
@@ -433,12 +437,13 @@ function main () {
 	global.PREDATOR_PERIOD = Infinity; // no time-based change
 	global.NUM_AGENTS = 20;
 	global.WORLD_OFFSET_Y = 0; // no info bar
-	global.INITIAL_AGENT_OFFSET = 180; // v. obvious critters
+	global.INITIAL_AGENT_OFFSETS[0] = 180; // v. obvious critters
 	global.MODE_SWITCH_SPEED = 200; // fast mode switch
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas, hue);
+	world = new World(global, canvas, [hue, GLOBAL.AGENT_RADIUS],
+																		['relative', 'relative']);
 	world.externalInit = function () {
 		//this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info);
@@ -478,12 +483,13 @@ function main () {
 	global.PREDATOR_PERIOD = Infinity; // no time-based change
 	global.NUM_AGENTS = 20;
 	global.WORLD_OFFSET_Y = 0; // no info bar
-	global.INITIAL_AGENT_OFFSET = 0; // v. hidden critters
+	global.INITIAL_AGENT_OFFSETS[0] = 0; // v. hidden critters
 	global.MODE_SWITCH_SPEED = 100; // fast mode switch
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
-	world = new World(global, canvas, hue);
+	world = new World(global, canvas, [hue, GLOBAL.AGENT_RADIUS],
+																		['relative', 'relative']);
 	world.externalInit = function () {
 		this.stage.removeChild(this.info);
 		//var envSpan = document.querySelector("#critter-hunt-right-env");
@@ -514,15 +520,17 @@ function main () {
 	world.start();
 	interactives.push(world);
 
-	// sandbox
+	// SELECTION
 	canvas = document.querySelector("#selection");
 	canvas.width = 1100;
 	canvas.height = 750;
 	global = globalClone();
-	global.INIT_AGENTS_VARIATION = 50;
+	global.INIT_AGENTS_VARIATIONS[0] = 50;
 	
 	world = new World(global, canvas,
-										GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)], true);
+										[GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)],
+										 GLOBAL.AGENT_RADIUS],
+										['split', 'relative']);
 									
 	world.yearCounter = 1;
 	world.externalTick = function () {
@@ -572,10 +580,10 @@ function main () {
 		}
 		var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
 		var envColor = this.bg.color;
-		var lmColor = chroma.hcl(avgColor.hcl()[0]-0.45*this.GLOBAL.MUTATION_RATE,
+		var lmColor = chroma.hcl(avgColor.hcl()[0]-0.45*this.GLOBAL.MUTATION_RATES[0],
 														 this.GLOBAL.CHROMA,
 														 this.GLOBAL.LIGHTNESS);
-		var rmColor = chroma.hcl(avgColor.hcl()[0]+0.45*this.GLOBAL.MUTATION_RATE,
+		var rmColor = chroma.hcl(avgColor.hcl()[0]+0.45*this.GLOBAL.MUTATION_RATES[0],
 														 this.GLOBAL.CHROMA,
 														 this.GLOBAL.LIGHTNESS);
 		var closerMColor, furtherMColor;
@@ -648,40 +656,43 @@ function main () {
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
-	global.INIT_AGENTS_VARIATION = 0;
-	global.INITIAL_AGENT_OFFSET = 0;
-	global.MOTHER_MUTATION_PROB = 0.15;
-	global.FATHER_MUTATION_PROB = 0.15;
+	global.INIT_AGENTS_VARIATIONS[0] = 0;
+	global.INITIAL_AGENT_OFFSETS[0] = 0;
+	global.MOTHER_MUTATION_PROBS[0] = 0.15;
+	global.FATHER_MUTATION_PROBS[0] = 0.15;
 	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
-	var selectionWorldAgentHue = world.agentStartCol;
-	var selectionWorldHue = world.envHue;
-	world = new World(global, canvas, selectionWorldHue);
+	var selectionWorldEnvGenome = world.envGenome;
+	var selectionWorldCritterGenome = world.critterGenome;
+	world = new World(global, canvas, selectionWorldEnvGenome,
+																		selectionWorldCritterGenome);
 	world.externalInit = function () {
 		// this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
 		
-		this.agentStartCol = selectionWorldAgentHue;
-
 		// create agents and replace old ones!
 		this.agentContainer.removeAllChildren();
 		this.agents = [];
 		var sample = poissonDiscSampler(canvas.width, canvas.height,
-																		2*this.GLOBAL.AGENT_RADIUS,
-																		this.GLOBAL.AGENT_RADIUS);
+																		2*this.GLOBAL.MAX_AGENT_RADIUS,
+																		this.GLOBAL.MAX_AGENT_RADIUS);
 		var father = new Agent(this.GLOBAL, this.bg.bounds,
-													 this.GLOBAL.AGENT_RADIUS,
 													 sample(), vec2.create(),
-													 [[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [0]]);
+													 [this.critterGenome[0]+
+														this.GLOBAL.INIT_AGENTS_VARIATIONS[0]*(random.number()-0.5),
+														this.critterGenome[1]+
+														this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 		father.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 		father.update({WILL_DRAW: true});
 		this.agentContainer.addChild(father);
 		this.agents.push(father);
 		var mother = new Agent(this.GLOBAL, this.bg.bounds,
-													 this.GLOBAL.AGENT_RADIUS,
 													 sample(), vec2.create(),
-													 [[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [0]]);
+													 [this.critterGenome[0]+
+														this.GLOBAL.INIT_AGENTS_VARIATIONS[0]*(random.number()-0.5),
+														this.critterGenome[1]+
+														this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 		mother.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 		mother.update({WILL_DRAW: true});
 		this.agentContainer.addChild(mother);
@@ -694,9 +705,8 @@ function main () {
 
 			mother.motherChild(null, father.genome);
 			var a = new Agent(this.GLOBAL, this.bg.bounds,
-														 this.GLOBAL.AGENT_RADIUS,
 														 pos, vec2.create(),
-														 [[mother.childGenome[0][0]], [0]]);
+														 [mother.childGenome[0], mother.childGenome[1]]);
 			mother.isPregnant = false;
 			mother.childGenome = null;
 			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION/2;
@@ -721,19 +731,18 @@ function main () {
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
-	global.INIT_AGENTS_VARIATION = 0;
-	global.INITIAL_AGENT_OFFSET = 0;
+	global.INIT_AGENTS_VARIATIONS[0] = 0;
+	global.INITIAL_AGENT_OFFSETS[0] = 0;
 	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
 	var mutationWorldAgentsEncoding = world.encodedAgents;
 	var mutationWorldSavedTime = world.savedTime;
-	world = new World(global, canvas, selectionWorldHue);
+	world = new World(global, canvas, selectionWorldEnvGenome,
+																		selectionWorldCritterGenome);
 	world.externalInit = function () {
 		// this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
-
-		this.agentStartCol = selectionWorldAgentHue;
 
 		// get agents from mutation pane
 		this.savedTime = mutationWorldSavedTime;
@@ -750,7 +759,7 @@ function main () {
 		// kill a bunch of them with the autopredator
 		for (var i = 0; i < this.agents.length; i++) {
 			a = this.agents[i];
-			diff = a.genome[0][0]-this.envHue;
+			diff = a.genome[0]-this.envGenome[0];
 			if (diff > 180) { diff -= 360; }
 			if (diff < -180) { diff += 360; }
 			diff = Math.abs(diff);
@@ -774,19 +783,18 @@ function main () {
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
-	global.INIT_AGENTS_VARIATION = 0;
-	global.INITIAL_AGENT_OFFSET = 0;
+	global.INIT_AGENTS_VARIATIONS[0] = 0;
+	global.INITIAL_AGENT_OFFSETS[0] = 0;
 	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
 	var mutationWorldAgentsEncoding = world.encodedAgents;
 	var mutationWorldSavedTime = world.savedTime;
-	world = new World(global, canvas, selectionWorldHue);
+	world = new World(global, canvas, selectionWorldEnvGenome,
+																		selectionWorldCritterGenome);
 	world.externalInit = function () {
 		// this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
-
-		this.agentStartCol = selectionWorldAgentHue;
 
 		// get agents from mutation pane
 		this.savedTime = mutationWorldSavedTime;
@@ -811,9 +819,8 @@ function main () {
 				father = livingAdults[k];
 				mother.motherChild(null, father.genome);
 				a = new Agent(this.GLOBAL, this.bg.bounds,
-															 this.GLOBAL.AGENT_RADIUS,
 															 vec2.clone(this.agents[i].pos), vec2.create(),
-															 [[mother.childGenome[0][0]], [0]]);
+															 [mother.childGenome[0], mother.childGenome[1]]);
 				mother.isPregnant = false;
 				mother.childGenome = null;
 				a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION/2;
@@ -842,40 +849,41 @@ function main () {
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
-	global.INIT_AGENTS_VARIATION = 0;
-	global.INITIAL_AGENT_OFFSET = 0;
-	global.MOTHER_MUTATION_PROB = 0.15;
-	global.FATHER_MUTATION_PROB = 0.15;
+	global.INIT_AGENTS_VARIATIONS[0] = 0;
+	global.INITIAL_AGENT_OFFSETS[0] = 0;
+	global.MOTHER_MUTATION_PROBS[0] = 0.15;
+	global.FATHER_MUTATION_PROBS[0] = 0.15;
 	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
-	var selectionWorldAgentHue = world.agentStartCol;
-	var selectionWorldHue = world.envHue;
-	world = new World(global, canvas, selectionWorldHue);
+	world = new World(global, canvas, selectionWorldEnvGenome,
+																		['relative', 'relative']);
 	world.externalInit = function () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
 		
-		//this.agentStartCol = selectionWorldAgentHue;
-
 		// create agents and replace old ones!
 		this.agentContainer.removeAllChildren();
 		this.agents = [];
 		var sample = poissonDiscSampler(canvas.width, canvas.height,
-																		2*this.GLOBAL.AGENT_RADIUS,
-																		this.GLOBAL.AGENT_RADIUS);
+																		2*this.GLOBAL.MAX_AGENT_RADIUS,
+																		this.GLOBAL.MAX_AGENT_RADIUS);
 		var father = new Agent(this.GLOBAL, this.bg.bounds,
-													 this.GLOBAL.AGENT_RADIUS,
 													 sample(), vec2.create(),
-													 [[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [0]]);
+													 [this.critterGenome[0]+
+														this.GLOBAL.INIT_AGENTS_VARIATIONS[0]*(random.number()-0.5),
+														this.critterGenome[1]+
+														this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 		father.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 		father.update({WILL_DRAW: true});
 		this.agentContainer.addChild(father);
 		this.agents.push(father);
 		var mother = new Agent(this.GLOBAL, this.bg.bounds,
-													 this.GLOBAL.AGENT_RADIUS,
 													 sample(), vec2.create(),
-													 [[this.agentStartCol+this.GLOBAL.INIT_AGENTS_VARIATION*(random.number()-0.5)], [0]]);
+													 [this.critterGenome[0]+
+														this.GLOBAL.INIT_AGENTS_VARIATIONS[0]*(random.number()-0.5),
+														this.critterGenome[1]+
+														this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 		mother.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 		mother.update({WILL_DRAW: true});
 		this.agentContainer.addChild(mother);
@@ -888,9 +896,8 @@ function main () {
 
 			mother.motherChild(null, father.genome);
 			var a = new Agent(this.GLOBAL, this.bg.bounds,
-														 this.GLOBAL.AGENT_RADIUS,
 														 pos, vec2.create(),
-														 [[mother.childGenome[0][0]], [0]]);
+														 [mother.childGenome[0], mother.childGenome[1]]);
 			mother.isPregnant = false;
 			mother.childGenome = null;
 			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION*Math.sqrt(random.number());

@@ -1,17 +1,16 @@
 // constructor
-function Agent(GLOBAL, bounds, radius, position, velocity, genome, encoding) {
+function Agent(GLOBAL, bounds, position, velocity, genome, encoding) {
 	// call inherited shape constructor
 	this.Container_constructor();
 
 	this.GLOBAL = GLOBAL;
 
 	// copy the genome, don't just get a reference to the array
-	this.genome = [[0], [0]];
-	this.genome[0][0] = genome[0][0];
-	this.genome[1][0] = genome[1][0];
+	this.genome = [0, 0];
+	this.genome[0] = genome[0];
+	this.genome[1] = genome[1];
 
 	this.bounds = bounds;
-	this.radius = radius-radius*(random.number()/5);
 	this.vel = vec2.clone(velocity);
 	this.pos = vec2.clone(position);
 	
@@ -22,7 +21,6 @@ var agentPrototype = createjs.extend(Agent, createjs.Container);
 
 agentPrototype.init = function (encoding) {
 	if (encoding != null) {
-		this.radius = encoding.radius;
 		this.acc = vec2.clone(encoding.acc);
 		this.heading = encoding.heading;
 		this.birthTime = encoding.birthTime;
@@ -36,7 +34,8 @@ agentPrototype.init = function (encoding) {
 		this.isEaten = encoding.isEaten;
 		this.isHiding = encoding.isHiding;
 		if (encoding.childGenome) {
-			this.childGenome = [[encoding.childGenome[0][0]], [0]];
+			this.childGenome = [encoding.childGenome[0],
+													encoding.childGenome[1]];
 		}
 		this.matingTime = encoding.matingTime;
 		this.deathTime = encoding.deathTime;
@@ -64,6 +63,9 @@ agentPrototype.init = function (encoding) {
 
 	this.snapToPixel = true;
 
+	this.expressPhenotype();
+	this.grow(this.birthTime);
+
 	// set createjs position & rotation vars based on internals
 	this.rotation = this.heading;
 	this.x = this.pos[0];
@@ -74,9 +76,6 @@ agentPrototype.init = function (encoding) {
 	this.cached = false;
 	this.isTweening = false;
 	
-	this.expressPhenotype();
-	this.grow(this.birthTime);
-
 	this.body = new createjs.Shape();
 	this.addChild(this.body);
 	this.eyes = new createjs.Shape();
@@ -110,7 +109,7 @@ agentPrototype.encode = function (a) {
 	out.heading = a.heading;
 	out.rotation = a.rotation;
 	out.radius = a.radius;
-	out.genome = [[a.genome[0][0]], [0]];
+	out.genome = [a.genome[0], a.genome[1]];
 	out.birthTime = a.birthTime;
 	out.isAdult = a.isAdult;
 	out.collisionCount = a.collisionCount;
@@ -122,7 +121,7 @@ agentPrototype.encode = function (a) {
 	out.isEaten = a.isEaten;
 	out.isHiding = a.isHiding;
 	if (a.childGenome) {
-		out.childGenome = [[a.childGenome[0][0]], [0]];
+		out.childGenome = [a.childGenome[0], a.childGenome[1]];
 	}
 	out.matingTime = a.matingTime;
 	out.deathTime = a.deathTime;
@@ -130,7 +129,7 @@ agentPrototype.encode = function (a) {
 }
 
 agentPrototype.agentFromEncoding = function (encoding, global) {
-	return new Agent(global, encoding.bounds, encoding.radius,
+	return new Agent(global, encoding.bounds,
 									 encoding.pos, encoding.vel,
 									 encoding.genome, encoding);
 }
@@ -145,8 +144,11 @@ agentPrototype.expressPhenotype = function () {
 	// HCL scale is for chroma and lightness. the goal of these settings
 	// is to stay within a safe range, where the spectrum of hues is continuous
 	// and has consistent lightness
-	//this.color = chroma.hcl(this.genome[0][0] + this.genome[1][0], GLOBAL_CHROMA, GLOBAL_LIGHTNESS);
-	this.color = chroma.hcl(this.genome[0][0], this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
+	this.color = chroma.hcl(this.genome[0]+
+													(random.number()-0.5)*this.GLOBAL.RAND_AGENT_VARIATIONS[0],
+													this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
+	this.radius = this.genome[1]+
+								(random.number()-0.5)*this.GLOBAL.RAND_AGENT_VARIATIONS[1];
 }
 
 // Two functions to move X & Y to play nice with the QUADTREE library
@@ -241,28 +243,43 @@ agentPrototype.collide = function (other) {
 agentPrototype.motherChild = function (matingTime, otherGenome) {
 	this.isPregnant = true;
 	this.matingTime = matingTime;
-	var thisGene = this.genome[0][0];
-	var otherGene = otherGenome[0][0];
-	// infrequent, significant mutations
-	if (random.number()<this.GLOBAL.MOTHER_MUTATION_PROB) {
+	this.childGenome = [0,0];
+
+	// COLOR
+	var thisGene = this.genome[0];
+	var otherGene = otherGenome[0];
+	if (random.number()<this.GLOBAL.MOTHER_MUTATION_PROBS[0]) {
 		thisGene += (0.8+0.2*random.number())*
-								this.GLOBAL.MUTATION_RATE*
+								this.GLOBAL.MUTATION_RATES[0]*
 								(Math.round(random.number())*2-1);
 		thisGene %= 360;
 	}
-	if (random.number()<this.GLOBAL.FATHER_MUTATION_PROB) {
+	if (random.number()<this.GLOBAL.FATHER_MUTATION_PROBS[0]) {
 		otherGene += (0.8+0.2*random.number())*
-								 this.GLOBAL.MUTATION_RATE*
+								 this.GLOBAL.MUTATION_RATES[0]*
 								 (Math.round(random.number())*2-1);
 		otherGene %= 360;
 	}
 	var diff = thisGene-otherGene;
 	if (diff > 180) { diff -= 360; }
 	if (diff < -180) { diff += 360; }
-	this.childGenome = [[0],[0]];
-	this.childGenome[0][0] = (otherGene + diff/2)%360;
-	// small, frequent mutations (unrealistic)
-	// this.childGenome[0][0] += (random.number()-0.5)*this.GLOBAL.MUTATION_RATE;
+	this.childGenome[0] = (otherGene + diff/2)%360;
+
+	// RADIUS
+	var thisGene = this.genome[1];
+	var otherGene = otherGenome[1];
+	if (random.number()<this.GLOBAL.MOTHER_MUTATION_PROBS[1]) {
+		thisGene += (0.8+0.2*random.number())*
+								this.GLOBAL.MUTATION_RATES[1]*
+								(Math.round(random.number())*2-1);
+	}
+	if (random.number()<this.GLOBAL.FATHER_MUTATION_PROBS[1]) {
+		otherGene += (0.8+0.2*random.number())*
+								 this.GLOBAL.MUTATION_RATES[1]*
+								 (Math.round(random.number())*2-1);
+	}
+	this.childGenome[1] = (thisGene + otherGene)/2
+
 	createjs.Tween.get(this, { override: true })
 								.to({ scaleX: this.GLOBAL.PREGNANT_SCALE, scaleY: this.GLOBAL.PREGNANT_SCALE }, 400);
 }
@@ -501,7 +518,6 @@ agentPrototype.update = function (e) {
 		var newVel = vec2.clone(this.vel);
 
 		result.push(new Agent(this.GLOBAL, this.bounds,
-													this.GLOBAL.AGENT_RADIUS,
 													newPos, newVel, this.childGenome));
 		createjs.Tween.get(this, { override: true })
 									.to({ scaleX: 1, scaleY: 1 }, 400);

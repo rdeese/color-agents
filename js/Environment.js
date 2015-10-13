@@ -1,8 +1,8 @@
-function Environment (GLOBAL,bounds,envHue) {
+function Environment (GLOBAL,bounds,envGenome) {
 	this.Container_constructor();
 	this.GLOBAL = GLOBAL;
 	this.bounds = bounds;
-	this.hue = envHue;
+	this.hue = envGenome[0];
 	this.color = chroma.hcl(this.hue,this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 	this.colorHasChanged = false;
 
@@ -44,35 +44,17 @@ envPrototype.drawBg = function () {
 	g.clear();
 	g.beginFill(this.color.hex()).drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
 	
-	/*
-	var radius;
-	var p;
-	var r;
-	for (var i = 0; i < this.GLOBAL.NUM_PLANTS; i++) {
-		r = random.number();
-		radius = this.GLOBAL.AGENT_RADIUS-(this.GLOBAL.AGENT_RADIUS*r*r);
-		p = new Plant(this.GLOBAL, this.bounds, radius,
-									vec2.fromValues(random.number() * (this.bounds.width-2*radius) + radius,
-																	random.number() * (this.bounds.height-2*radius) + radius),
-									vec2.create(),
-									this.hue+30*(random.number()-0.5));
-		this.plants.push(p);
-		this.bg.addChild(p);
-	}
-	*/
-	
-	
 	// body like things
 	var c;
 	var r;
 	var radius;
 	for (var i = 0; i < this.GLOBAL.NUM_PLANTS; i++) {
 		r = random.number();
-		radius = this.GLOBAL.AGENT_RADIUS-(this.GLOBAL.AGENT_RADIUS*r*r);
+		radius = this.GLOBAL.AGENT_RADIUS+(random.number()-0.5)*this.GLOBAL.ENV_VARIATIONS[1];
 		c = new createjs.Shape();
 		c.x = random.number() * (this.bounds.width-2*radius) + radius;
 		c.y = random.number() * (this.bounds.height-2*radius) + radius;
-		col = chroma.hcl(this.hue+this.GLOBAL.ENV_VARIATION*(random.number()-0.5),
+		col = chroma.hcl(this.hue+this.GLOBAL.ENV_VARIATIONS[0]*(random.number()-0.5),
 										 this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 		c.graphics.beginFill(col.hex());
 		c.graphics.drawCircle(0,0,radius);
