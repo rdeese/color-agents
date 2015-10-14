@@ -29,10 +29,10 @@ World.prototype = {
 		this.envGenome[1] = this.initEnvGenome[1] != null ?
 												this.initEnvGenome[1] :
 												this.GLOBAL.MIN_AGENT_RADIUS+
-												this.GLOBAL.MUTATION_RATES[1]+
+												this.GLOBAL.MUTATION_RATES[1]/2+
 												random.number()*(this.GLOBAL.MAX_AGENT_RADIUS-
 																				 this.GLOBAL.MIN_AGENT_RADIUS-
-																				 2*this.GLOBAL.MUTATION_RATES[1]); 
+																				 this.GLOBAL.MUTATION_RATES[1]); 
 
 		this.critterGenome = [null, null];
 		this.critterGenome[0] = this.initCritterGenome[0] != null ?

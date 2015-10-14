@@ -18,7 +18,7 @@ function main () {
 		DELTA: 0, // just in case
 
 		MATING_PROB: 0.25,
-		MUTATION_RATES: [0, 8],
+		MUTATION_RATES: [0, 16],
 		MOTHER_MUTATION_PROBS: [0, 0.1],
 		FATHER_MUTATION_PROBS: [0, 0.1],
 		GESTATION_PD: 20000, // milliseconds
@@ -37,7 +37,7 @@ function main () {
 		MISS_TIME_PENALTY: 20000, // milliseconds
 		HIT_THRESHOLD: 30,
 
-		INITIAL_AGENT_OFFSETS: [0, 4],
+		INITIAL_AGENT_OFFSETS: [0, 8],
 		ENV_VARIATIONS: [0, 0],
 		RAND_AGENT_VARIATIONS: [0, 0],
 		DRAW_ENV_BACKGROUND: false,
@@ -209,13 +209,13 @@ function main () {
 	canvas.width = 1100;
 	canvas.height = 200;
 	global = globalClone();
+	var midSize = global.MIN_AGENT_RADIUS+(global.MAX_AGENT_RADIUS-global.MIN_AGENT_RADIUS)/2;
 	global.NUM_AGENTS = 1; // doesn't matter
 	global.WORLD_SPEED = 0;
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
-	global.INIT_AGENTS_VARIATIONS[1] = 12;
-	global.INITIAL_AGENT_OFFSETS[0] = 0;
+	global.INIT_AGENTS_VARIATIONS[1] = (global.MAX_AGENT_RADIUS-global.MIN_AGENT_RADIUS);
 	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
@@ -270,7 +270,7 @@ function main () {
 		this.stage.removeChild(this.info); // hide the info bar
 		var span = document.querySelector("#single-critter-color");
 		var color = this.agents[0].color;
-		span.textContent = Math.round(this.agents[0].radius) + " pixel";
+		span.textContent = Math.round(2*this.agents[0].radius) + " pixel";
 		span.style.setProperty('color', color.hex());
 	}.bind(world);
 	world.init();
@@ -314,13 +314,13 @@ function main () {
 		var motherSpan = document.querySelector("#critter-family-mother");
 		var childSpan = document.querySelector("#critter-family-child");
 		var fatherColor = this.agents[0].color;
-		fatherSpan.textContent = Math.round(this.agents[0].radius) + " pixel";
+		fatherSpan.textContent = Math.round(2*this.agents[0].radius) + " pixel";
 		fatherSpan.style.setProperty('color', fatherColor.hex());
 		var motherColor = this.agents[1].color;
-		motherSpan.textContent = Math.round(this.agents[1].radius) + " pixel";
+		motherSpan.textContent = Math.round(2*this.agents[1].radius) + " pixel";
 		motherSpan.style.setProperty('color', motherColor.hex());
 		var childColor = intermediateChromaColor(motherColor, fatherColor);
-		childSpan.textContent = Math.round((this.agents[0].radius+this.agents[1].radius)/2) +
+		childSpan.textContent = Math.round(2*(this.agents[0].radius+this.agents[1].radius)/2) +
 														" pixel";
 		childSpan.style.setProperty('color', childColor.hex());
 	}.bind(world);
@@ -369,7 +369,7 @@ function main () {
 		//var motherSpan = document.querySelector("#critter-m-family-mother");
 		var childSpan = document.querySelector("#critter-m-family-child");
 		var fatherColor = this.agents[0].color;
-		fatherSpan.textContent = Math.round(this.agents[0].radius) + " pixel";
+		fatherSpan.textContent = Math.round(2*this.agents[0].radius) + " pixel";
 		fatherSpan.style.setProperty('color', fatherColor.hex());
 	}.bind(world);
 	world.init();
@@ -412,7 +412,7 @@ function main () {
 		var startRadius = this.agents.map(function (x) { return x.radius; })
 																 .reduce(function (x, y) { return x+y; })
 																 /this.agents.length;
-		startSpan.textContent = Math.round(startRadius) + " pixel";
+		startSpan.textContent = Math.round(2*startRadius) + " pixel";
 		startSpan.style.setProperty('color', this.bg.color.hex());
 	}.bind(world);
 	world.externalTick = function (e) {
@@ -421,7 +421,7 @@ function main () {
 			var endRadius = this.agents.map(function (x) { return x.radius; })
 																	 .reduce(function (x, y) { return x+y; })
 																	 /this.agents.length;
-			endSpan.textContent = Math.round(endRadius) + " pixel";
+			endSpan.textContent = Math.round(2*endRadius) + " pixel";
 			endSpan.style.setProperty('color', this.bg.color.hex());
 		}
 	}.bind(world);
@@ -452,13 +452,13 @@ function main () {
 		this.stage.removeChild(this.info);
 		var envSpan = document.querySelector("#critter-hunt-left-env");
 		var envColor = this.bg.color;
-		envSpan.textContent = Math.round(size) + " pixel";
+		envSpan.textContent = Math.round(2*size) + " pixel";
 		envSpan.style.setProperty('color', envColor.hex());
 		var critterSpan = document.querySelector("#critter-hunt-left-critter");
 		var critterRadius = this.agents.map(function (x) { return x.radius; })
 																	 .reduce(function (x, y) { return x+y; })
 																	 /this.agents.length;
-		critterSpan.textContent = Math.round(critterRadius) + " pixel";
+		critterSpan.textContent = Math.round(2*critterRadius) + " pixel";
 		critterSpan.style.setProperty('color', this.bg.color.hex());
 	}.bind(world);
 	world.externalTick = function (e) {
@@ -505,7 +505,7 @@ function main () {
 		var critterRadius = this.agents.map(function (x) { return x.radius; })
 																	 .reduce(function (x, y) { return x+y; })
 																	 /this.agents.length;
-		critterSpan.textContent = Math.round(critterRadius) + " pixel";
+		critterSpan.textContent = Math.round(2*critterRadius) + " pixel";
 		critterSpan.style.setProperty('color', this.bg.color.hex());
 	}.bind(world);
 	world.externalTick = function (e) {
@@ -544,7 +544,7 @@ function main () {
 			var avgRadius = this.agents.map(function (x) { return x.radius; })
 																 .reduce(function (x, y) { return x+y; })
 																 /this.agents.length;
-			span.textContent = Math.round(avgRadius) + " pixel";
+			span.textContent = Math.round(2*avgRadius) + " pixel";
 			span.style.setProperty('color', this.bg.color.hex());
 			if (this.info.year > 1) {
 				span = document.querySelector("#last-year");
@@ -555,7 +555,7 @@ function main () {
 					var avgRadius = this.agents.map(function (x) { return x.radius; })
 																		 .reduce(function (x, y) { return x+y; })
 																		 /this.agents.length;
-					span.textContent = Math.round(avgRadius) + " pixel";
+					span.textContent = Math.round(2*avgRadius) + " pixel";
 					span.style.setProperty('color', this.bg.color.hex());
 				}
 				setTimeout(function () {
@@ -605,25 +605,25 @@ function main () {
 		spans = document.querySelectorAll("#critter-decade-env");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = Math.round(envRadius) + " pixel";
+			span.textContent = Math.round(2*envRadius) + " pixel";
 			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-start-critter");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = Math.round(avgRadius) + " pixel";
+			span.textContent = Math.round(2*avgRadius) + " pixel";
 			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-closer-m-critter");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = Math.round(closerMRadius) + " pixel";
+			span.textContent = Math.round(2*closerMRadius) + " pixel";
 			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-further-m-critter");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = Math.round(furtherMRadius) + " pixel";
+			span.textContent = Math.round(2*furtherMRadius) + " pixel";
 			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-end-critter");
@@ -769,7 +769,7 @@ function main () {
 			a = this.agents[i];
 			diff = a.genome[1]-this.envGenome[1];
 			diff = Math.abs(diff);
-			if (diff > safe && random.number() < diff/5) {
+			if (diff > safe && random.number() < diff/9) {
 				a.isEaten = true;
 			}
 		}
@@ -857,9 +857,7 @@ function main () {
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
 	global.INIT_AGENTS_VARIATIONS[0] = 0;
-	global.INITIAL_AGENT_OFFSETS[0] = 0;
-	global.MOTHER_MUTATION_PROBS[0] = 0.15;
-	global.FATHER_MUTATION_PROBS[0] = 0.15;
+	global.INITIAL_AGENT_OFFSETS[1] = 0;
 	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
@@ -907,7 +905,7 @@ function main () {
 														 [mother.childGenome[0], mother.childGenome[1]]);
 			mother.isPregnant = false;
 			mother.childGenome = null;
-			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION*Math.sqrt(random.number());
+			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 			a.update({WILL_DRAW: true});
 			this.agentContainer.addChild(a);
 			this.agents.push(a);

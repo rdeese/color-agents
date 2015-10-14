@@ -488,7 +488,7 @@ function main () {
 	global.NUM_AGENTS = 20;
 	global.WORLD_OFFSET_Y = 0; // no info bar
 	global.INITIAL_AGENT_OFFSETS[0] = 0; // v. hidden critters
-	global.MODE_SWITCH_SPEED = 100; // fast mode switch
+	global.MODE_SWITCH_SPEED = 200; // fast mode switch
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
@@ -855,8 +855,6 @@ function main () {
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
 	global.INIT_AGENTS_VARIATIONS[0] = 0;
 	global.INITIAL_AGENT_OFFSETS[0] = 0;
-	global.MOTHER_MUTATION_PROBS[0] = 0.15;
-	global.FATHER_MUTATION_PROBS[0] = 0.15;
 	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
