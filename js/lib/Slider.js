@@ -35,8 +35,15 @@
 		this.Container_constructor();
 		this.GLOBAL = GLOBAL;
 		this.color = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
-		this.textColor = chroma("#FFFFFF");
-		this.bgColor = this.color.brighten(1);
+		if (this.GLOBAL.COLOR_FILL) {
+			this.fgColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
+			this.textColor = chroma("#FFFFFF");
+			this.bgColor = this.color.brighten(1);
+		} else {
+			this.fgColor = this.color.brighten(1);
+			this.textColor = this.color;
+			this.bgColor = chroma("#FFFFFF");
+		}
 		var tempText = new createjs.Text("M", "bold 30px "+this.GLOBAL.FONT, "#FFFFFF");
 		this.textLineHeight = tempText.getMeasuredLineHeight();
 
@@ -87,10 +94,11 @@
 	p._drawSlider = function () {
 		var g = this._bg.graphics;
 		g.clear();
+		g.beginStroke(this.textColor.hex());
 		g.beginFill(this.bgColor.hex()).drawRoundRect(0,0,this.width,this.height, 20);
 		g = this._nub.graphics;
 		g.clear();
-		g.beginFill(this.color.hex()).drawRoundRect(0,0,this.height, this.height, 20);
+		g.beginFill(this.fgColor.hex()).drawRoundRect(0,0,this.height, this.height, 20);
 		this._minText.textAlign = "center";
 		this._minText.x = this.height/2;
 		this._minText.y = this.height/2-this.textLineHeight/2;

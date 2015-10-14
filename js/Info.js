@@ -5,10 +5,24 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.bounds = infoBounds;
 	this.worldBounds = worldBounds;
 
-	this.lightColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
-	this.darkColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS).darken(-5);
-	this.overlayHitColorHex = "#FFFFFF"; //chroma.hcl(145, 55, 90).hex();
-	this.overlayMissColorHex = "#FFFFFF"; //chroma.hcl(25, 55, 90).hex();
+	this.color = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
+
+	if (this.GLOBAL.COLOR_FILL) {
+		this.fillColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
+		this.textColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS).darken(-5);
+	} else {
+		this.fillColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS).brighten(5);
+		this.textColor = chroma.hcl(hue, this.GLOBAL.CHROMA, this.GLOBAL.LIGHTNESS);
+	}
+	if (this.GLOBAL.COLOR_FILL) {
+		this.overlayHitColorHex = "#FFFFFF"; //chroma.hcl(145, 55, 90).hex();
+		this.overlayMissColorHex = "#FFFFFF"; //chroma.hcl(25, 55, 90).hex();
+	} else {
+		this.overlayHitColorHex = chroma.hcl(hue, this.GLOBAL.CHROMA,
+																				 this.GLOBAL.LIGHTNESS).hex();
+		this.overlayMissColorHex = chroma.hcl(hue, this.GLOBAL.CHROMA,
+																				  this.GLOBAL.LIGHTNESS).hex();
+	}
 
 	var tempText = new createjs.Text("M", "bold 30px "+this.GLOBAL.FONT, "#FFFFFF");
 	this.textLineHeight = tempText.getMeasuredLineHeight();
@@ -25,7 +39,7 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.togglePauseBg.y = 0;
 	this.togglePause.addChild(this.togglePauseBg);
 
-	this.togglePauseLabel = new createjs.Text("", "bold 30px "+this.GLOBAL.FONT, this.darkColor.hex());
+	this.togglePauseLabel = new createjs.Text("", "bold 30px "+this.GLOBAL.FONT, this.textColor.hex());
 	this.togglePauseLabel.textAlign = "center";
 	this.togglePauseLabel.x = this.togglePause.width/2;
 	this.togglePauseLabel.y = this.togglePause.height/2-20;
@@ -46,7 +60,7 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.resetButtonBg.y = 0;
 	this.resetButton.addChild(this.resetButtonBg);
 
-	this.resetButtonLabel = new createjs.Text("", "bold 30px "+this.GLOBAL.FONT, this.darkColor.hex());
+	this.resetButtonLabel = new createjs.Text("", "bold 30px "+this.GLOBAL.FONT, this.textColor.hex());
 	this.resetButtonLabel.textAlign = "center";
 	this.resetButtonLabel.x = this.resetButton.width/2;
 	this.resetButtonLabel.y = this.resetButton.height/2-20;
@@ -68,18 +82,18 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.toggleMode.addChild(this.toggleModeBg);
 
 	/*
-	this.toggleModeArrow = new createjs.Text("\u25be", "bold 24px "+this.GLOBAL.FONT, this.darkColor.hex());
+	this.toggleModeArrow = new createjs.Text("\u25be", "bold 24px "+this.GLOBAL.FONT, this.textColor.hex());
 	this.toggleModeArrow.x = this.toggleMode.width - 30;
 	this.toggleModeArrow.y = this.toggleMode.height/2-this.textLineHeight/2;
 	this.toggleMode.addChild(this.toggleModeArrow);
 	*/
 
-	this.toggleModeLabel = new createjs.Text("", "bold 24px "+this.GLOBAL.FONT, this.darkColor.hex());
+	this.toggleModeLabel = new createjs.Text("", "bold 24px "+this.GLOBAL.FONT, this.textColor.hex());
 	this.toggleModeLabel.x = 20;
 	this.toggleModeLabel.y = this.toggleMode.height/2-this.textLineHeight/2;
 	this.toggleMode.addChild(this.toggleModeLabel);
 	
-	this.toggleModeTime = new createjs.Text("", "bold 24px "+this.GLOBAL.FONT, this.lightColor.brighten(1).hex());
+	this.toggleModeTime = new createjs.Text("", "bold 24px "+this.GLOBAL.FONT, this.color.brighten(1).hex());
 	this.toggleModeTime.textAlign = "right";
 	this.toggleModeTime.x = this.toggleMode.width-20;
 	this.toggleModeTime.y = this.toggleMode.height/2-this.textLineHeight/2;
@@ -105,7 +119,7 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.bg.y = 0;
 	this.detailViewer.addChild(this.bg);
 
-	this.detailLabel = new createjs.Text("Last kill:", "bold 24px "+this.GLOBAL.FONT, this.darkColor.hex());
+	this.detailLabel = new createjs.Text("Last kill:", "bold 24px "+this.GLOBAL.FONT, this.textColor.hex());
 	this.detailLabel.textAlign = 'center';
 	this.detailLabel.x = this.detailViewer.width/2;
 	this.detailLabel.y = this.detailViewer.height/2-this.textLineHeight/2;
@@ -124,7 +138,7 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 
 	// INSTRUCTIONS
 	this.instructions = new createjs.Text("Click on a critter to get some info about it.",
-																				"bold 20px "+this.GLOBAL.FONT, this.lightColor.hex());
+																				"bold 20px "+this.GLOBAL.FONT, this.fillColor.hex());
 	this.instructions.width = this.bounds.width -
 														this.togglePause.width -
 														this.resetButton.width -
@@ -359,7 +373,8 @@ infoPrototype.setTarget = function (target) {
 
 infoPrototype.drawTogglePause = function () {
 	this.togglePauseBg.graphics.clear();
-	this.togglePauseBg.graphics.beginFill(this.lightColor.hex());
+	this.togglePauseBg.graphics.beginFill(this.fillColor.hex());
+	this.togglePauseBg.graphics.beginStroke(this.textColor.hex());
 	this.togglePauseBg.graphics.drawRoundRect(0,0,this.togglePause.width,
 																						this.togglePause.height,20);
 	this.GLOBAL.DIRTY = true;
@@ -367,7 +382,8 @@ infoPrototype.drawTogglePause = function () {
 
 infoPrototype.drawResetButton = function () {
 	this.resetButtonBg.graphics.clear();
-	this.resetButtonBg.graphics.beginFill(this.lightColor.hex());
+	this.resetButtonBg.graphics.beginFill(this.fillColor.hex());
+	this.resetButtonBg.graphics.beginStroke(this.textColor.hex());
 	this.resetButtonBg.graphics.drawRoundRect(0,0,this.resetButton.width,
 																						this.resetButton.height,20);
 	this.resetButtonLabel.text = "\u21bb";
@@ -376,7 +392,8 @@ infoPrototype.drawResetButton = function () {
 
 infoPrototype.drawToggleMode = function () {
 	this.toggleModeBg.graphics.clear();
-	this.toggleModeBg.graphics.beginFill(this.lightColor.hex());
+	this.toggleModeBg.graphics.beginFill(this.fillColor.hex());
+	this.toggleModeBg.graphics.beginStroke(this.textColor.hex());
 	this.toggleModeBg.graphics.drawRoundRect(0,0,this.toggleMode.width,
 																						this.togglePause.height,20);
 	this.toggleModeLabel.text = "Year " + this.year;
@@ -394,7 +411,8 @@ infoPrototype.drawToggleMode = function () {
 
 infoPrototype.drawDetailViewer = function () {
 	this.bg.graphics.clear();
-	this.bg.graphics.beginFill(this.lightColor.hex());
+	this.bg.graphics.beginFill(this.fillColor.hex());
+	this.bg.graphics.beginStroke(this.textColor.hex());
 	this.bg.graphics.drawRoundRect(0,0,this.detailViewer.width,this.detailViewer.height,20);
 	if (false) { //this.GLOBAL.MODE == 'observer') {
 		if (this.target == null) {

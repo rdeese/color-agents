@@ -49,10 +49,13 @@ envPrototype.drawBg = function () {
 	}
 	
 	// body like things
+	var numPlants = this.bounds.width*this.bounds.height/
+									this.envGenome[1]/this.envGenome[1]/4/4;
+
 	var c;
 	var r;
 	var radius;
-	for (var i = 0; i < this.GLOBAL.NUM_PLANTS; i++) {
+	for (var i = 0; i < numPlants; i++) {
 		r = random.number();
 		radius = this.envGenome[1]+(random.number()-0.5)*this.GLOBAL.ENV_VARIATIONS[1];
 		c = new createjs.Shape();
@@ -60,7 +63,12 @@ envPrototype.drawBg = function () {
 		c.y = random.number() * (this.bounds.height-2*radius) + radius;
 		col = chroma.hcl(this.envGenome[0]+this.GLOBAL.ENV_VARIATIONS[0]*(random.number()-0.5),
 										 this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
-		c.graphics.beginFill(col.hex());
+		if (this.GLOBAL.COLOR_FILL) {
+			c.graphics.beginFill(col.hex());
+		} else {
+			c.graphics.beginFill("#FFFFFF");
+			c.graphics.beginStroke(col.hex());
+		}
 		c.graphics.drawCircle(0,0,radius);
 		this.bg.addChild(c);
 	}

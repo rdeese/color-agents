@@ -352,8 +352,16 @@ agentPrototype.drawAgent = function () {
 	// draw body
 	var g = this.body.graphics;
 	g.clear();
-	g.beginFill(this.color.hex());
+	if (this.GLOBAL.COLOR_FILL) {
+		g.beginFill(this.color.hex());
+	} else {
+		g.beginFill("#FFFFFF");
+		g.beginStroke(this.color.hex());
+	}
+
 	g.drawCircle(0, 0, this.radius);
+	g.endStroke();
+	g.endFill();
 	
 	// draw eyes
 	g = this.eyes.graphics;
@@ -396,7 +404,9 @@ agentPrototype.drawAgent = function () {
 		g.endStroke();
 	} else {
 		// whites
-		g.beginFill(this.color.brighten(eyeContrast).hex());
+		if (this.GLOBAL.COLOR_FILL) {
+			g.beginFill(this.color.brighten(eyeContrast).hex());
+		}
 		g.beginStroke(this.color.darken(eyeContrast).hex());
 		g.drawCircle(0, -this.radius*0.4, this.radius*0.3);
 		g.endStroke();

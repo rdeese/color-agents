@@ -18,11 +18,11 @@ function main () {
 		DELTA: 0, // just in case
 
 		MATING_PROB: 0.25,
-		MUTATION_RATES: [0, 20],
+		MUTATION_RATES: [0, 8],
 		MOTHER_MUTATION_PROBS: [0, 0.1],
 		FATHER_MUTATION_PROBS: [0, 0.1],
 		GESTATION_PD: 20000, // milliseconds
-		YOUTH_DURATION: 40000, // milliseconds
+		YOUTH_DURATION: 20000, // milliseconds
 		MAX_ACC: 4/100000, // pixels per millisecond
 		ACC_DAMPING: 0.999,
 		VEL_DAMPING: 0.9999,
@@ -37,14 +37,15 @@ function main () {
 		MISS_TIME_PENALTY: 20000, // milliseconds
 		HIT_THRESHOLD: 30,
 
-		INITIAL_AGENT_OFFSETS: [0, 10],
+		INITIAL_AGENT_OFFSETS: [0, 4],
 		ENV_VARIATIONS: [0, 0],
 		RAND_AGENT_VARIATIONS: [0, 0],
 		DRAW_ENV_BACKGROUND: false,
+		COLOR_FILL: false,
 
-		AGENT_RADIUS: 25,
+		AGENT_RADIUS: 20,
 		MIN_AGENT_RADIUS: 10,
-		MAX_AGENT_RADIUS: 40,
+		MAX_AGENT_RADIUS: 30,
 		AGENT_COLOR: Math.random()*360,
 		BABY_AGENT_RADIUS: 5,
 		PREGNANT_SCALE: 1.2,
@@ -269,7 +270,7 @@ function main () {
 		this.stage.removeChild(this.info); // hide the info bar
 		var span = document.querySelector("#single-critter-color");
 		var color = this.agents[0].color;
-		span.textContent = chromaColorToHueName(color);
+		span.textContent = Math.round(this.agents[0].radius) + " pixel";
 		span.style.setProperty('color', color.hex());
 	}.bind(world);
 	world.init();
@@ -313,13 +314,14 @@ function main () {
 		var motherSpan = document.querySelector("#critter-family-mother");
 		var childSpan = document.querySelector("#critter-family-child");
 		var fatherColor = this.agents[0].color;
-		fatherSpan.textContent = chromaColorToHueName(fatherColor);
+		fatherSpan.textContent = Math.round(this.agents[0].radius) + " pixel";
 		fatherSpan.style.setProperty('color', fatherColor.hex());
 		var motherColor = this.agents[1].color;
-		motherSpan.textContent = chromaColorToHueName(motherColor);
+		motherSpan.textContent = Math.round(this.agents[1].radius) + " pixel";
 		motherSpan.style.setProperty('color', motherColor.hex());
 		var childColor = intermediateChromaColor(motherColor, fatherColor);
-		childSpan.textContent = chromaColorToHueName(childColor);
+		childSpan.textContent = Math.round((this.agents[0].radius+this.agents[1].radius)/2) +
+														" pixel";
 		childSpan.style.setProperty('color', childColor.hex());
 	}.bind(world);
 	world.init();
@@ -367,14 +369,8 @@ function main () {
 		//var motherSpan = document.querySelector("#critter-m-family-mother");
 		var childSpan = document.querySelector("#critter-m-family-child");
 		var fatherColor = this.agents[0].color;
-		fatherSpan.textContent = chromaColorToHueName(fatherColor);
+		fatherSpan.textContent = Math.round(this.agents[0].radius) + " pixel";
 		fatherSpan.style.setProperty('color', fatherColor.hex());
-		var motherColor = this.agents[1].color;
-		//motherSpan.textContent = chromaColorToHueName(motherColor);
-		//motherSpan.style.setProperty('color', motherColor.hex());
-		var childColor = intermediateChromaColor(motherColor, fatherColor);
-		childSpan.textContent = chromaColorToHueName(childColor);
-		childSpan.style.setProperty('color', childColor.hex());
 	}.bind(world);
 	world.init();
 	world.start();
@@ -413,16 +409,20 @@ function main () {
 		this.info.removeChild(this.info.toggleMode);
 		this.info.removeChild(this.info.detailViewer);
 		var startSpan = document.querySelector("#critter-observe-start");
-		var startColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-		startSpan.textContent = chromaColorToHueName(startColor);
-		startSpan.style.setProperty('color', startColor.hex());
+		var startRadius = this.agents.map(function (x) { return x.radius; })
+																 .reduce(function (x, y) { return x+y; })
+																 /this.agents.length;
+		startSpan.textContent = Math.round(startRadius) + " pixel";
+		startSpan.style.setProperty('color', this.bg.color.hex());
 	}.bind(world);
 	world.externalTick = function (e) {
 		if (e.WILL_DRAW) {
 			var endSpan = document.querySelector("#critter-observe-end");
-			var endColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-			endSpan.textContent = chromaColorToHueName(endColor);
-			endSpan.style.setProperty('color', endColor.hex());
+			var endRadius = this.agents.map(function (x) { return x.radius; })
+																	 .reduce(function (x, y) { return x+y; })
+																	 /this.agents.length;
+			endSpan.textContent = Math.round(endRadius) + " pixel";
+			endSpan.style.setProperty('color', this.bg.color.hex());
 		}
 	}.bind(world);
 	world.init();
@@ -452,12 +452,14 @@ function main () {
 		this.stage.removeChild(this.info);
 		var envSpan = document.querySelector("#critter-hunt-left-env");
 		var envColor = this.bg.color;
-		envSpan.textContent = chromaColorToHueName(envColor);
+		envSpan.textContent = Math.round(size) + " pixel";
 		envSpan.style.setProperty('color', envColor.hex());
 		var critterSpan = document.querySelector("#critter-hunt-left-critter");
-		var critterColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-		critterSpan.textContent = chromaColorToHueName(critterColor);
-		critterSpan.style.setProperty('color', critterColor.hex());
+		var critterRadius = this.agents.map(function (x) { return x.radius; })
+																	 .reduce(function (x, y) { return x+y; })
+																	 /this.agents.length;
+		critterSpan.textContent = Math.round(critterRadius) + " pixel";
+		critterSpan.style.setProperty('color', this.bg.color.hex());
 	}.bind(world);
 	world.externalTick = function (e) {
 		if (e.WILL_DRAW) {
@@ -500,9 +502,11 @@ function main () {
 		//envSpan.textContent = chromaColorToHueName(envColor);
 		//envSpan.style.setProperty('color', envColor.hex());
 		var critterSpan = document.querySelector("#critter-hunt-right-critter");
-		var critterColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-		critterSpan.textContent = chromaColorToHueName(critterColor);
-		critterSpan.style.setProperty('color', critterColor.hex());
+		var critterRadius = this.agents.map(function (x) { return x.radius; })
+																	 .reduce(function (x, y) { return x+y; })
+																	 /this.agents.length;
+		critterSpan.textContent = Math.round(critterRadius) + " pixel";
+		critterSpan.style.setProperty('color', this.bg.color.hex());
 	}.bind(world);
 	world.externalTick = function (e) {
 		if (e.WILL_DRAW) {
@@ -530,26 +534,29 @@ function main () {
 	global = globalClone();
 	
 	world = new World(global, canvas,
-										[GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)],
-										 GLOBAL.AGENT_RADIUS],
-										['split', 'relative']);
-									
+										[GLOBAL.AGENT_COLOR,
+										 null],
+										['relative', 'split']);
 	world.yearCounter = 1;
 	world.externalTick = function () {
 		if (this.info.year <= 10 && this.info.year == this.yearCounter) {
-			var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
 			var span = document.querySelector("#critter-decade-"+this.yearCounter);
-			span.textContent = chromaColorToHueName(avgColor);
-			span.style.setProperty('color', avgColor.hex());
+			var avgRadius = this.agents.map(function (x) { return x.radius; })
+																 .reduce(function (x, y) { return x+y; })
+																 /this.agents.length;
+			span.textContent = Math.round(avgRadius) + " pixel";
+			span.style.setProperty('color', this.bg.color.hex());
 			if (this.info.year > 1) {
 				span = document.querySelector("#last-year");
 				span.textContent = this.yearCounter.toString();
 				var spans = document.querySelectorAll("#critter-decade-end-critter");
 				for (var i = 0; i < spans.length; i++) {
 					var span = spans[i];
-					var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-					span.textContent = chromaColorToHueName(avgColor);
-					span.style.setProperty('color', avgColor.hex());
+					var avgRadius = this.agents.map(function (x) { return x.radius; })
+																		 .reduce(function (x, y) { return x+y; })
+																		 /this.agents.length;
+					span.textContent = Math.round(avgRadius) + " pixel";
+					span.style.setProperty('color', this.bg.color.hex());
 				}
 				setTimeout(function () {
 					this.after = document.querySelector("#selection-after").getContext('2d');
@@ -580,46 +587,44 @@ function main () {
 			span.textContent = "???";
 			span.style.setProperty('color', chroma.hcl(0, 0, this.GLOBAL.LIGHTNESS).hex());
 		}
-		var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-		var envColor = this.bg.color;
-		var lmColor = chroma.hcl(avgColor.hcl()[0]-0.45*this.GLOBAL.MUTATION_RATES[0],
-														 this.GLOBAL.CHROMA,
-														 this.GLOBAL.LIGHTNESS);
-		var rmColor = chroma.hcl(avgColor.hcl()[0]+0.45*this.GLOBAL.MUTATION_RATES[0],
-														 this.GLOBAL.CHROMA,
-														 this.GLOBAL.LIGHTNESS);
+		var avgRadius = this.agents.map(function (x) { return x.radius; })
+															 .reduce(function (x, y) { return x+y; })
+															 /this.agents.length;
+		var envRadius = this.bg.envGenome[1];
+		var lmRadius = avgRadius-0.45*this.GLOBAL.MUTATION_RATES[1];
+		var rmRadius = avgRadius+0.45*this.GLOBAL.MUTATION_RATES[1];
 		var closerMColor, furtherMColor;
-		if (Math.abs(chromaColorDist(lmColor, envColor)) >
-				Math.abs(chromaColorDist(rmColor, envColor))) {
-			closerMColor = rmColor;
-			furtherMColor = lmColor;
+		if (Math.abs(lmRadius-envRadius) >
+				Math.abs(rmRadius-envRadius)) {
+			closerMRadius = rmRadius;
+			furtherMRadius = lmRadius;
 		} else {
-			closerMColor = lmColor;
-			furtherMColor = rmColor;
+			closerMRadius = lmRadius;
+			furtherMRadius = rmRadius;
 		}
 		spans = document.querySelectorAll("#critter-decade-env");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = chromaColorToHueName(envColor);
-			span.style.setProperty('color', envColor.hex());
+			span.textContent = Math.round(envRadius) + " pixel";
+			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-start-critter");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = chromaColorToHueName(avgColor);
-			span.style.setProperty('color', avgColor.hex());
+			span.textContent = Math.round(avgRadius) + " pixel";
+			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-closer-m-critter");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = chromaColorToHueName(closerMColor);
-			span.style.setProperty('color', closerMColor.hex());
+			span.textContent = Math.round(closerMRadius) + " pixel";
+			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-further-m-critter");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = chromaColorToHueName(furtherMColor);
-			span.style.setProperty('color', furtherMColor.hex());
+			span.textContent = Math.round(furtherMRadius) + " pixel";
+			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-end-critter");
 		for (var i = 0; i < spans.length; i++) {
@@ -660,8 +665,8 @@ function main () {
 	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
 	global.INIT_AGENTS_VARIATIONS[0] = 0;
 	global.INITIAL_AGENT_OFFSETS[0] = 0;
-	global.MOTHER_MUTATION_PROBS[0] = 0.15;
-	global.FATHER_MUTATION_PROBS[0] = 0.15;
+	global.MOTHER_MUTATION_PROBS[1] = 0.15;
+	global.FATHER_MUTATION_PROBS[1] = 0.15;
 	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
@@ -719,6 +724,7 @@ function main () {
 		// reset mother size
 		createjs.Tween.get(mother, { override: true })
 									.to({ scaleX: 1, scaleY: 1 }, 10);
+		this.GLOBAL.TIME += this.GLOBAL.YOUTH_DURATION;
 	}.bind(world);
 	world.init();
 	world.start();
@@ -756,16 +762,14 @@ function main () {
 		var max = 0;
 		var target = null;
 		var diff = 0;
-		var safe = 20;
+		var safe = 2;
 
 		// kill a bunch of them with the autopredator
 		for (var i = 0; i < this.agents.length; i++) {
 			a = this.agents[i];
-			diff = a.genome[0]-this.envGenome[0];
-			if (diff > 180) { diff -= 360; }
-			if (diff < -180) { diff += 360; }
+			diff = a.genome[1]-this.envGenome[1];
 			diff = Math.abs(diff);
-			if (diff > safe && random.number() < diff/70) {
+			if (diff > safe && random.number() < diff/5) {
 				a.isEaten = true;
 			}
 		}
@@ -837,6 +841,7 @@ function main () {
 											.to({ scaleX: 1, scaleY: 1 }, 10);
 			}
 		}
+		this.GLOBAL.TIME += this.GLOBAL.YOUTH_DURATION;
 	}.bind(world);
 	world.init();
 	world.start();
