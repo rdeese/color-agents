@@ -113,6 +113,12 @@ function main () {
 		return chroma.hcl((180/Math.PI)*Math.atan2(y,x), GLOBAL.CHROMA, GLOBAL.LIGHTNESS);
 	}
 
+	var radiusToSizeName = function (radius) {
+		var names = ['eensy', 'tiny', 'small', 'medium', 'big', 'huge'];
+		var step = (GLOBAL.MAX_AGENT_RADIUS-GLOBAL.MIN_AGENT_RADIUS)/(names.length);
+		return names[Math.floor((radius-GLOBAL.MIN_AGENT_RADIUS)/step)];
+	}
+
 	var poissonDiscSampler = function (width, height, radius, edge) {
 		var k = 30, // maximum number of samples before rejection
 				radius2 = radius * radius,
@@ -270,7 +276,7 @@ function main () {
 		this.stage.removeChild(this.info); // hide the info bar
 		var span = document.querySelector("#single-critter-color");
 		var color = this.agents[0].color;
-		span.textContent = Math.round(2*this.agents[0].radius) + " pixel";
+		span.textContent = radiusToSizeName(this.agents[0].radius);
 		span.style.setProperty('color', color.hex());
 	}.bind(world);
 	world.init();
@@ -314,14 +320,13 @@ function main () {
 		var motherSpan = document.querySelector("#critter-family-mother");
 		var childSpan = document.querySelector("#critter-family-child");
 		var fatherColor = this.agents[0].color;
-		fatherSpan.textContent = Math.round(2*this.agents[0].radius) + " pixel";
+		fatherSpan.textContent = radiusToSizeName(this.agents[0].radius);
 		fatherSpan.style.setProperty('color', fatherColor.hex());
 		var motherColor = this.agents[1].color;
-		motherSpan.textContent = Math.round(2*this.agents[1].radius) + " pixel";
+		motherSpan.textContent = radiusToSizeName(this.agents[1].radius);
 		motherSpan.style.setProperty('color', motherColor.hex());
 		var childColor = intermediateChromaColor(motherColor, fatherColor);
-		childSpan.textContent = Math.round(2*(this.agents[0].radius+this.agents[1].radius)/2) +
-														" pixel";
+		childSpan.textContent = radiusToSizeName((this.agents[0].radius+this.agents[1].radius)/2);
 		childSpan.style.setProperty('color', childColor.hex());
 	}.bind(world);
 	world.init();
@@ -369,8 +374,10 @@ function main () {
 		//var motherSpan = document.querySelector("#critter-m-family-mother");
 		var childSpan = document.querySelector("#critter-m-family-child");
 		var fatherColor = this.agents[0].color;
-		fatherSpan.textContent = Math.round(2*this.agents[0].radius) + " pixel";
+		fatherSpan.textContent = radiusToSizeName(this.agents[0].radius);
 		fatherSpan.style.setProperty('color', fatherColor.hex());
+		childSpan.textContent = radiusToSizeName(this.agents[0].radius);
+		childSpan.style.setProperty('color', fatherColor.hex());
 	}.bind(world);
 	world.init();
 	world.start();
@@ -412,7 +419,7 @@ function main () {
 		var startRadius = this.agents.map(function (x) { return x.radius; })
 																 .reduce(function (x, y) { return x+y; })
 																 /this.agents.length;
-		startSpan.textContent = Math.round(2*startRadius) + " pixel";
+		startSpan.textContent = radiusToSizeName(startRadius);
 		startSpan.style.setProperty('color', this.bg.color.hex());
 	}.bind(world);
 	world.externalTick = function (e) {
@@ -421,7 +428,7 @@ function main () {
 			var endRadius = this.agents.map(function (x) { return x.radius; })
 																	 .reduce(function (x, y) { return x+y; })
 																	 /this.agents.length;
-			endSpan.textContent = Math.round(2*endRadius) + " pixel";
+			endSpan.textContent = radiusToSizeName(endRadius);
 			endSpan.style.setProperty('color', this.bg.color.hex());
 		}
 	}.bind(world);
@@ -452,13 +459,13 @@ function main () {
 		this.stage.removeChild(this.info);
 		var envSpan = document.querySelector("#critter-hunt-left-env");
 		var envColor = this.bg.color;
-		envSpan.textContent = Math.round(2*size) + " pixel";
+		envSpan.textContent = radiusToSizeName(size);
 		envSpan.style.setProperty('color', envColor.hex());
 		var critterSpan = document.querySelector("#critter-hunt-left-critter");
 		var critterRadius = this.agents.map(function (x) { return x.radius; })
 																	 .reduce(function (x, y) { return x+y; })
 																	 /this.agents.length;
-		critterSpan.textContent = Math.round(2*critterRadius) + " pixel";
+		critterSpan.textContent = radiusToSizeName(critterRadius);
 		critterSpan.style.setProperty('color', this.bg.color.hex());
 	}.bind(world);
 	world.externalTick = function (e) {
@@ -505,7 +512,7 @@ function main () {
 		var critterRadius = this.agents.map(function (x) { return x.radius; })
 																	 .reduce(function (x, y) { return x+y; })
 																	 /this.agents.length;
-		critterSpan.textContent = Math.round(2*critterRadius) + " pixel";
+		critterSpan.textContent = radiusToSizeName(critterRadius);
 		critterSpan.style.setProperty('color', this.bg.color.hex());
 	}.bind(world);
 	world.externalTick = function (e) {
@@ -544,7 +551,7 @@ function main () {
 			var avgRadius = this.agents.map(function (x) { return x.radius; })
 																 .reduce(function (x, y) { return x+y; })
 																 /this.agents.length;
-			span.textContent = Math.round(2*avgRadius) + " pixel";
+			span.textContent = radiusToSizeName(avgRadius);
 			span.style.setProperty('color', this.bg.color.hex());
 			if (this.info.year > 1) {
 				span = document.querySelector("#last-year");
@@ -555,7 +562,7 @@ function main () {
 					var avgRadius = this.agents.map(function (x) { return x.radius; })
 																		 .reduce(function (x, y) { return x+y; })
 																		 /this.agents.length;
-					span.textContent = Math.round(2*avgRadius) + " pixel";
+					span.textContent = radiusToSizeName(avgRadius);
 					span.style.setProperty('color', this.bg.color.hex());
 				}
 				setTimeout(function () {
@@ -605,25 +612,25 @@ function main () {
 		spans = document.querySelectorAll("#critter-decade-env");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = Math.round(2*envRadius) + " pixel";
+			span.textContent = radiusToSizeName(envRadius);
 			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-start-critter");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = Math.round(2*avgRadius) + " pixel";
+			span.textContent = radiusToSizeName(avgRadius);
 			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-closer-m-critter");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = Math.round(2*closerMRadius) + " pixel";
+			span.textContent = radiusToSizeName(closerMRadius);
 			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-further-m-critter");
 		for (var i = 0; i < spans.length; i++) {
 			var span = spans[i];
-			span.textContent = Math.round(2*furtherMRadius) + " pixel";
+			span.textContent = radiusToSizeName(furtherMRadius);
 			span.style.setProperty('color', this.bg.color.hex());
 		}
 		var spans = document.querySelectorAll("#critter-decade-end-critter");
