@@ -63,7 +63,6 @@ World.prototype = {
 															this.GLOBAL.INITIAL_AGENT_OFFSETS[1]*(random.integer(2)*2-1);
 		} else if (this.critterGenome[1] == 'split') {
 			this.critterGenome[1] = this.envGenome[1];
-			console.log("critters", this.critterGenome[1]);
 			if (random.number() < 0.5) {
 				this.critterGenome[1] += this.GLOBAL.INITIAL_AGENT_OFFSETS[1]/3;
 				this.envGenome[1] -= 2*this.GLOBAL.INITIAL_AGENT_OFFSETS[1]/3;
@@ -71,7 +70,6 @@ World.prototype = {
 				this.critterGenome[1] -= this.GLOBAL.INITIAL_AGENT_OFFSETS[1]/3;
 				this.envGenome[1] += 2*this.GLOBAL.INITIAL_AGENT_OFFSETS[1]/3;
 			}
-			console.log("critters", this.critterGenome[1]);
 		}
 
 		// QuadTree setup

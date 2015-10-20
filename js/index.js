@@ -304,11 +304,13 @@ function main () {
 	global.INIT_AGENTS_VARIATIONS[0] = 160;
 	global.FATHER_MUTATION_PROBS[0] = 0;
 	global.MOTHER_MUTATION_PROBS[0] = 0;
+	global.MATING_PROB = 1;
 	// autoplay
 	global.AUTOPLAY = true;
 	global.PAUSED = false;
 	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
+		this.GLOBAL.MATING_PROB = 1;
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
 		var fatherSpan = document.querySelector("#critter-family-father");
@@ -328,6 +330,9 @@ function main () {
 	world.start();
 	interactives.push(world);
 	world.externalTick = function () {
+		if (this.agents.length > 2) {
+			this.GLOBAL.MATING_PROB = 0;
+		}
 		if (!createjs.Tween.hasActiveTweens(this.GLOBAL) &&
 				(this.agents.filter(function (x) { return x.scaleX > 0.7 && x.scaleX < 0.8}).length >= 1 ||
 				this.agents.length < 2)) {
@@ -337,7 +342,7 @@ function main () {
 										.call(function () {
 											this.stage.removeAllChildren();
 										}, [], this)
-										.wait(1000)
+										.wait(500)
 										.call(function () {
 											this.init();
 										}, [], this);

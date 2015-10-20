@@ -114,9 +114,15 @@ function main () {
 	}
 
 	var radiusToSizeName = function (radius) {
-		var names = ['eensy', 'tiny', 'small', 'medium', 'big', 'huge'];
+		var names = ['eensy', 'tiny', 'small', 'medium', 'big', 'huge', 'giant'];
 		var step = (GLOBAL.MAX_AGENT_RADIUS-GLOBAL.MIN_AGENT_RADIUS)/(names.length);
-		return names[Math.floor((radius-GLOBAL.MIN_AGENT_RADIUS)/step)];
+    var index = Math.floor((radius-GLOBAL.MIN_AGENT_RADIUS)/step);
+		if (index < 0 || index >= names.length) {
+			console.log("error on radius: ", radius);
+			console.log("index", index);
+			return index.toString();
+		}
+		return names[index];
 	}
 
 	var poissonDiscSampler = function (width, height, radius, edge) {
@@ -437,7 +443,8 @@ function main () {
 	interactives.push(world);
 
 	// critter observation interactive
-	var size = 20+random.number()*10;
+	var size = GLOBAL.MIN_AGENT_RADIUS+GLOBAL.INITIAL_AGENT_OFFSETS[1]+
+						 random.number()*(GLOBAL.MAX_AGENT_RADIUS-GLOBAL.MIN_AGENT_RADIUS-GLOBAL.INITIAL_AGENT_OFFSETS[1]);
 	// LEFT ONE
 	canvas = document.querySelector("#critter-hunt-left");
 	canvas.width = 530;
@@ -447,7 +454,6 @@ function main () {
 	global.PREDATOR_PERIOD = Infinity; // no time-based change
 	global.NUM_AGENTS = 20;
 	global.WORLD_OFFSET_Y = 0; // no info bar
-	global.INITIAL_AGENT_OFFSETS[1] = 10; // v. obvious critters
 	global.MODE_SWITCH_SPEED = 200; // fast mode switch
 	// autoplay
 	global.AUTOPLAY = true;
