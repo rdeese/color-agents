@@ -187,7 +187,7 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 		var evt = new createjs.Event('reset', true);
 		this.dispatchEvent(evt);
 	}, this);
-	
+
 	this.x = 0;
 	this.y = 0;
 	this.alpha = 1;
@@ -206,11 +206,15 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.OBSERVER_PERIOD;
 
 	this.on('tick', function (e) {
-		this.update();
+		this.update(e);
 	});
 }
 
 var infoPrototype = createjs.extend(Info, createjs.Container);
+
+infoPrototype.sendPredator = function (target) {
+	this.predator.huntTarget(target);
+}
 
 infoPrototype.handleWorldClick = function (event, didHit, agent) {
 	if (this.GLOBAL.MODE == 'predator' && !this.GLOBAL.PAUSED) {
@@ -219,11 +223,10 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 		}
 		// BEGIN OVERLAY
 		if (didHit) {
-			agent.isEaten = true;
+			//agent.isEaten = true;
 			this.numHits++;
 			this.lifetimeHits++;
 			this.lifetimeScore++;
-			//this.drawDetailViewer();
 		} else {
 			this.numMisses++;
 			this.lifetimeMisses++;
@@ -443,7 +446,7 @@ infoPrototype.drawInfo = function () {
 	this.drawToggleMode();
 }
 
-infoPrototype.update = function () {
+infoPrototype.update = function (e) {
 	if (this.modeEnd < this.GLOBAL.TIME || this.numHits >= this.GLOBAL.HIT_THRESHOLD) {
 		this.nextMode();
 	}

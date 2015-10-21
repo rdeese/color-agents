@@ -287,9 +287,9 @@ agentPrototype.motherChild = function (matingTime, otherGenome) {
 }
 
 agentPrototype.selectCacheIfExists = function () {
-	if (this.isEaten) {
-		if (this.eatenCacheCanvas) {
-			this.cacheCanvas = this.eatenCacheCanvas;
+	if (this.isDying) {
+		if (this.dyingCacheCanvas) {
+			this.cacheCanvas = this.dyingCacheCanvas;
 			return true;
 		} else {
 			return false;
@@ -367,7 +367,7 @@ agentPrototype.drawAgent = function () {
 	g = this.eyes.graphics;
 	g.clear();
 	var eyeContrast = 0.4;
-	if (this.isEaten) {
+	if (this.isDying) {
 		this.eyes.scaleX = 1;
 	}
 	/*
@@ -379,7 +379,7 @@ agentPrototype.drawAgent = function () {
 		eyeContrast = 0.4;
 	}
 	*/
-	if (this.isEaten) {
+	if (this.isDying) {
 		var lineWidth = this.radius*0.15;
 		g.setStrokeStyle(lineWidth, 'round');
 		g.beginStroke(this.color.brighten(eyeContrast).hex());
@@ -434,8 +434,8 @@ agentPrototype.drawAgent = function () {
 	if (!this.isTweening) {
 		this.cache(-this.radius-1, -this.radius-1, 2*this.radius+2, 2*this.radius+2);
 
-		if (this.isEaten) {
-			this.eatenCacheCanvas = this.cacheCanvas;
+		if (this.isDying) {
+			this.dyingCacheCanvas = this.cacheCanvas;
 		} else if (this.isPregnant && this.GLOBAL.MODE != 'predator') {
 			this.peCacheCanvas = this.cacheCanvas;
 		} else if (this.isPregnant && this.GLOBAL.MODE != 'predator') {
@@ -461,19 +461,20 @@ agentPrototype.grow = function () {
 }
 
 agentPrototype.isDead = function () {
-	// check if I got eaten
-	if (this.isEaten) {
-		if (!this.deathTime) {
+	// check if this critter is dead
+	if (this.isDying) {
+		if (!this.deathTime && !this.isEaten) {
 			//this.color = this.color.darken(1);
 			this.deathTime = this.GLOBAL.TIME;
 			return false;
-		} else if (this.GLOBAL.TIME-this.deathTime > this.GLOBAL.EATEN_DURATION) {
+		} else if (this.isEaten ||
+							 this.GLOBAL.TIME-this.deathTime > this.GLOBAL.DEATH_DURATION) {
 			this.uncache();
 			this.body.graphics.clear();
 			this.eyes.graphics.clear();
 			return true;
 		} else {
-			this.alpha = 1-(this.GLOBAL.TIME-this.deathTime)/this.GLOBAL.EATEN_DURATION;
+			this.alpha = 1-(this.GLOBAL.TIME-this.deathTime)/this.GLOBAL.DEATH_DURATION;
 			return false;
 		}
 	} 
@@ -483,7 +484,6 @@ agentPrototype.isDead = function () {
 								this.GLOBAL.COLLISION_PENALTY*this.collisionCount;
 		if (score > this.GLOBAL.DEATH_THRESHHOLD) {
 			this.isDying = true;
-			this.isEaten = true;
 			this.deathTime = this.GLOBAL.TIME;
 		}
 		return false;
@@ -592,7 +592,7 @@ agentPrototype.update = function (e) {
 	// require it
 	if (e.WILL_DRAW && 
 			((this.wasPregnant != this.isPregnant) ||
-			 this.isEaten ||
+			 this.isDying ||
 			 this.isTweening ||
 			 this.GLOBAL.AGENTS_DIRTY)) {
 		this.updateHiding();

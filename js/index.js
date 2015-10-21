@@ -34,7 +34,7 @@ function main () {
 		OBSERVER_PERIOD: 240000, // milliseconds
 		PREDATOR_PERIOD: 20000, // milliseconds
 		MODE_SWITCH_SPEED: 500,
-		MISS_TIME_PENALTY: 20000, // milliseconds
+		MISS_TIME_PENALTY: 2000, // milliseconds
 		HIT_THRESHOLD: 30,
 
 		INITIAL_AGENT_OFFSETS: [60, 0],

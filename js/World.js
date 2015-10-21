@@ -76,6 +76,13 @@ World.prototype = {
 		// give it the world bounds, false means shapes not points, and a depth of 7
 		this.tree = new QuadTree(worldBounds, false, 7);
 
+		/*
+		this.worldMask = new createjs.Shape();
+		this.worldMask.graphics.beginFill("#000000")
+													 .drawRoundRect(0, 0, worldBounds.width, worldBounds.height, 20);
+		this.worldMask.cache(0, 0, worldBounds.width, worldBounds.height);
+		*/
+
 		// create the environment
 		this.bg = new Environment(this.GLOBAL, worldBounds, this.envGenome);
 		this.bg.y = this.GLOBAL.WORLD_OFFSET_Y;
@@ -88,8 +95,28 @@ World.prototype = {
 		this.stage.addChild(this.agentContainer);
 		this.initAgents(this.GLOBAL.NUM_AGENTS);
 
+		// create the predator and predator container
+		this.predatorContainer = new createjs.Container();
+		this.predatorContainer.y = this.GLOBAL.WORLD_OFFSET_Y;
+		this.predatorContainer.GLOBAL = this.GLOBAL;
+		this.stage.addChild(this.predatorContainer);
+		this.predator = new Predator(this.GLOBAL, worldBounds, 60);
+		this.predator.pos[0] = -150;
+		this.predator.pos[1] = -150;
+		this.predatorContainer.addChild(this.predator);
+
 		// send world clicks to the info obj
 		this.stage.on("worldClick", function (e) {
+			if (this.GLOBAL.MODE == 'predator' && !this.GLOBAL.PAUSED) {
+				if (this.predator.isTweening) {
+					return;
+				}
+				if (e.onAgent) {
+					this.predator.huntTarget(e.agent);
+				} else {
+					this.predator.huntNothing(e.mouseEvent);
+				}
+			}
 			this.info.handleWorldClick(e.mouseEvent, e.onAgent, e.agent);
 		}, this);
 
@@ -257,6 +284,7 @@ World.prototype = {
 			for (var i = 0; i < this.bg.plants.length; i++) {
 				this.bg.plants[i].update(event);
 			}
+			this.predator.update(event);
 
 			if (event.WILL_DRAW) { this.GLOBAL.AGENTS_DIRTY = false; }
 
