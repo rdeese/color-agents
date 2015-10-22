@@ -26,9 +26,11 @@ predatorPrototype.init = function () {
 	this.shadowGen = new createjs.Shape();
 	this.shadowGen.shadow = new createjs.Shadow("rgba(0, 0, 0, 0.5)", 0, 50, 10);
 	this.addChild(this.shadowGen);
+  this.victimContainer = new createjs.Container();
+	this.victimContainer.x = this.radius;
+  this.addChild(this.victimContainer);
 	this.victim = new createjs.Shape();
-	this.victim.x = this.radius;
-	this.addChild(this.victim);
+	this.victimContainer.addChild(this.victim);
 	this.body = new createjs.Shape();
 	this.addChild(this.body);
 	this.eyes = new createjs.Shape();
@@ -115,8 +117,6 @@ predatorPrototype.selectCacheIfExists = function () {
 // TODO confirm that adding the "!this.isHiding" conditional fixes
 // the weird eyes still showing, teleporting, and MISS-ing issue.
 predatorPrototype.drawPredator = function () {
-  if (this.cacheCanvas) { return; }
-
 	var g = this.shadowGen.graphics;
 	g.clear();
 	g.beginFill("#FFFFFF");
@@ -128,15 +128,22 @@ predatorPrototype.drawPredator = function () {
 
 	// draw victim
 	if (this.hasTarget) {
-		this.victim.cache(-this.target.radius-1,
-											-this.target.radius-1,
-											2*this.target.radius+2,
-											2*this.target.radius+2);
-		this.victim.cacheCanvas = this.target.cacheCanvas;
-		this.victim.scaleX = this.target.scaleX;
-		this.victim.scaleY = this.target.scaleY;
+    if (!this.victimContainer.cacheCanvas) {
+      this.victim.cache(-this.target.radius-1,
+                        -this.target.radius-1,
+                        2*this.target.radius+2,
+                        2*this.target.radius+2);
+      this.victim.cacheCanvas = this.target.cacheCanvas;
+      this.victimContainer.cache(-this.target.radius-1,
+                                 -this.target.radius-1,
+                                 2*this.target.radius+2,
+                                 2*this.target.radius+2);
+      this.victimContainer.scaleX = this.target.scaleX;
+      this.victimContainer.scaleY = this.target.scaleY;
+    }
 	} else {
-		this.victim.uncache();
+    this.victim.uncache();
+		this.victimContainer.uncache();
 		this.victim.graphics.clear();
 	}
 
@@ -202,7 +209,6 @@ predatorPrototype.drawPredator = function () {
 		g.drawCircle(0.1*this.radius, this.radius*0.35, this.radius*0.12);
 		g.endFill();
 	}
-  this.cache(-2*this.radius, -2*this.radius, 4*this.radius, 4*this.radius);
 }
 
 predatorPrototype.huntNothing = function (e) {
@@ -254,7 +260,6 @@ predatorPrototype.huntTarget = function (target) {
 									this.pos[0] = this.tempX;
 									this.pos[1] = this.tempY;
 									if (vec2.distance(this.target.pos, this.pos) < 1.2*this.radius) {
-                    this.uncache();
 										this.hasTarget = true;
 										this.target.getEaten();
 									}
@@ -262,7 +267,6 @@ predatorPrototype.huntTarget = function (target) {
 										createjs.Tween.removeTweens(this);
 										this.isTweening = false;
 										this.hasTarget = false;
-                    this.uncache();
 									}
 								}.bind(this)})
 								.to({ tempX: this.finalDest[0],
@@ -271,7 +275,6 @@ predatorPrototype.huntTarget = function (target) {
 								.call(function () {
 									this.isTweening = false;
 									this.hasTarget = false;
-                  this.uncache();
 								});
 }
 
