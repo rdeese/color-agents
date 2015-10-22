@@ -81,6 +81,7 @@ agentPrototype.init = function (encoding) {
 	this.eyes = new createjs.Shape();
 	this.eyes.x = this.eyeOffset;
 	this.addChild(this.eyes);
+	this.updateHiding();
 	this.drawAgent();
 
 	// create temp vectors we'll need later
@@ -170,6 +171,10 @@ agentPrototype.wander = function (e) {
 		vec2.add(this.acc, this.acc, vec2.fromValues(this.GLOBAL.MAX_ACC*(random.number()-0.5),
 																 								 this.GLOBAL.MAX_ACC*(random.number()-0.5)));
 	}
+}
+
+agentPrototype.killSpeed = function () {
+	vec2.scale(this.acc, this.vel, -0.1/this.GLOBAL.DELTA);
 }
 
 agentPrototype.blink = function (e) {
@@ -513,7 +518,11 @@ agentPrototype.update = function (e) {
 	}
 
 	// exercise free will (acceleration)
-	this.wander(e);
+	if (this.GLOBAL.MODE == 'predator') {
+		this.killSpeed();
+	} else {
+		this.wander(e);
+	}
 
 	// this.blink();
 

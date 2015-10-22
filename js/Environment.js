@@ -12,6 +12,17 @@ function Environment (GLOBAL,bounds,envGenome) {
 	this.addChild(this.bg);
 	this.drawBg();
 
+	this.agentContainer = new createjs.Container();
+	this.addChild(this.agentContainer);
+
+	this.predatorContainer = new createjs.Container();
+	this.addChild(this.predatorContainer);
+
+	this.nighttime = new createjs.Shape();
+	this.nighttime.mouseEnabled = false;
+	this.addChild(this.nighttime);
+	this.drawNighttime();
+
 	this.targetHalo = new createjs.Shape();
 	this.targetHalo.alpha = 0;
 	var width = 40;
@@ -36,6 +47,23 @@ function Environment (GLOBAL,bounds,envGenome) {
 }
 
 var envPrototype = createjs.extend(Environment, createjs.Container);
+
+envPrototype.drawNighttime = function () {
+	var g = this.nighttime.graphics;
+	g.beginFill(this.color.darken(2).hex())
+	 .drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
+	this.nighttime.alpha = 0;
+}
+
+envPrototype.startNighttime = function () {
+	createjs.Tween.get(this.nighttime, { override: true })
+								.to({ alpha: 0.3 }, 1000);
+}
+
+envPrototype.startDaytime = function () {
+	createjs.Tween.get(this.nighttime, { override: true })
+								.to({ alpha: 0 }, 1000);
+}
 
 envPrototype.drawBg = function () {
 		var colorFill = new createjs.Shape();

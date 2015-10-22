@@ -89,21 +89,13 @@ World.prototype = {
 		this.stage.addChild(this.bg);
 
 		// create the agents
-		this.agentContainer = new createjs.Container();
-		this.agentContainer.y = this.GLOBAL.WORLD_OFFSET_Y;
-		this.agentContainer.GLOBAL = this.GLOBAL;
-		this.stage.addChild(this.agentContainer);
 		this.initAgents(this.GLOBAL.NUM_AGENTS);
 
 		// create the predator and predator container
-		this.predatorContainer = new createjs.Container();
-		this.predatorContainer.y = this.GLOBAL.WORLD_OFFSET_Y;
-		this.predatorContainer.GLOBAL = this.GLOBAL;
-		this.stage.addChild(this.predatorContainer);
 		this.predator = new Predator(this.GLOBAL, worldBounds, 60);
 		this.predator.pos[0] = -150;
 		this.predator.pos[1] = -150;
-		this.predatorContainer.addChild(this.predator);
+		this.bg.predatorContainer.addChild(this.predator);
 
 		// send world clicks to the info obj
 		this.stage.on("worldClick", function (e) {
@@ -118,6 +110,14 @@ World.prototype = {
 				}
 			}
 			this.info.handleWorldClick(e.mouseEvent, e.onAgent, e.agent);
+		}, this);
+
+		this.stage.on("nighttime", function () {
+			this.bg.startNighttime();
+		}, this);
+
+		this.stage.on("daytime", function () {
+			this.bg.startDaytime();
 		}, this);
 
 		this.stage.on("nextRound", function () {
@@ -155,13 +155,13 @@ World.prototype = {
 
 	restoreState: function () {
 		this.GLOBAL.TIME = this.savedTime;
-		this.agentContainer.removeAllChildren();
+		this.bg.agentContainer.removeAllChildren();
 		var self = this;
 		this.agents = this.encodedAgents.map(function (e) {
 			return Agent.prototype.agentFromEncoding(e, self.GLOBAL);
 		});
 		for (var i = 0; i < this.agents.length; i++) {
-			this.agentContainer.addChild(this.agents[i]);
+			this.bg.agentContainer.addChild(this.agents[i]);
 		}
 		this.updateTree();
 	},
@@ -192,7 +192,7 @@ World.prototype = {
 										 this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 			a.update({ WILL_DRAW: true });
-			this.agentContainer.addChild(a);
+			this.bg.agentContainer.addChild(a);
 			this.agents.push(a);
 			this.tree.insert(a);
 		}
@@ -210,11 +210,15 @@ World.prototype = {
 	tick: function (event) {
 		event.WILL_DRAW = (this.GLOBAL.UPDATE_COUNTER % this.GLOBAL.UPDATES_PER_DRAW == 0);
 		
+		this.GLOBAL.DELTA = this.GLOBAL.PAUSED ?
+												0 :
+												event.delta * this.GLOBAL.WORLD_SPEED;
+		this.GLOBAL.TIME += this.GLOBAL.DELTA;
+		createjs.Tween.tick(this.GLOBAL.DELTA, this.GLOBAL.PAUSED);
+
 		// if we're not paused, we have to deal with 
 		// collisions
 		if (!this.GLOBAL.PAUSED) {
-			this.GLOBAL.DELTA = event.delta * this.GLOBAL.WORLD_SPEED;
-			this.GLOBAL.TIME += this.GLOBAL.DELTA;
 
 			// autopredator vars
 			var max = 0;
@@ -272,11 +276,11 @@ World.prototype = {
 			for (var i = 0; i < this.agents.length; i++) {
 				result = this.agents[i].update(event);
 				if (result.length == 0) {
-					this.agentContainer.removeChild(this.agents[i]);
+					this.bg.agentContainer.removeChild(this.agents[i]);
 				} else if (result.length == 1) {
 					this.newAgents.push(result[0]);
 				} else if (result.length == 2) {
-					this.agentContainer.addChild(result[0]);
+					this.bg.agentContainer.addChild(result[0]);
 					this.newAgents.push(result[0]);
 					this.newAgents.push(result[1]);
 				}

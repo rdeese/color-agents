@@ -12,7 +12,7 @@ function main () {
 
 		WORLD_SPEED: 10, // virtual milliseconds per real millisecond
 		OBSERVE_MODE_SPEED: 10,
-		PRED_MODE_SPEED: 0,
+		PRED_MODE_SPEED: 1,
 		AUTOPRED_MODE_SPEED: 10,
 		TIME: 0, // starts at 0
 		DELTA: 0, // just in case
@@ -197,6 +197,8 @@ function main () {
 	glMatrix.setMatrixArrayType(Array);
 	random = new PcgRandom(Date.now());
 	createjs.Ticker.setFPS(120);
+	// destroy tween event handling so we can do it ourselves
+	createjs.Tween.handleEvent = function () {};
 
 	// INTERACTIVES
 	var canvas;
@@ -227,7 +229,7 @@ function main () {
 		this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
 		
-		this.agentContainer.removeAllChildren();
+		this.bg.agentContainer.removeAllChildren();
 		this.agents = [];
 		var sample = poissonDiscSampler(canvas.width, canvas.height,
 																		2*this.GLOBAL.MAX_AGENT_RADIUS,
@@ -245,7 +247,7 @@ function main () {
 															this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION*Math.sqrt(random.number());
 			a.update({WILL_DRAW: true});
-			this.agentContainer.addChild(a);
+			this.bg.agentContainer.addChild(a);
 			this.agents.push(a);
 		}
 	}.bind(world);
@@ -681,7 +683,7 @@ function main () {
 		this.stage.removeChild(this.info); // hide the info bar
 		
 		// create agents and replace old ones!
-		this.agentContainer.removeAllChildren();
+		this.bg.agentContainer.removeAllChildren();
 		this.agents = [];
 		var sample = poissonDiscSampler(canvas.width, canvas.height,
 																		2*this.GLOBAL.MAX_AGENT_RADIUS,
@@ -694,7 +696,7 @@ function main () {
 														this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 		father.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 		father.update({WILL_DRAW: true});
-		this.agentContainer.addChild(father);
+		this.bg.agentContainer.addChild(father);
 		this.agents.push(father);
 		var mother = new Agent(this.GLOBAL, this.bg.bounds,
 													 sample(), vec2.create(),
@@ -704,7 +706,7 @@ function main () {
 														this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 		mother.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 		mother.update({WILL_DRAW: true});
-		this.agentContainer.addChild(mother);
+		this.bg.agentContainer.addChild(mother);
 		this.agents.push(mother);
 
 		// make children
@@ -720,7 +722,7 @@ function main () {
 			mother.childGenome = null;
 			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION/2;
 			a.update({WILL_DRAW: true});
-			this.agentContainer.addChild(a);
+			this.bg.agentContainer.addChild(a);
 			this.agents.push(a);
 		}
 		// reset mother size
@@ -835,9 +837,9 @@ function main () {
 				a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION/2;
 				a.update({WILL_DRAW: true});
 
-				this.agentContainer.removeChild(this.agents[i]);
+				this.bg.agentContainer.removeChild(this.agents[i]);
 				this.agents[i] = a;
-				this.agentContainer.addChild(a);
+				this.bg.agentContainer.addChild(a);
 
 				// reset mother size
 				createjs.Tween.get(mother, { override: true })
@@ -870,7 +872,7 @@ function main () {
 		this.stage.removeChild(this.info); // hide the info bar
 		
 		// create agents and replace old ones!
-		this.agentContainer.removeAllChildren();
+		this.bg.agentContainer.removeAllChildren();
 		this.agents = [];
 		var sample = poissonDiscSampler(canvas.width, canvas.height,
 																		2*this.GLOBAL.MAX_AGENT_RADIUS,
@@ -883,7 +885,7 @@ function main () {
 														this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 		father.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 		father.update({WILL_DRAW: true});
-		this.agentContainer.addChild(father);
+		this.bg.agentContainer.addChild(father);
 		this.agents.push(father);
 		var mother = new Agent(this.GLOBAL, this.bg.bounds,
 													 sample(), vec2.create(),
@@ -893,7 +895,7 @@ function main () {
 														this.GLOBAL.INIT_AGENTS_VARIATIONS[1]*(random.number()-0.5)]);
 		mother.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION;
 		mother.update({WILL_DRAW: true});
-		this.agentContainer.addChild(mother);
+		this.bg.agentContainer.addChild(mother);
 		this.agents.push(mother);
 
 		// make children
@@ -909,7 +911,7 @@ function main () {
 			mother.childGenome = null;
 			a.birthTime = this.GLOBAL.TIME - this.GLOBAL.YOUTH_DURATION*Math.sqrt(random.number());
 			a.update({WILL_DRAW: true});
-			this.agentContainer.addChild(a);
+			this.bg.agentContainer.addChild(a);
 			this.agents.push(a);
 		}
 		// reset mother size

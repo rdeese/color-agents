@@ -310,6 +310,8 @@ infoPrototype.nextMode = function () {
 
 infoPrototype.setObserverMode = function () {
 	this.GLOBAL.MODE = 'observer';
+	var evt = new createjs.Event('daytime', true);
+	this.dispatchEvent(evt);
 	this.instructions.text = "Click on a critter to get some info about it."; 
 	createjs.Tween.get(this.GLOBAL, {
 																							ignoreGlobalPause: true,
@@ -333,6 +335,8 @@ infoPrototype.setObserverMode = function () {
 }
 
 infoPrototype.setPredatorMode = function () {
+	var evt = new createjs.Event('nighttime', true);
+	this.dispatchEvent(evt);
 	this.instructions.text = "Eat critters by clicking on them " +
 													 "to increase your health.";
 	this.worldSpeedSlider.setEnabled(false);

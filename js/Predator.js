@@ -278,7 +278,7 @@ predatorPrototype.huntTarget = function (target) {
 										this.hasTarget = true;
 										this.target.notColliding = true;
 										this.target.isDying = true;
-										this.target.pos[0] = -500;
+										this.target.alpha = 0;
 									}
 									if (this.hasTarget && this.isOutsideBounds()) {
 										createjs.Tween.removeTweens(this);
