@@ -56,7 +56,7 @@ predatorPrototype.randomEdgePos = function () {
 		pos[1] = -2*this.radius;
 	} else if (side === 1) { // left
 		pos[0] = -2*this.radius;
-		pos[1] = random.number()*this.worldBounds.height; 
+		pos[1] = random.number()*this.worldBounds.height;
 	} else if (side === 2) { // bottom
 		pos[0] = random.number()*this.worldBounds.width;
 		pos[1] = this.worldBounds.height+2*this.radius;
@@ -75,7 +75,7 @@ predatorPrototype.blink = function (e) {
 								.wait(100)
 								.to({ scaleX: 1}, 100)
 								.call(function () {
-									this.isTweening = false; 
+									this.isTweening = false;
 								}, [], this);
 }
 
@@ -115,10 +115,7 @@ predatorPrototype.selectCacheIfExists = function () {
 // TODO confirm that adding the "!this.isHiding" conditional fixes
 // the weird eyes still showing, teleporting, and MISS-ing issue.
 predatorPrototype.drawPredator = function () {
-	if (!this.isTweening && this.selectCacheIfExists()) {
-		return;
-		console.log("getting a cached one");
-	}
+  if (this.cacheCanvas) { return; }
 
 	var g = this.shadowGen.graphics;
 	g.clear();
@@ -156,7 +153,7 @@ predatorPrototype.drawPredator = function () {
 	g.drawCircle(0, 0, this.radius);
 	g.endStroke();
 	g.endFill();
-	
+
 	// draw eyes
 	g = this.eyes.graphics;
 	g.clear();
@@ -205,23 +202,7 @@ predatorPrototype.drawPredator = function () {
 		g.drawCircle(0.1*this.radius, this.radius*0.35, this.radius*0.12);
 		g.endFill();
 	}
-
-	this.uncache();
-	if (!this.isTweening) {
-		this.cache(-this.radius-1, -this.radius-1, 2*this.radius+2, 2*this.radius+2);
-
-		if (this.isEaten) {
-			this.eatenCacheCanvas = this.cacheCanvas;
-		} else if (this.isPregnant && this.GLOBAL.MODE != 'predator') {
-			this.peCacheCanvas = this.cacheCanvas;
-		} else if (this.isPregnant && this.GLOBAL.MODE != 'predator') {
-			this.neCacheCanvas = this.cacheCanvas;
-		} else if (!this.isPregnant && this.GLOBAL.MODE == 'predator') {
-			this.pnCacheCanvas = this.cacheCanvas;
-		} else if (!this.isPregnant && this.GLOBAL.MODE == 'predator') {
-			this.nnCacheCanvas = this.cacheCanvas;
-		}
-	}
+  this.cache(-2*this.radius, -2*this.radius, 4*this.radius, 4*this.radius);
 }
 
 predatorPrototype.huntNothing = function (e) {
@@ -229,7 +210,6 @@ predatorPrototype.huntNothing = function (e) {
 	var dir = 180/Math.PI*Math.atan2(e.stageY-this.pos[1], e.stageX-this.pos[0]);
 	this.heading = dir;
 	this.isTweening = true;
-	console.log("e", e);
 	createjs.Tween.get(this, { onChange: function () {
 									if (this.pos[0] != this.tempX || this.pos[1] != this.tempY) {
 										this.heading = 180/Math.PI*Math.atan2(this.tempY-this.pos[1],
@@ -240,7 +220,7 @@ predatorPrototype.huntNothing = function (e) {
 								}.bind(this) })
 								.to({ tempX: e.stageX,
 											tempY: e.stageY-this.GLOBAL.WORLD_OFFSET_Y },
-											1000, createjs.Ease.sineOut) 
+											1000, createjs.Ease.sineOut)
 								.to({ heading: dir+180 }, 500, createjs.Ease.sineOut)
 								.to({ tempX: startPos[0],
 											tempY: startPos[1] },
@@ -267,7 +247,6 @@ predatorPrototype.huntTarget = function (target) {
 	this.tempX = this.pos[0];
 	this.tempY = this.pos[1];
 	this.isTweening = true;
-	console.log("before tween", this);
 
 	createjs.Tween.get(this, { onChange: function () {
 									this.heading = 180/Math.PI*Math.atan2(this.tempY-this.pos[1],
@@ -275,16 +254,15 @@ predatorPrototype.huntTarget = function (target) {
 									this.pos[0] = this.tempX;
 									this.pos[1] = this.tempY;
 									if (vec2.distance(this.target.pos, this.pos) < 1.2*this.radius) {
+                    this.uncache();
 										this.hasTarget = true;
-										this.target.notColliding = true;
-										this.target.isDying = true;
-										this.target.alpha = 0;
+										this.target.getEaten();
 									}
 									if (this.hasTarget && this.isOutsideBounds()) {
 										createjs.Tween.removeTweens(this);
 										this.isTweening = false;
-										this.target.isEaten = true;
 										this.hasTarget = false;
+                    this.uncache();
 									}
 								}.bind(this)})
 								.to({ tempX: this.finalDest[0],
@@ -292,8 +270,8 @@ predatorPrototype.huntTarget = function (target) {
 										}, 3000)
 								.call(function () {
 									this.isTweening = false;
-									this.target.isEaten = true;
 									this.hasTarget = false;
+                  this.uncache();
 								});
 }
 

@@ -13,7 +13,7 @@ function Agent(GLOBAL, bounds, position, velocity, genome, encoding) {
 	this.bounds = bounds;
 	this.vel = vec2.clone(velocity);
 	this.pos = vec2.clone(position);
-	
+
 	this.init(encoding);
 }
 
@@ -75,7 +75,7 @@ agentPrototype.init = function (encoding) {
 
 	this.cached = false;
 	this.isTweening = false;
-	
+
 	this.body = new createjs.Shape();
 	this.addChild(this.body);
 	this.eyes = new createjs.Shape();
@@ -185,7 +185,7 @@ agentPrototype.blink = function (e) {
 								.wait(100)
 								.to({ scaleX: 1}, 100)
 								.call(function () {
-									this.isTweening = false; 
+									this.isTweening = false;
 								}, [], this);
 }
 
@@ -332,7 +332,7 @@ agentPrototype.updateHiding = function () {
 									.wait(random.number()*500)
 									.to({ scaleX: 0 }, 100)
 									.call(function () {
-										this.isTweening = false; 
+										this.isTweening = false;
 									}, [], this);
 	} else if (this.GLOBAL.MODE != 'predator' && this.isHiding) {
 		this.isHiding = false;
@@ -341,11 +341,11 @@ agentPrototype.updateHiding = function () {
 									.wait(random.number()*500)
 									.to({ scaleX: 1 }, 100)
 									.call(function () {
-										this.isTweening = false; 
+										this.isTweening = false;
 									}, [], this);
 	}
 }
-	
+
 // draw the graphical representation of the agent
 // TODO confirm that adding the "!this.isHiding" conditional fixes
 // the weird eyes still showing, teleporting, and MISS-ing issue.
@@ -367,7 +367,7 @@ agentPrototype.drawAgent = function () {
 	g.drawCircle(0, 0, this.radius);
 	g.endStroke();
 	g.endFill();
-	
+
 	// draw eyes
 	g = this.eyes.graphics;
 	g.clear();
@@ -434,7 +434,7 @@ agentPrototype.drawAgent = function () {
 		g.drawCircle(0,0,this.radius);
 	}
 	*/
-	
+
 	this.uncache();
 	if (!this.isTweening) {
 		this.cache(-this.radius-1, -this.radius-1, 2*this.radius+2, 2*this.radius+2);
@@ -465,6 +465,13 @@ agentPrototype.grow = function () {
 	this.mass = Math.PI*this.height*this.height/4; // comes out to pi*r^2
 }
 
+agentPrototype.getEaten = function () {
+  this.isDying = true;
+  this.isEaten = true;
+  this.deathTime = this.GLOBAL.TIME;
+  this.drawAgent();
+}
+
 agentPrototype.isDead = function () {
 	// check if this critter is dead
 	if (this.isDying) {
@@ -474,36 +481,25 @@ agentPrototype.isDead = function () {
 			return false;
 		} else if (this.isEaten ||
 							 this.GLOBAL.TIME-this.deathTime > this.GLOBAL.DEATH_DURATION) {
-			this.uncache();
-			this.body.graphics.clear();
-			this.eyes.graphics.clear();
+			//this.uncache();
+			//this.body.graphics.clear();
+			//this.eyes.graphics.clear();
 			return true;
 		} else {
 			this.alpha = 1-(this.GLOBAL.TIME-this.deathTime)/this.GLOBAL.DEATH_DURATION;
 			return false;
 		}
-	} 
-	// calculate probability of death
-	if (!this.deathTime) {
+	} else {
 		var score = (this.GLOBAL.TIME-this.birthTime)/1000 +
 								this.GLOBAL.COLLISION_PENALTY*this.collisionCount;
 		if (score > this.GLOBAL.DEATH_THRESHHOLD) {
 			this.isDying = true;
 			this.deathTime = this.GLOBAL.TIME;
+      this.drawAgent();
 		}
 		return false;
-	} else {
-		this.alpha = 1-(this.GLOBAL.TIME-this.deathTime)/this.GLOBAL.DEATH_DURATION;
-		if (this.alpha <= 0) {
-			this.uncache();
-			this.body.graphics.clear();
-			this.eyes.graphics.clear();
-			return true;
-		} else {
-			return false;
-		}
 	}
-}
+};
 
 
 // update the kinematics of the agent
@@ -529,7 +525,7 @@ agentPrototype.update = function (e) {
 	// birth if necessary
 	if (this.isPregnant &&
 			this.GLOBAL.TIME-this.matingTime > this.GLOBAL.GESTATION_PD) {
-		// put the baby behind the mama, touching. 
+		// put the baby behind the mama, touching.
 		var newPos = vec2.clone(this.pos);
 		vec2.normalize(this.subResult, this.vel);
 		vec2.scale(this.subResult, this.subResult,
@@ -554,9 +550,9 @@ agentPrototype.update = function (e) {
 	vec2.add(this.vel, this.vel, this.subResult);
 	vec2.scale(this.subResult, this.vel, this.GLOBAL.DELTA);
 	vec2.add(this.pos, this.pos, this.subResult);
-	
+
 	// update the heading properly
-	// bounded by -180 to 180 
+	// bounded by -180 to 180
 	if (this.vel[0] != 0 || this.vel[1] != 0) {
 		var velDir = 180/Math.PI*Math.atan2(this.vel[1], this.vel[0]);
 		velDir = velDir - this.heading;
@@ -564,7 +560,7 @@ agentPrototype.update = function (e) {
 		else if (velDir > 180) { velDir -= 360; }
 		this.heading = this.heading + velDir/100*this.GLOBAL.WORLD_SPEED;
 	}
-	
+
 	// elastically collide with walls
 	if (this.pos[0] + this.scaleX*this.radius > this.bounds.width) {
 		this.pos[0] = this.pos[0] = this.bounds.width - this.scaleX*this.radius - 1;
@@ -599,9 +595,8 @@ agentPrototype.update = function (e) {
 
 	// redraw if we are on a draw update and other conditions
 	// require it
-	if (e.WILL_DRAW && 
+	if (e.WILL_DRAW &&
 			((this.wasPregnant != this.isPregnant) ||
-			 this.isDying ||
 			 this.isTweening ||
 			 this.GLOBAL.AGENTS_DIRTY)) {
 		this.updateHiding();
@@ -613,6 +608,6 @@ agentPrototype.update = function (e) {
 	this.isColliding = false;
 
 	return result;
-}
+};
 
 window.Agent = createjs.promote(Agent, "Container");
