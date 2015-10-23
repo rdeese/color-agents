@@ -113,11 +113,12 @@ World.prototype = {
 		}, this);
 
 		this.stage.on("nighttime", function () {
-			this.bg.startNighttime();
+			//this.bg.startNighttime();
+			this.predator.getInPosition();
 		}, this);
 
 		this.stage.on("daytime", function () {
-			this.bg.startDaytime();
+			//this.bg.startDaytime();
 		}, this);
 
 		this.stage.on("nextRound", function () {

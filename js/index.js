@@ -32,10 +32,10 @@ function main () {
 		AUTOPRED_INTERVAL: 8000, // milliseconds
 		
 		OBSERVER_PERIOD: 240000, // milliseconds
-		PREDATOR_PERIOD: 20000, // milliseconds
+		PREDATOR_PERIOD: 240000, // milliseconds
 		MODE_SWITCH_SPEED: 500,
-		MISS_TIME_PENALTY: 2000, // milliseconds
-		HIT_THRESHOLD: 30,
+		MISS_TIME_PENALTY: 0, // milliseconds
+		HIT_THRESHOLD: 0,
 
 		INITIAL_AGENT_OFFSETS: [60, 0],
 		ENV_VARIATIONS: [30, 10],

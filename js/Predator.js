@@ -69,6 +69,30 @@ predatorPrototype.randomEdgePos = function () {
 	return pos;
 }
 
+predatorPrototype.getInPosition = function () {
+	this.pos[0] = this.worldBounds.width/2;
+	this.pos[1] = -2*this.radius;
+	this.finalDest = vec2.create();
+	this.finalDest[0] = this.worldBounds.width/2+this.radius*(random.number()-0.5);
+	this.finalDest[1] = 0;
+	this.tempX = this.pos[0];
+	this.tempY = this.pos[1];
+	this.isTweening = true;
+	console.log("dest", this.pos[0], this.pos[1]);
+	createjs.Tween.get(this, { onChange: function () {
+									this.heading = 180/Math.PI*Math.atan2(this.tempY-this.pos[1],
+																												this.tempX-this.pos[0]);
+									this.pos[0] = this.tempX;
+									this.pos[1] = this.tempY;
+								}.bind(this)})
+								.to({ tempX: this.finalDest[0],
+											tempY: this.finalDest[1],
+										}, 6000)
+								.call(function () {
+									this.isTweening = false;
+								});
+}
+
 predatorPrototype.blink = function (e) {
 	if (this.isHiding || this.isTweening) { return; }
 	this.isTweening = true;
@@ -215,6 +239,8 @@ predatorPrototype.huntNothing = function (e) {
 	var startPos = vec2.clone(this.pos);
 	var dir = 180/Math.PI*Math.atan2(e.stageY-this.pos[1], e.stageX-this.pos[0]);
 	this.heading = dir;
+	this.tempX = this.pos[0];
+	this.tempY = this.pos[1];
 	this.isTweening = true;
 	createjs.Tween.get(this, { onChange: function () {
 									if (this.pos[0] != this.tempX || this.pos[1] != this.tempY) {
@@ -226,11 +252,11 @@ predatorPrototype.huntNothing = function (e) {
 								}.bind(this) })
 								.to({ tempX: e.stageX,
 											tempY: e.stageY-this.GLOBAL.WORLD_OFFSET_Y },
-											1000, createjs.Ease.sineOut)
-								.to({ heading: dir+180 }, 500, createjs.Ease.sineOut)
+											2000, createjs.Ease.sineOut)
+								.to({ heading: dir+180 }, 1000, createjs.Ease.sineOut)
 								.to({ tempX: startPos[0],
 											tempY: startPos[1] },
-											1000, createjs.Ease.sineIn)
+											2000, createjs.Ease.sineIn)
 								.call(function () {
 									this.isTweening = false;
 								});
@@ -271,7 +297,7 @@ predatorPrototype.huntTarget = function (target) {
 								}.bind(this)})
 								.to({ tempX: this.finalDest[0],
 											tempY: this.finalDest[1],
-										}, 3000)
+										}, 6000)
 								.call(function () {
 									this.isTweening = false;
 									this.hasTarget = false;

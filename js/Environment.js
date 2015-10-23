@@ -13,6 +13,7 @@ function Environment (GLOBAL,bounds,envGenome) {
 	this.drawBg();
 
 	this.agentContainer = new createjs.Container();
+	this.agentContainer.shadow = new createjs.Shadow("rgba(0, 0, 0, 0.2)", 0, 0, 10);
 	this.addChild(this.agentContainer);
 
 	this.predatorContainer = new createjs.Container();
@@ -31,6 +32,11 @@ function Environment (GLOBAL,bounds,envGenome) {
 	this.addChild(this.targetHalo);
 	this.drawTargetHalo();
 
+	this.border = new createjs.Shape();
+	this.border.y = -this.GLOBAL.WORLD_OFFSET_Y;
+	this.addChild(this.border);
+	this.drawBorder();
+
 	this.on('mousedown', function (e) {
 		var evt = new createjs.Event("worldClick", true);
 		evt.mouseEvent = e;
@@ -48,9 +54,32 @@ function Environment (GLOBAL,bounds,envGenome) {
 
 var envPrototype = createjs.extend(Environment, createjs.Container);
 
+envPrototype.drawBorder = function () {
+	this.border.graphics.beginFill("#FFFFFF")
+											.drawRect(0, 0,
+																this.bounds.width,
+																this.bounds.height+this.GLOBAL.WORLD_OFFSET_Y)
+											.endFill();
+	this.borderFilterShape = new createjs.Shape();
+	this.borderFilterShape.graphics.beginFill("#000000")
+																 .drawRoundRect(0,this.GLOBAL.WORLD_OFFSET_Y,this.bounds.width, this.bounds.height,20);
+	this.borderFilterShape.filters = [
+		new createjs.ColorFilter(0,0,0,-1,0,0,0,255)
+	];
+	this.borderFilterShape.cache(0, 0,
+															 this.bounds.width,
+															 this.bounds.height+this.GLOBAL.WORLD_OFFSET_Y);
+	this.border.filters = [
+		new createjs.AlphaMaskFilter(this.borderFilterShape.cacheCanvas)
+	];
+	this.border.cache(0, 0,
+									  this.bounds.width,
+									  this.bounds.height+this.GLOBAL.WORLD_OFFSET_Y);
+}
+
 envPrototype.drawNighttime = function () {
 	var g = this.nighttime.graphics;
-	g.beginFill(this.color.darken(2).hex())
+	g.beginFill("#000000")
 	 .drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
 	this.nighttime.alpha = 0;
 }
@@ -115,6 +144,23 @@ envPrototype.drawTargetHalo = function () {
 }
 
 envPrototype.update = function (e) {
+	var sunAngle;
+	if (this.GLOBAL.MODE == 'predator') {
+		this.agentContainer.shadow.color = "rgba(0, 0, 0, 0)";
+		sunAngle = Math.PI*(this.GLOBAL.TIME % this.GLOBAL.PREDATOR_PERIOD) /
+																					 this.GLOBAL.PREDATOR_PERIOD;
+		this.nighttime.alpha = 0.3+0.4*Math.sin(sunAngle);
+	} else {
+		sunAngle = Math.PI*(this.GLOBAL.TIME % this.GLOBAL.OBSERVER_PERIOD) /
+																					 this.GLOBAL.OBSERVER_PERIOD;
+		this.agentContainer.shadow.color = "rgba(0, 0, 0,"+
+																			 0.2*Math.sin(sunAngle)+
+																			 ")";
+		this.nighttime.alpha = 0.3*(1-Math.sin(sunAngle));
+	}
+	this.agentContainer.shadow.offsetX = -Math.cos(sunAngle)*10;
+	this.agentContainer.shadow.offsetY = Math.sin(sunAngle)*2;
+	
 	if (this.colorHasChanged) {
 		this.drawBg();
 	}

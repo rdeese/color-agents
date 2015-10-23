@@ -157,7 +157,7 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	// END INSTRUCTIONS
 
 	// BEGIN SLIDER
-	this.worldSpeedSlider = new Slider(this.GLOBAL, 1, 30, this.instructions.width, 50,
+	this.worldSpeedSlider = new Slider(this.GLOBAL, 1, 12, this.instructions.width, 50,
 																		 "World Speed", hue);
 	this.worldSpeedSlider.x = this.toggleMode.x +
 														this.toggleMode.width +
@@ -313,11 +313,13 @@ infoPrototype.setObserverMode = function () {
 	var evt = new createjs.Event('daytime', true);
 	this.dispatchEvent(evt);
 	this.instructions.text = "Click on a critter to get some info about it."; 
+	/*
 	createjs.Tween.get(this.GLOBAL, {
 																							ignoreGlobalPause: true,
 																							override: true
 																						}) 
 								.to({ WORLD_SPEED: this.worldSpeedSlider.userVal }, this.GLOBAL.MODE_SWITCH_SPEED);
+								*/
 	createjs.Tween.get(this.overlayContainer, {
 																							ignoreGlobalPause: true,
 																							override: true
@@ -339,8 +341,9 @@ infoPrototype.setPredatorMode = function () {
 	this.dispatchEvent(evt);
 	this.instructions.text = "Eat critters by clicking on them " +
 													 "to increase your health.";
-	this.worldSpeedSlider.setEnabled(false);
+	//this.worldSpeedSlider.setEnabled(false);
 	this.GLOBAL.MODE = 'predator';
+	/*
 	createjs.Tween.get(this.GLOBAL, {
 																							ignoreGlobalPause: true,
 																							override: true
@@ -351,6 +354,8 @@ infoPrototype.setPredatorMode = function () {
 									this.drawInfo();
 									this.GLOBAL.AGENTS_DIRTY = true;
 								}, [], this);
+								*/
+	this.GLOBAL.AGENTS_DIRTY = true;
 	this.toggleModeTime.text = "HUNT";
 	this.overlayContainer.alpha = 1;
 	this.toggleMode.mouseEnabled = false;
@@ -451,7 +456,7 @@ infoPrototype.drawInfo = function () {
 }
 
 infoPrototype.update = function (e) {
-	if (this.modeEnd < this.GLOBAL.TIME || this.numHits >= this.GLOBAL.HIT_THRESHOLD) {
+	if (this.modeEnd < this.GLOBAL.TIME) { // || this.numHits >= this.GLOBAL.HIT_THRESHOLD) {
 		this.nextMode();
 	}
 

@@ -79,6 +79,7 @@ agentPrototype.init = function (encoding) {
 	this.body = new createjs.Shape();
 	this.addChild(this.body);
 	this.eyes = new createjs.Shape();
+	this.eyes.shadow = new createjs.Shadow("rgba(0,0,0,0)", 0, 0, 0);
 	this.eyes.x = this.eyeOffset;
 	this.addChild(this.eyes);
 	this.updateHiding();
@@ -174,7 +175,7 @@ agentPrototype.wander = function (e) {
 }
 
 agentPrototype.killSpeed = function () {
-	vec2.scale(this.acc, this.vel, -0.1/this.GLOBAL.DELTA);
+	vec2.scale(this.acc, this.vel, -0.005/this.GLOBAL.DELTA);
 }
 
 agentPrototype.blink = function (e) {
@@ -288,7 +289,7 @@ agentPrototype.motherChild = function (matingTime, otherGenome) {
 																 this.GLOBAL.MAX_AGENT_RADIUS);
 
 	createjs.Tween.get(this, { override: true })
-								.to({ scaleX: this.GLOBAL.PREGNANT_SCALE, scaleY: this.GLOBAL.PREGNANT_SCALE }, 400);
+								.to({ scaleX: this.GLOBAL.PREGNANT_SCALE, scaleY: this.GLOBAL.PREGNANT_SCALE }, this.GLOBAL.GESTATION_PD/3);
 }
 
 agentPrototype.selectCacheIfExists = function () {
@@ -328,9 +329,9 @@ agentPrototype.updateHiding = function () {
 		this.isHiding = true;
 		this.isTweening = true;
 		createjs.Tween.get(this.eyes, { override: true })
-									.to({ scaleX: 1 }, 100)
-									.wait(random.number()*500)
-									.to({ scaleX: 0 }, 100)
+									.to({ scaleX: 1 }, 1000)
+									.wait(random.number()*5000)
+									.to({ scaleX: 0 }, 1000)
 									.call(function () {
 										this.isTweening = false;
 									}, [], this);
@@ -338,8 +339,8 @@ agentPrototype.updateHiding = function () {
 		this.isHiding = false;
 		this.isTweening = true;
 		createjs.Tween.get(this.eyes, { override: true })
-									.wait(random.number()*500)
-									.to({ scaleX: 1 }, 100)
+									.wait(random.number()*5000)
+									.to({ scaleX: 1 }, 1000)
 									.call(function () {
 										this.isTweening = false;
 									}, [], this);
@@ -537,7 +538,7 @@ agentPrototype.update = function (e) {
 		result.push(new Agent(this.GLOBAL, this.bounds,
 													newPos, newVel, this.childGenome));
 		createjs.Tween.get(this, { override: true })
-									.to({ scaleX: 1, scaleY: 1 }, 400);
+									.to({ scaleX: 1, scaleY: 1 }, this.GLOBAL.GESTATION_PD/3);
 
 		this.isPregnant = false;
 		this.childGenome = null;
