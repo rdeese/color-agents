@@ -505,6 +505,16 @@ agentPrototype.isDead = function () {
 
 // update the kinematics of the agent
 agentPrototype.update = function (e) {
+  if (this.GLOBAL.MODE == 'predator') {
+    this.birthTime += this.GLOBAL.DELTA;
+    if (this.matingTime !== null) {
+      this.matingTime += this.GLOBAL.DELTA;
+    }
+    if (this.deathTime !== null) {
+      this.deathTime += this.GLOBAL.DELTA;
+    }
+  }
+
 	var result = [];
 
 	if (!this.isAdult) {
