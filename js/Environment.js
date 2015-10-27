@@ -141,11 +141,10 @@ envPrototype.drawTargetHalo = function () {
 }
 
 envPrototype.update = function (e) {
-	console.log("env tick");
 	// baseRate
 	var baseRate = Math.PI/this.GLOBAL.OBSERVER_PERIOD; // radians/ms
-	var maxCritters = 60;
-	var minCritters = 30;
+	var maxCritters = 40;
+	var minCritters = 60;
 	var rateScale = 10;
 	// update day vs night
 	if (this.isDaytime && Math.sin(this.sunAngle) < 0) {
@@ -160,12 +159,10 @@ envPrototype.update = function (e) {
 	}
 
 	var currentCritters = this.agentContainer.children.length;
-	console.log(currentCritters);
 	if (this.isDaytime) { 
 		var rateDilation = (currentCritters-minCritters)/rateScale;
 		if (rateDilation < 0) { rateDilation = 0; }
 		rateDilation = Math.sin(this.sunAngle)*rateDilation+(1-Math.sin(this.sunAngle))*1;
-		console.log("rate dilation is", rateDilation);
 		this.sunAngle += rateDilation*baseRate*this.GLOBAL.DELTA;
 
 		this.agentContainer.shadow.color = "rgba(0, 0, 0,"+
@@ -176,7 +173,6 @@ envPrototype.update = function (e) {
 		var rateDilation = (maxCritters-currentCritters)/rateScale;
 		if (rateDilation < 0) { rateDilation = 0; }
 		rateDilation = -Math.sin(this.sunAngle)*rateDilation+(1+Math.sin(this.sunAngle))*1;
-		console.log("rate dilation is", rateDilation);
 		this.sunAngle += 4*rateDilation*baseRate*this.GLOBAL.DELTA;
 
 		this.agentContainer.shadow.color = "rgba(0, 0, 0, 0)";

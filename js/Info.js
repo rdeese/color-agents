@@ -98,11 +98,7 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.toggleModeTime.y = this.toggleMode.height/2-this.textLineHeight/2;
 	this.toggleMode.addChild(this.toggleModeTime);
 
-	this.toggleMode.on('click', function (e) {
-		this.drawToggleMode();
-	}, this); // callback executes in the scope of Info object
-
-	this.addChild(this.toggleMode);
+	//this.addChild(this.toggleMode);
 	// END MODE TOGGLE
 
 	// AGENT VIEWER
@@ -141,14 +137,12 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.instructions.width = this.bounds.width -
 														this.togglePause.width -
 														this.resetButton.width -
-														this.toggleMode.width -
 														//this.detailViewer.width -
-														3*this.GLOBAL.COMPONENT_MARGIN;
+														2*this.GLOBAL.COMPONENT_MARGIN;
 	this.instructions.lineWidth = this.instructions.width;
 	this.instructions.height = 50;
 	this.instructions.x = this.togglePause.width +
-												this.toggleMode.width +
-												2*this.GLOBAL.COMPONENT_MARGIN +
+												this.GLOBAL.COMPONENT_MARGIN +
 												this.instructions.width/2;
 	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
 	this.instructions.textAlign = 'center';
@@ -158,8 +152,8 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	// BEGIN SLIDER
 	this.worldSpeedSlider = new Slider(this.GLOBAL, 1, 12, this.instructions.width, 50,
 																		 "World Speed", hue);
-	this.worldSpeedSlider.x = this.toggleMode.x +
-														this.toggleMode.width +
+	this.worldSpeedSlider.x = this.resetButton.x +
+														this.resetButton.width +
 														this.GLOBAL.COMPONENT_MARGIN;
 	this.worldSpeedSlider.y = 0;
 	this.addChild(this.worldSpeedSlider);
@@ -304,7 +298,7 @@ infoPrototype.nextMode = function () {
 		this.setObserverMode();
 	}
 	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
-	this.drawToggleMode();
+	//this.drawToggleMode();
 }
 
 infoPrototype.setObserverMode = function () {
@@ -408,7 +402,7 @@ infoPrototype.drawDetailViewer = function () {
 infoPrototype.drawInfo = function () {
 	this.drawTogglePause();
 	this.drawResetButton();
-	this.drawToggleMode();
+	//this.drawToggleMode();
 }
 
 infoPrototype.update = function (e) {

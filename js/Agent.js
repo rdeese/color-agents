@@ -351,7 +351,9 @@ agentPrototype.updateHiding = function () {
 // TODO confirm that adding the "!this.isHiding" conditional fixes
 // the weird eyes still showing, teleporting, and MISS-ing issue.
 agentPrototype.drawAgent = function () {
-	if (!this.isTweening && !this.isHiding && this.selectCacheIfExists()) {
+	if (!this.isTweening && !this.isHiding && this.cached &&
+			this.selectCacheIfExists()) {
+		console.log("happening");
 		return;
 	}
 

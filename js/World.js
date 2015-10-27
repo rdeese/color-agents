@@ -220,7 +220,6 @@ World.prototype = {
 		// if we're not paused, we have to deal with 
 		// collisions
 		if (!this.GLOBAL.PAUSED) {
-			console.log("world tick");
 			// autopredator vars
 			var max = 0;
 			var target = null;
