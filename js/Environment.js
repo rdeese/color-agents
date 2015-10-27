@@ -6,6 +6,9 @@ function Environment (GLOBAL,bounds,envGenome) {
 	this.color = chroma.hcl(this.envGenome[0],this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 	this.colorHasChanged = false;
 
+	this.sunAngle = 0;
+	this.isDaytime = true;
+
 	this.plants = [];
 	
 	this.bg = new createjs.Container();
@@ -19,9 +22,9 @@ function Environment (GLOBAL,bounds,envGenome) {
 	this.predatorContainer = new createjs.Container();
 	this.addChild(this.predatorContainer);
 
-	this.nighttime = new createjs.Shape();
-	this.nighttime.mouseEnabled = false;
-	this.addChild(this.nighttime);
+	this.darkness = new createjs.Shape();
+	this.darkness.mouseEnabled = false;
+	this.addChild(this.darkness);
 	this.drawNighttime();
 
 	this.targetHalo = new createjs.Shape();
@@ -43,12 +46,6 @@ function Environment (GLOBAL,bounds,envGenome) {
 		evt.onAgent = false;
 		evt.agent = this;
 		this.dispatchEvent(evt);
-	});
-
-	this.on('tick', function (e) {
-		//if (!e.paused) {
-			this.update(e);
-		//}
 	});
 }
 
@@ -78,19 +75,19 @@ envPrototype.drawBorder = function () {
 }
 
 envPrototype.drawNighttime = function () {
-	var g = this.nighttime.graphics;
+	var g = this.darkness.graphics;
 	g.beginFill("#000000")
 	 .drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
-	this.nighttime.alpha = 0;
+	this.darkness.alpha = 0;
 }
 
 envPrototype.startNighttime = function () {
-	createjs.Tween.get(this.nighttime, { override: true })
+	createjs.Tween.get(this.darkness, { override: true })
 								.to({ alpha: 0.3 }, 1000);
 }
 
 envPrototype.startDaytime = function () {
-	createjs.Tween.get(this.nighttime, { override: true })
+	createjs.Tween.get(this.darkness, { override: true })
 								.to({ alpha: 0 }, 1000);
 }
 
@@ -144,35 +141,54 @@ envPrototype.drawTargetHalo = function () {
 }
 
 envPrototype.update = function (e) {
-	var sunAngle;
-	if (this.GLOBAL.MODE == 'predator') {
-		this.agentContainer.shadow.color = "rgba(0, 0, 0, 0)";
-		sunAngle = Math.PI*(this.GLOBAL.TIME % this.GLOBAL.PREDATOR_PERIOD) /
-																					 this.GLOBAL.PREDATOR_PERIOD;
-		this.nighttime.alpha = 0.3+0.4*Math.sin(sunAngle);
-	} else {
-		sunAngle = Math.PI*(this.GLOBAL.TIME % this.GLOBAL.OBSERVER_PERIOD) /
-																					 this.GLOBAL.OBSERVER_PERIOD;
-		this.agentContainer.shadow.color = "rgba(0, 0, 0,"+
-																			 0.2*Math.sin(sunAngle)+
-																			 ")";
-		this.nighttime.alpha = 0.3*(1-Math.sin(sunAngle));
+	console.log("env tick");
+	// baseRate
+	var baseRate = Math.PI/this.GLOBAL.OBSERVER_PERIOD; // radians/ms
+	var maxCritters = 60;
+	var minCritters = 30;
+	var rateScale = 10;
+	// update day vs night
+	if (this.isDaytime && Math.sin(this.sunAngle) < 0) {
+		this.isDaytime = false;
+		var evt = new createjs.Event('nighttime', true);
+		this.dispatchEvent(evt);
 	}
-	this.agentContainer.shadow.offsetX = -Math.cos(sunAngle)*10;
-	this.agentContainer.shadow.offsetY = Math.sin(sunAngle)*2;
+	if (!this.isDaytime && Math.sin(this.sunAngle) >= 0) {
+		this.isDaytime = true;
+		var evt = new createjs.Event('daytime', true);
+		this.dispatchEvent(evt);
+	}
+
+	var currentCritters = this.agentContainer.children.length;
+	console.log(currentCritters);
+	if (this.isDaytime) { 
+		var rateDilation = (currentCritters-minCritters)/rateScale;
+		if (rateDilation < 0) { rateDilation = 0; }
+		rateDilation = Math.sin(this.sunAngle)*rateDilation+(1-Math.sin(this.sunAngle))*1;
+		console.log("rate dilation is", rateDilation);
+		this.sunAngle += rateDilation*baseRate*this.GLOBAL.DELTA;
+
+		this.agentContainer.shadow.color = "rgba(0, 0, 0,"+
+																			 0.2*Math.sin(this.sunAngle)+
+																			 ")";
+		this.darkness.alpha = 0.3*(1-Math.sin(this.sunAngle));
+	} else {
+		var rateDilation = (maxCritters-currentCritters)/rateScale;
+		if (rateDilation < 0) { rateDilation = 0; }
+		rateDilation = -Math.sin(this.sunAngle)*rateDilation+(1+Math.sin(this.sunAngle))*1;
+		console.log("rate dilation is", rateDilation);
+		this.sunAngle += 4*rateDilation*baseRate*this.GLOBAL.DELTA;
+
+		this.agentContainer.shadow.color = "rgba(0, 0, 0, 0)";
+		this.darkness.alpha = 0.3+0.4*(-Math.sin(this.sunAngle));
+	}
+
+	this.agentContainer.shadow.offsetX = -Math.cos(this.sunAngle)*10;
+	this.agentContainer.shadow.offsetY = Math.sin(this.sunAngle)*2;
 	
 	if (this.colorHasChanged) {
 		this.drawBg();
 	}
-	/*
-	if (info.target) {
-		this.targetHalo.alpha = 0.5;
-		this.targetHalo.x = info.target.x;
-		this.targetHalo.y = info.target.y;
-	} else { 
-		this.targetHalo.alpha = 0;
-	}
-	*/
 }
 
 window.Environment = createjs.promote(Environment, "Container");

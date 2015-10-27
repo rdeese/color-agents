@@ -953,6 +953,7 @@ function main () {
 			var isVisible = w.stage.canvas.offsetTop<scrollY+innerHeight &&
 											w.stage.canvas.offsetTop+w.stage.canvas.height>scrollY;
 			if (isVisible && w.GLOBAL.PAUSED && w.GLOBAL.AUTOPLAY) {
+				console.log("unpausing", i);
 				w.GLOBAL.PAUSED = false;
 			} 
 		}

@@ -113,12 +113,12 @@ World.prototype = {
 		}, this);
 
 		this.stage.on("nighttime", function () {
-			//this.bg.startNighttime();
+			this.info.nextMode();
 			this.predator.getInPosition();
 		}, this);
 
 		this.stage.on("daytime", function () {
-			//this.bg.startDaytime();
+			this.info.nextMode();
 		}, this);
 
 		this.stage.on("nextRound", function () {
@@ -220,7 +220,7 @@ World.prototype = {
 		// if we're not paused, we have to deal with 
 		// collisions
 		if (!this.GLOBAL.PAUSED) {
-
+			console.log("world tick");
 			// autopredator vars
 			var max = 0;
 			var target = null;
@@ -269,6 +269,7 @@ World.prototype = {
 				*/
 			}
 
+			this.bg.update(event);
 
 			// iterate kinematics
 			// (we can't let a tick listener do this because it

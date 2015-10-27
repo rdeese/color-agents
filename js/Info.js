@@ -1,7 +1,6 @@
 function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.Container_constructor();
 	this.GLOBAL = GLOBAL;
-	this.target = null;
 	this.bounds = infoBounds;
 	this.worldBounds = worldBounds;
 
@@ -310,16 +309,6 @@ infoPrototype.nextMode = function () {
 
 infoPrototype.setObserverMode = function () {
 	this.GLOBAL.MODE = 'observer';
-	var evt = new createjs.Event('daytime', true);
-	this.dispatchEvent(evt);
-	this.instructions.text = "Click on a critter to get some info about it."; 
-	/*
-	createjs.Tween.get(this.GLOBAL, {
-																							ignoreGlobalPause: true,
-																							override: true
-																						}) 
-								.to({ WORLD_SPEED: this.worldSpeedSlider.userVal }, this.GLOBAL.MODE_SWITCH_SPEED);
-								*/
 	createjs.Tween.get(this.overlayContainer, {
 																							ignoreGlobalPause: true,
 																							override: true
@@ -329,38 +318,15 @@ infoPrototype.setObserverMode = function () {
 									this.overlayContainer.removeAllChildren();
 								}, [], this);
 	this.toggleModeTime.alpha = 1;
-	this.worldSpeedSlider.setEnabled(true);
-	this.toggleMode.mouseEnabled = false;
-	this.setTarget(null); 
 	this.drawInfo();
 	this.GLOBAL.AGENTS_DIRTY = true;
 }
 
 infoPrototype.setPredatorMode = function () {
-	var evt = new createjs.Event('nighttime', true);
-	this.dispatchEvent(evt);
-	this.instructions.text = "Eat critters by clicking on them " +
-													 "to increase your health.";
-	//this.worldSpeedSlider.setEnabled(false);
 	this.GLOBAL.MODE = 'predator';
-	/*
-	createjs.Tween.get(this.GLOBAL, {
-																							ignoreGlobalPause: true,
-																							override: true
-																						}) 
-								.to({ WORLD_SPEED: this.GLOBAL.PRED_MODE_SPEED}, this.GLOBAL.MODE_SWITCH_SPEED)
-								.call(function () {
-									this.GLOBAL.WORLD_SPEED = this.GLOBAL.PRED_MODE_SPEED;
-									this.drawInfo();
-									this.GLOBAL.AGENTS_DIRTY = true;
-								}, [], this);
-								*/
 	this.GLOBAL.AGENTS_DIRTY = true;
 	this.toggleModeTime.text = "HUNT";
 	this.overlayContainer.alpha = 1;
-	this.toggleMode.mouseEnabled = false;
-	this.setTarget(null);
-	//this.detailViewer.alpha = 1;
 }
 
 infoPrototype.setAutoPredatorMode = function () {
@@ -373,14 +339,7 @@ infoPrototype.setAutoPredatorMode = function () {
 																							override: true
 																						}) 
 								.to({ value: this.worldSpeedSlider.userVal }, this.GLOBAL.MODE_SWITCH_SPEED)
-	this.worldSpeedSlider.setEnabled(true);
-	this.setTarget(null); 
 	this.drawInfo();
-}
-
-infoPrototype.setTarget = function (target) {
-	this.target = target;
-	//this.drawDetailViewer();
 }
 
 infoPrototype.drawTogglePause = function () {
@@ -427,9 +386,6 @@ infoPrototype.drawDetailViewer = function () {
 	this.bg.graphics.beginStroke(this.textColor.hex());
 	this.bg.graphics.drawRoundRect(0,0,this.detailViewer.width,this.detailViewer.height,20);
 	if (false) { //this.GLOBAL.MODE == 'observer') {
-		if (this.target == null) {
-			this.detailLabel.text = "No critter.";
-		}
 		this.phenotypeCircle.alpha = 0;
 	} else if (true) { //this.GLOBAL.MODE == 'predator') {
 		this.detailLabel.text = "Round " + this.round;
@@ -457,24 +413,7 @@ infoPrototype.drawInfo = function () {
 
 infoPrototype.update = function (e) {
 	if (this.modeEnd < this.GLOBAL.TIME) { // || this.numHits >= this.GLOBAL.HIT_THRESHOLD) {
-		this.nextMode();
-	}
-
-	if (this.target && this.target.isDying) {
-		this.setTarget(null);
-	}
-
-	if (false) { //this.GLOBAL.MODE == 'observer') {
-		// update the age
-		if (this.target) {
-			var age = Math.ceil((this.GLOBAL.TIME-this.target.birthTime)/1000);
-			var ageStr = ('0' + Math.floor((age%3600)/60)).slice(-1) + ":" +
-									 ('00' + Math.ceil(age%60)).slice(-2);
-
-			this.detailLabel.text = "Age: " + ageStr;
-		} else {
-			this.detailLabel.text = "No critter selected."
-		}
+		//this.nextMode();
 	}
 
 	if (this.GLOBAL.MODE == 'observer') {
