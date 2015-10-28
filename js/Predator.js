@@ -143,8 +143,8 @@ predatorPrototype.selectCacheIfExists = function () {
 predatorPrototype.drawPredator = function () {
 	var g = this.shadowGen.graphics;
 	g.clear();
-	g.beginFill("#FFFFFF");
-	g.drawCircle(0, 0, this.radius);
+	g.beginFill(this.color.hex());
+	g.drawPolyStar(0, 0, this.radius, 30, 0.05, 0);
 	if (this.hasTarget) {
 		g.drawCircle(this.radius, 0, this.target.radius*this.target.scaleX);
 	}
@@ -181,7 +181,8 @@ predatorPrototype.drawPredator = function () {
 		g.beginStroke(this.color.hex());
 	}
 
-	g.drawCircle(0, 0, this.radius);
+	g.drawPolyStar(0, 0, this.radius, 30, 0.05, 0);
+	//g.drawCircle(0, 0, this.radius);
 	g.endStroke();
 	g.endFill();
 

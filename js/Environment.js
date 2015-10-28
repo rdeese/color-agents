@@ -29,14 +29,6 @@ function Environment (GLOBAL,bounds,envGenome) {
 	this.addChild(this.darkness);
 	this.drawNighttime();
 
-	this.targetHalo = new createjs.Shape();
-	this.targetHalo.alpha = 0;
-	var width = 40;
-	this.targetHaloRadius = this.GLOBAL.AGENT_RADIUS + width;
-	this.targetToHaloDiff = this.targetHaloRadius - this.GLOBAL.AGENT_RADIUS;
-	this.addChild(this.targetHalo);
-	this.drawTargetHalo();
-
 	this.border = new createjs.Shape();
 	this.border.y = -this.GLOBAL.WORLD_OFFSET_Y;
 	this.addChild(this.border);
@@ -89,7 +81,7 @@ envPrototype.drawBg = function () {
 		var g = colorFill.graphics;
 		g.clear();
 	if (this.GLOBAL.DRAW_ENV_BACKGROUND) {
-		g.beginFill(this.color.hex()).drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
+		g.beginFill(this.color.brighten(0.2).hex()).drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
 	} else {
 		g.beginFill("#FFFFFF").drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
 	}
@@ -114,7 +106,7 @@ envPrototype.drawBg = function () {
 		c.x = pos[0];
 		c.y = pos[1];
 		col = chroma.hcl(this.envGenome[0]+this.GLOBAL.ENV_VARIATIONS[0]*
-										(random.integer(2)*2-1)*(0.3+0.7*random.number()),
+										(random.integer(2)*2-1)*random.number(),
 										 this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 		if (this.GLOBAL.COLOR_FILL) {
 			c.graphics.beginFill(col.hex());
@@ -131,18 +123,10 @@ envPrototype.drawBg = function () {
 	this.colorHasChanged = false;
 }
 
-envPrototype.drawTargetHalo = function () {
-	var g = this.targetHalo.graphics;
-	g.clear();
-	g.beginFill("#FFFFFF").drawCircle(0,
-																		0,
-																		this.targetHaloRadius);
-}
-
 envPrototype.update = function (e) {
 	// baseRate
 	var baseRate = Math.PI/this.GLOBAL.OBSERVER_PERIOD; // radians/ms
-	var maxCritters = 40;
+	var maxCritters = 50;
 	var minCritters = 60;
 	var rateScale = 10;
 	// update day vs night
