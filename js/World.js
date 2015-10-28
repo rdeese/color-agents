@@ -181,11 +181,16 @@ World.prototype = {
 		var worldBounds = this.bg.bounds;
 		var radius;
 		var a;
+		var pos;
+		var sample = poissonDiscSampler(worldBounds.width, worldBounds.height,
+																		2*this.GLOBAL.MAX_AGENT_RADIUS,
+																		this.GLOBAL.MAX_AGENT_RADIUS);
 		for (var i = 0; i < num; i++) {
 			radius = this.critterGenome[1];
+			pos = sample();
+			if (!pos) { break; }
 			a = new Agent(this.GLOBAL, worldBounds,
-										vec2.fromValues(random.number() * (worldBounds.width-2*radius) + radius,
-																		random.number() * (worldBounds.height-2*radius) + radius),
+										pos,
 										vec2.create(),
 										[this.critterGenome[0]+
 										 this.GLOBAL.INIT_AGENTS_VARIATIONS[0]*(random.number()-0.5),

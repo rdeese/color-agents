@@ -8,6 +8,7 @@ function Environment (GLOBAL,bounds,envGenome) {
 
 	this.sunAngle = 0;
 	this.isDaytime = true;
+	this.shadowColor = this.color.darken(4).rgb();
 
 	this.plants = [];
 	
@@ -16,7 +17,8 @@ function Environment (GLOBAL,bounds,envGenome) {
 	this.drawBg();
 
 	this.agentContainer = new createjs.Container();
-	this.agentContainer.shadow = new createjs.Shadow("rgba(0, 0, 0, 0.2)", 0, 0, 10);
+	this.agentContainer.shadow = new createjs.Shadow("rgba("+this.shadowColor.join(",")+
+																									 ", 0.2)", 0, 0, 10);
 	this.addChild(this.agentContainer);
 
 	this.predatorContainer = new createjs.Container();
@@ -76,19 +78,9 @@ envPrototype.drawBorder = function () {
 
 envPrototype.drawNighttime = function () {
 	var g = this.darkness.graphics;
-	g.beginFill("#000000")
+	g.beginFill("rgb("+this.shadowColor.join(",")+")")
 	 .drawRoundRect(0,0,this.bounds.width, this.bounds.height,20);
 	this.darkness.alpha = 0;
-}
-
-envPrototype.startNighttime = function () {
-	createjs.Tween.get(this.darkness, { override: true })
-								.to({ alpha: 0.3 }, 1000);
-}
-
-envPrototype.startDaytime = function () {
-	createjs.Tween.get(this.darkness, { override: true })
-								.to({ alpha: 0 }, 1000);
 }
 
 envPrototype.drawBg = function () {
@@ -109,13 +101,20 @@ envPrototype.drawBg = function () {
 	var c;
 	var r;
 	var radius;
-	for (var i = 0; i < numPlants; i++) {
+	var pos;
+	var sample = poissonDiscSampler(this.bounds.width, this.bounds.height,
+																	2*this.GLOBAL.MAX_AGENT_RADIUS,
+																	this.GLOBAL.MAX_AGENT_RADIUS);
+	for (var i = 0; i < Infinity; i++) {
 		r = random.number();
 		radius = this.envGenome[1]+(random.number()-0.5)*this.GLOBAL.ENV_VARIATIONS[1];
+		pos = sample();
+		if (!pos) { break; }
 		c = new createjs.Shape();
-		c.x = random.number() * (this.bounds.width-2*radius) + radius;
-		c.y = random.number() * (this.bounds.height-2*radius) + radius;
-		col = chroma.hcl(this.envGenome[0]+this.GLOBAL.ENV_VARIATIONS[0]*(random.number()-0.5),
+		c.x = pos[0];
+		c.y = pos[1];
+		col = chroma.hcl(this.envGenome[0]+this.GLOBAL.ENV_VARIATIONS[0]*
+										(random.integer(2)*2-1)*(0.3+0.7*random.number()),
 										 this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 		if (this.GLOBAL.COLOR_FILL) {
 			c.graphics.beginFill(col.hex());
@@ -149,6 +148,7 @@ envPrototype.update = function (e) {
 	// update day vs night
 	if (this.isDaytime && Math.sin(this.sunAngle) < 0) {
 		this.isDaytime = false;
+		this.agentContainer.shadow.color = "rgba("+this.shadowColor.join(",")+", 0)";
 		var evt = new createjs.Event('nighttime', true);
 		this.dispatchEvent(evt);
 	}
@@ -165,21 +165,20 @@ envPrototype.update = function (e) {
 		rateDilation = Math.sin(this.sunAngle)*rateDilation+(1-Math.sin(this.sunAngle))*1;
 		this.sunAngle += rateDilation*baseRate*this.GLOBAL.DELTA;
 
-		this.agentContainer.shadow.color = "rgba(0, 0, 0,"+
+		this.agentContainer.shadow.color = "rgba("+this.shadowColor.join(",")+","+
 																			 0.2*Math.sin(this.sunAngle)+
 																			 ")";
-		this.darkness.alpha = 0.3*(1-Math.sin(this.sunAngle));
+		this.darkness.alpha = 0.3*(1-Math.pow(Math.sin(this.sunAngle), 1/3));
 	} else {
 		var rateDilation = (maxCritters-currentCritters)/rateScale;
 		if (rateDilation < 0) { rateDilation = 0; }
 		rateDilation = -Math.sin(this.sunAngle)*rateDilation+(1+Math.sin(this.sunAngle))*1;
 		this.sunAngle += 4*rateDilation*baseRate*this.GLOBAL.DELTA;
 
-		this.agentContainer.shadow.color = "rgba(0, 0, 0, 0)";
-		this.darkness.alpha = 0.3+0.4*(-Math.sin(this.sunAngle));
+		this.darkness.alpha = 0.3+0.5*Math.pow(-Math.sin(this.sunAngle), 1/3);
 	}
 
-	this.agentContainer.shadow.offsetX = -Math.cos(this.sunAngle)*10;
+	this.agentContainer.shadow.offsetX = -Math.cos(this.sunAngle)*15;
 	this.agentContainer.shadow.offsetY = Math.sin(this.sunAngle)*2;
 	
 	if (this.colorHasChanged) {
