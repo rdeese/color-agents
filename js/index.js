@@ -512,6 +512,18 @@ function main () {
 													  0, 0, this.bg.bounds.width/2.1,
 														this.bg.bounds.height/2.1);
 		}
+		var restOfContent = document.querySelector("#hidden-until-selection-game")
+		var huntProgressSpan = document.querySelector("#selection-hunt-progress")
+		if (this.info.lifetimeHits > 200 && restOfContent.style.display == "none") {
+			restOfContent.style.display = "block";
+			huntProgressSpan.textContent = "Way to go! You hunted <b>" +
+																		 this.info.lifetimeHits +
+																		 "</b> critters!";
+		} else {
+			huntProgressSpan.innerHTML = "Keep hunting! Only <b>" +
+																	 (200 - this.info.lifetimeHits) +
+																	 "</b> critters to go!";
+		}
 	}.bind(world);
 	world.externalInit = function () {
 		this.yearCounter = 1;

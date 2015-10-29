@@ -264,185 +264,192 @@
 		<div style="height:750px" class="centered vspace">
 			<canvas class="centered" id=selection></canvas>
 		</div>
-		<div style="height:100px" class="widest centered vspace">
-			<div style="width:180px" class="left">
-				<p class="c-text notopmargin">
-				In year<br>
-				Most critters were
-				</p>
+		<section class="centered vspace">
+			<p class="c-text caption">
+				<span id="selection-hunt-progress"></span>
+			</p>
+		</section>
+		<div id="hidden-until-selection-game" style="display:none">
+			<div style="height:100px" class="widest centered vspace">
+				<div style="width:180px" class="left">
+					<p class="c-text notopmargin">
+					In year<br>
+					Most critters were
+					</p>
+				</div>
+				<div class="ten-across left">
+					<p class="c-text notopmargin">
+						<b>1</b><br>
+						<b><span id="critter-decade-1">???</span></b>
+					</p>
+				</div>
+				<div class="ten-across left">
+					<p class="c-text notopmargin">
+						<b>2</b><br>
+						<b><span id="critter-decade-2">???</span></b>
+					</p>
+				</div>
+				<div class="ten-across left">
+					<p class="c-text notopmargin">
+						<b>3</b><br>
+						<b><span id="critter-decade-3">???</span></b>
+					</p>
+				</div>
+				<div class="ten-across left">
+					<p class="c-text notopmargin">
+						<b>4</b><br>
+						<b><span id="critter-decade-4">???</span></b>
+					</p>
+				</div>
+				<div class="ten-across left">
+					<p class="c-text notopmargin">
+						<b>5</b><br>
+						<b><span id="critter-decade-5">???</span></b>
+					</p>
+				</div>
+				<div class="ten-across left">
+					<p class="c-text notopmargin">
+						<b>6</b><br>
+						<b><span id="critter-decade-6">???</span></b>
+					</p>
+				</div>
+				<div class="ten-across left">
+					<p class="c-text notopmargin">
+						<b>7</b><br>
+						<b><span id="critter-decade-7">???</span></b>
+					</p>
+				</div>
+				<div class="ten-across left">
+					<p class="c-text notopmargin">
+						<b>8</b><br>
+						<b><span id="critter-decade-8">???</span></b>
+					</p>
+				</div>
+				<div class="ten-across left">
+					<p class="c-text notopmargin">
+						<b>9</b><br>
+						<b><span id="critter-decade-9">???</span></b>
+					</p>
+				</div>
+				<div class="ten-across left">
+					<p class="c-text notopmargin">
+						<b>10</b><br>
+						<b><span id="critter-decade-10">???</span></b>
+					</p>
+				</div>
 			</div>
-			<div class="ten-across left">
-				<p class="c-text notopmargin">
-					<b>1</b><br>
-					<b><span id="critter-decade-1">???</span></b>
+			<section class="centered vspace">
+				<h3 class="nobottommargin">
+					The critters changed color to match the environment.
+				</h3>
+				<p class="notopmargin">
+					The critters changed color!
+					They started out
+					<b><span id="critter-decade-start-critter">???</span></b>,
+					and now they are
+					<b><span id="critter-decade-end-critter">???</span></b>.
+					That's a bigger change than we saw before, without hunting.
 				</p>
-			</div>
-			<div class="ten-across left">
-				<p class="c-text notopmargin">
-					<b>2</b><br>
-					<b><span id="critter-decade-2">???</span></b>
+				<p>
+					Strangely, these
+					<b><span id="critter-decade-end-critter">???</span></b>
+					critters are almost the same color as the
+					<b><span id="critter-decade-env">???</span></b>
+					environment. Did you notice that they got harder to
+					hunt every year?
 				</p>
+			</section>
+			<div style="height: 431px" class="widest centered vspace">
+				<div style="width:524px; height:381px" class="left">
+					<p class="c-text caption notopmargin nobottommargin">Year <b>1</b></p>
+					<canvas id="selection-before"></canvas>
+				</div>
+				<div style="width:524px; height:381px;" class="right">
+					<p class="c-text caption notopmargin nobottommargin">
+					Year <b><span id="last-year">???</span></b>
+					</p>
+					<canvas id="selection-after"></canvas>
+				</div>
 			</div>
-			<div class="ten-across left">
-				<p class="c-text notopmargin">
-					<b>3</b><br>
-					<b><span id="critter-decade-3">???</span></b>
+			<section class="centered vspace">
+				<h3 class="nobottommargin">
+					How did the critters change color?
+				</h3>
+				<p class="notopmargin">
+					While you were watching and hunting them, three things
+					were happening.
 				</p>
+			</section>
+			<div style="height:1060px" class="widest centered vspace">
+				<div class="left three-across">
+					<p class="c-text caption three-across notopmargin">
+						<b>1. Mutation</b>
+					</p>
+					<canvas class="centered" id="triptych-mutation"></canvas>
+					<p class="c-text centered three-across-text">
+						Some of the
+						<b><span id="critter-decade-start-critter">???</span></b>
+						critters' children were surprisingly
+						<b><span id="critter-decade-further-m-critter">???</span></b>
+						or
+						<b><span id="critter-decade-closer-m-critter">???</span></b>.
+					</p>
+				</div>
+				<div class="left three-across">
+					<div style="height:100px"></div>
+					<p class="c-text caption three-across notopmargin">
+						<b>2. Elimination</b>
+					</p>
+					<canvas class="centered" id="triptych-selection"></canvas>
+					<p class="c-text centered three-across-text">
+						The <b><span id="critter-decade-env">???</span></b>
+						environment made
+						<b><span id="critter-decade-closer-m-critter">???</span></b>
+						critters hard to see, so you hunted
+						<b><span id="critter-decade-start-critter">???</span></b>
+						and
+						<b><span id="critter-decade-further-m-critter">???</span></b>
+						critters.
+					</p>
+				</div>
+				<div class="left three-across">
+					<div style="height:200px"></div>
+					<p class="c-text caption three-across notopmargin">
+						<b>3. Inheritance</b>
+					</p>
+					<canvas class="centered" id="triptych-inheritance"></canvas>
+					<p class="c-text centered three-across-text">
+						The
+						<b><span id="critter-decade-closer-m-critter">???</span></b>
+						critters that you didn't hunt passed that
+						<b><span id="critter-decade-closer-m-critter">???</span></b>
+						color to their children. 
+					</p>
+				</div>
 			</div>
-			<div class="ten-across left">
-				<p class="c-text notopmargin">
-					<b>4</b><br>
-					<b><span id="critter-decade-4">???</span></b>
+			
+			<section class="centered vspace">
+				<p>
+				This is called natural selection.
+				It's a process that causes slow changes to
+				living things.
 				</p>
-			</div>
-			<div class="ten-across left">
-				<p class="c-text notopmargin">
-					<b>5</b><br>
-					<b><span id="critter-decade-5">???</span></b>
+			</section>
+			<section class="centered vspace">
+				<h3 class="nobottommargin">
+					Will natural selection do this every time?
+				</h3>
+				<p class="notopmargin">
+					Yes! No matter what color the environment is, or what
+					color the critters start out with, they will become
+					the same color as the environment if you hunt them.
+					<a href="javascript:
+										window.scroll(0, document.querySelector('#decade').offsetTop-10);
+										window.location.reload();">See for yourself by starting again with
+										different colors.</a>
 				</p>
-			</div>
-			<div class="ten-across left">
-				<p class="c-text notopmargin">
-					<b>6</b><br>
-					<b><span id="critter-decade-6">???</span></b>
-				</p>
-			</div>
-			<div class="ten-across left">
-				<p class="c-text notopmargin">
-					<b>7</b><br>
-					<b><span id="critter-decade-7">???</span></b>
-				</p>
-			</div>
-			<div class="ten-across left">
-				<p class="c-text notopmargin">
-					<b>8</b><br>
-					<b><span id="critter-decade-8">???</span></b>
-				</p>
-			</div>
-			<div class="ten-across left">
-				<p class="c-text notopmargin">
-					<b>9</b><br>
-					<b><span id="critter-decade-9">???</span></b>
-				</p>
-			</div>
-			<div class="ten-across left">
-				<p class="c-text notopmargin">
-					<b>10</b><br>
-					<b><span id="critter-decade-10">???</span></b>
-				</p>
-			</div>
+			</section>
 		</div>
-		<section class="centered vspace">
-			<h3 class="nobottommargin">
-				The critters changed color to match the environment.
-			</h3>
-			<p class="notopmargin">
-				The critters changed color!
-				They started out
-				<b><span id="critter-decade-start-critter">???</span></b>,
-				and now they are
-				<b><span id="critter-decade-end-critter">???</span></b>.
-				That's a bigger change than we saw before, without hunting.
-			</p>
-			<p>
-				Strangely, these
-				<b><span id="critter-decade-end-critter">???</span></b>
-				critters are almost the same color as the
-				<b><span id="critter-decade-env">???</span></b>
-				environment. Did you notice that they got harder to
-				hunt every year?
-			</p>
-		</section>
-		<div style="height: 431px" class="widest centered vspace">
-			<div style="width:524px; height:381px" class="left">
-				<p class="c-text caption notopmargin nobottommargin">Year <b>1</b></p>
-				<canvas id="selection-before"></canvas>
-			</div>
-			<div style="width:524px; height:381px;" class="right">
-				<p class="c-text caption notopmargin nobottommargin">
-				Year <b><span id="last-year">???</span></b>
-				</p>
-				<canvas id="selection-after"></canvas>
-			</div>
-		</div>
-		<section class="centered vspace">
-			<h3 class="nobottommargin">
-				How did the critters change color?
-			</h3>
-			<p class="notopmargin">
-				While you were watching and hunting them, three things
-				were happening.
-			</p>
-		</section>
-		<div style="height:1060px" class="widest centered vspace">
-			<div class="left three-across">
-				<p class="c-text caption three-across notopmargin">
-					<b>1. Mutation</b>
-				</p>
-				<canvas class="centered" id="triptych-mutation"></canvas>
-				<p class="c-text centered three-across-text">
-					Some of the
-					<b><span id="critter-decade-start-critter">???</span></b>
-					critters' children were surprisingly
-					<b><span id="critter-decade-further-m-critter">???</span></b>
-					or
-					<b><span id="critter-decade-closer-m-critter">???</span></b>.
-				</p>
-			</div>
-			<div class="left three-across">
-				<div style="height:100px"></div>
-				<p class="c-text caption three-across notopmargin">
-					<b>2. Elimination</b>
-				</p>
-				<canvas class="centered" id="triptych-selection"></canvas>
-				<p class="c-text centered three-across-text">
-					The <b><span id="critter-decade-env">???</span></b>
-					environment made
-					<b><span id="critter-decade-closer-m-critter">???</span></b>
-					critters hard to see, so you hunted
-					<b><span id="critter-decade-start-critter">???</span></b>
-					and
-					<b><span id="critter-decade-further-m-critter">???</span></b>
-					critters.
-				</p>
-			</div>
-			<div class="left three-across">
-				<div style="height:200px"></div>
-				<p class="c-text caption three-across notopmargin">
-					<b>3. Inheritance</b>
-				</p>
-				<canvas class="centered" id="triptych-inheritance"></canvas>
-				<p class="c-text centered three-across-text">
-					The
-					<b><span id="critter-decade-closer-m-critter">???</span></b>
-					critters that you didn't hunt passed that
-					<b><span id="critter-decade-closer-m-critter">???</span></b>
-					color to their children. 
-				</p>
-			</div>
-		</div>
-		
-		<section class="centered vspace">
-			<p>
-			This is called natural selection.
-			It's a process that causes slow changes to
-			living things.
-			</p>
-		</section>
-		<section class="centered vspace">
-			<h3 class="nobottommargin">
-				Will natural selection do this every time?
-			</h3>
-			<p class="notopmargin">
-				Yes! No matter what color the environment is, or what
-				color the critters start out with, they will become
-				the same color as the environment if you hunt them.
-				<a href="javascript:
-									window.scroll(0, document.querySelector('#decade').offsetTop-10);
-									window.location.reload();">See for yourself by starting again with
-									different colors.</a>
-			</p>
-		</section>
 		<div style="height:200px" class="widest centered vspace">
 			<canvas class="centered" id="confetti-bottom"></canvas>
 		</div>
