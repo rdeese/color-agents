@@ -143,29 +143,30 @@ envPrototype.update = function (e) {
 		this.dispatchEvent(evt);
 	}
 
+	this.agentContainer.shadow.offsetX = -Math.cos(this.sunAngle)*15;
+	this.agentContainer.shadow.offsetY = Math.sin(this.sunAngle)*2;
+
 	var currentCritters = this.agentContainer.children.length;
 	if (this.isDaytime) { 
 		var rateDilation = (currentCritters-minCritters)/rateScale;
 		if (rateDilation < 0) { rateDilation = 0; }
 		rateDilation = Math.sin(this.sunAngle)*rateDilation+(1-Math.sin(this.sunAngle))*1;
-		this.sunAngle += rateDilation*baseRate*this.GLOBAL.DELTA;
 
 		this.agentContainer.shadow.color = "rgba("+this.shadowColor.join(",")+","+
 																			 0.2*Math.sin(this.sunAngle)+
 																			 ")";
-		this.darkness.alpha = 0.3*(1-Math.pow(Math.sin(this.sunAngle), 1/3));
+		this.darkness.alpha = 0.3*(1-Math.pow(Math.sin(this.sunAngle), 1/2));
+
+		this.sunAngle += rateDilation*baseRate*this.GLOBAL.DELTA;
 	} else {
 		var rateDilation = (maxCritters-currentCritters)/rateScale;
 		if (rateDilation < 0) { rateDilation = 0; }
 		rateDilation = -Math.sin(this.sunAngle)*rateDilation+(1+Math.sin(this.sunAngle))*1;
-		this.sunAngle += 4*rateDilation*baseRate*this.GLOBAL.DELTA;
+		this.darkness.alpha = 0.3+0.5*Math.pow(-Math.sin(this.sunAngle), 1/2);
 
-		this.darkness.alpha = 0.3+0.5*Math.pow(-Math.sin(this.sunAngle), 1/3);
+		this.sunAngle += 4*rateDilation*baseRate*this.GLOBAL.DELTA;
 	}
 
-	this.agentContainer.shadow.offsetX = -Math.cos(this.sunAngle)*15;
-	this.agentContainer.shadow.offsetY = Math.sin(this.sunAngle)*2;
-	
 	if (this.colorHasChanged) {
 		this.drawBg();
 	}
