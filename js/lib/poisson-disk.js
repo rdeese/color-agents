@@ -14,7 +14,8 @@ var poissonDiscSampler = function (width, height, radius, edge) {
 			sampleSize = 0;
 
 	return function() {
-		if (!sampleSize) return sample(0.5 * width, 0.5 * height);
+		if (!sampleSize) return sample((0.5+0.1*(Math.random()-0.5)) * width,
+																	 (0.5+0.1*(Math.random()-0.5)) * height);
 
 		// Pick a random existing sample and remove it from the queue.
 		while (queueSize) {

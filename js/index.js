@@ -152,7 +152,8 @@ function main () {
 	world = new World(global, canvas, [null, GLOBAL.AGENT_RADIUS],
 																		[null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
-		this.stage.removeChild(this.bg); // hide the background
+		this.bg.removeChild(this.bg.bg);
+		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
 		
 		this.bg.agentContainer.removeAllChildren();
@@ -196,7 +197,8 @@ function main () {
 	global.PAUSED = false;
 	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
-		this.stage.removeChild(this.bg); // hide the background
+		this.bg.removeChild(this.bg.bg);
+		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
 		var span = document.querySelector("#single-critter-color");
 		var color = this.agents[0].color;
@@ -239,7 +241,8 @@ function main () {
 	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
 		this.GLOBAL.MATING_PROB = 1;
-		this.stage.removeChild(this.bg); // hide the background
+		this.bg.removeChild(this.bg.bg);
+		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
 		var fatherSpan = document.querySelector("#critter-family-father");
 		var motherSpan = document.querySelector("#critter-family-mother");
@@ -295,7 +298,8 @@ function main () {
 	global.PAUSED = false;
 	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
-		this.stage.removeChild(this.bg); // hide the background
+		this.bg.removeChild(this.bg.bg);
+		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
 		var fatherSpan = document.querySelector("#critter-m-family-father");
 		//var motherSpan = document.querySelector("#critter-m-family-mother");
@@ -343,7 +347,6 @@ function main () {
 	world = new World(global, canvas, [null, GLOBAL.AGENT_RADIUS],
 																		['relative', 'relative']);
 	world.externalInit = function () {
-		//this.stage.removeChild(this.bg); // hide the background
 		this.info.removeChild(this.info.toggleMode);
 		this.info.removeChild(this.info.detailViewer);
 		var startSpan = document.querySelector("#critter-observe-start");
@@ -472,7 +475,8 @@ function main () {
 									
 	world.yearCounter = 1;
 	world.externalTick = function () {
-		if (this.info.year <= 10 && this.info.year == this.yearCounter) {
+		if (this.info.year <= 10 && this.bg.sunAngle > Math.PI/2 &&
+				this.info.year == this.yearCounter) {
 			var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
 			var span = document.querySelector("#critter-decade-"+this.yearCounter);
 			span.textContent = chromaColorToHueName(avgColor);
@@ -499,7 +503,7 @@ function main () {
 			}
 			this.yearCounter++;
 		}
-		if (!this.before) {
+		if (!this.before && this.bg.sunAngle > Math.PI/2) {
 			this.before = document.querySelector("#selection-before").getContext('2d');
 			this.before.canvas.width = this.bg.bounds.width/2.1;
 			this.before.canvas.height = this.bg.bounds.height/2.1;
@@ -702,7 +706,7 @@ function main () {
 			if (diff < -180) { diff += 360; }
 			diff = Math.abs(diff);
 			if (diff > safe && random.number() < diff/70) {
-				a.isEaten = true;
+				a.isDying = true;
 			}
 		}
 
@@ -740,14 +744,14 @@ function main () {
 		this.restoreState();
 
 		var livingAdults = this.agents.filter(function (a) {
-			return (a.isAdult && !a.isEaten);
+			return (a.isAdult && !a.isDying);
 		});
 
 		// variables for making babies
 		var j, k, a, father, mother;
 
 		for (var i = 0; i < this.agents.length; i++) {
-			if (this.agents[i].isEaten) {
+			if (this.agents[i].isDying) {
 				j = random.integer(livingAdults.length);
 				k = random.integer(livingAdults.length);
 				while (k == j) {
@@ -795,7 +799,8 @@ function main () {
 	world = new World(global, canvas, selectionWorldEnvGenome,
 																		['relative', 'relative']);
 	world.externalInit = function () {
-		this.stage.removeChild(this.bg); // hide the background
+		this.bg.removeChild(this.bg.bg);
+		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
 		
 		// create agents and replace old ones!

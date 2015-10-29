@@ -138,6 +138,7 @@ envPrototype.update = function (e) {
 	}
 	if (!this.isDaytime && Math.sin(this.sunAngle) >= 0) {
 		this.isDaytime = true;
+		this.sunAngle = this.sunAngle % (2*Math.PI);
 		var evt = new createjs.Event('daytime', true);
 		this.dispatchEvent(evt);
 	}

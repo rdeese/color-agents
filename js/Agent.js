@@ -507,7 +507,7 @@ agentPrototype.isDead = function () {
 
 // update the kinematics of the agent
 agentPrototype.update = function (e) {
-  if (this.GLOBAL.MODE == 'predator') {
+  if (this.GLOBAL.MODE == 'predator' && !this.isDying) {
     this.birthTime += this.GLOBAL.DELTA;
     if (this.matingTime !== null) {
       this.matingTime += this.GLOBAL.DELTA;
@@ -596,6 +596,10 @@ agentPrototype.update = function (e) {
 	// check for survival of agent
 	if (!this.isDead()) {
 		result.push(this);
+	} else {
+		this.eyes.graphics.clear();
+		this.body.graphics.clear();
+		this.removeAllChildren();
 	}
 
 	// only write to the position vars used by createjs

@@ -32,7 +32,7 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.pauseImage = new createjs.Shape();
 	this.drawPauseImage();
 	this.addChild(this.pauseImage);
-	this.pauseImage.alpha = this.GLOBAL.PAUSED ? 0.5 : 0;
+	this.pauseImage.alpha = this.GLOBAL.PAUSED ? 1 : 0;
 	// END PAUSE LAYER	
 
 	this.pauseImage.on('click', function (e) {
@@ -63,12 +63,12 @@ var infoPrototype = createjs.extend(Info, createjs.Container);
 infoPrototype.drawPauseImage = function () {
 	var g = this.pauseImage.graphics;
 	g.clear();
-	g.beginFill(this.color.hex());
+	g.beginFill("rgba("+this.color.rgb().join(",")+",0.5)");
 	g.drawRoundRect(0,0,this.worldBounds.width, this.worldBounds.height,20);
 	g.endFill();
-	g.beginFill("rgba(255, 255, 255, 1)");
+	g.beginFill(this.color.brighten(1).hex());
 	g.drawPolyStar(this.worldBounds.width/2, this.worldBounds.height/2,
-								 200, 3, 0, 0);
+								 this.worldBounds.height/5, 3, 0, 0);
 	g.endFill();
 }
 													
@@ -125,6 +125,7 @@ infoPrototype.nextMode = function () {
 		this.setPredatorMode();
 	} else if (this.GLOBAL.MODE == 'predator') {
 		// reset lifetime score if hits from last Pred round are below threshold
+		/*
 		if (this.numHits < this.GLOBAL.HIT_THRESHOLD) {
 			this.lifetimeScore = 0;
 			
@@ -140,7 +141,6 @@ infoPrototype.nextMode = function () {
 			var evt = new createjs.Event('resetRound', true);
 			this.dispatchEvent(evt);
 		} else {
-			this.year += 1;
 			
 			var overlay = new createjs.Text("YEAR "+this.year,
 																			"bold 150px "+this.GLOBAL.FONT,
@@ -154,6 +154,8 @@ infoPrototype.nextMode = function () {
 			var evt = new createjs.Event('nextRound', true);
 			this.dispatchEvent(evt);
 		}
+		*/
+		this.year += 1;
 		this.numHits = 0;
 		this.setObserverMode();
 	}
@@ -180,8 +182,7 @@ infoPrototype.setPredatorMode = function () {
 
 infoPrototype.update = function (e) {
 	if (this.pauseImage.alpha == 0 && this.GLOBAL.PAUSED) {
-		console.log("setting alpha to 1");
-		this.pauseImage.alpha = 0.5;
+		this.pauseImage.alpha = 1;
 		this.GLOBAL.DIRTY = true;
 	}
 }
