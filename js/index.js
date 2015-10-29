@@ -1,6 +1,6 @@
 function main () {
 	var GLOBAL = {
-		WORLD_OFFSET_Y: 58, // pixels
+		WORLD_OFFSET_Y: 0, // pixels
 		COMPONENT_MARGIN: 8, // pixels
 		NUM_AGENTS: 40,
 		INIT_AGENTS_VARIATIONS: [20, 0],
@@ -38,7 +38,7 @@ function main () {
 		HIT_THRESHOLD: 0,
 
 		INITIAL_AGENT_OFFSETS: [60, 0],
-		ENV_VARIATIONS: [10, 10],
+		ENV_VARIATIONS: [40, 10],
 		RAND_AGENT_VARIATIONS: [0, 5],
 		DRAW_ENV_BACKGROUND: true,
 		COLOR_FILL: true,
@@ -118,6 +118,10 @@ function main () {
 	// it simple for now.
 	glMatrix.setMatrixArrayType(Array);
 	random = new PcgRandom(Date.now());
+	random.normal = function () {
+		return (random.number()+random.number()+random.number()+
+						random.number()+random.number()+random.number()-3)/3;
+	}
 	createjs.Ticker.setFPS(120);
 	// destroy tween event handling so we can do it ourselves
 	createjs.Tween.handleEvent = function () {};
@@ -458,7 +462,8 @@ function main () {
 	canvas.width = 1100;
 	canvas.height = 750;
 	global = globalClone();
-	global.INIT_AGENTS_VARIATIONS[0] = 50;
+	global.WORLD_SPEED = 12;
+	global.INIT_AGENTS_VARIATIONS[0] = 40;
 	
 	world = new World(global, canvas,
 										[GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)],

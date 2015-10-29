@@ -106,7 +106,7 @@ envPrototype.drawBg = function () {
 		c.x = pos[0];
 		c.y = pos[1];
 		col = chroma.hcl(this.envGenome[0]+this.GLOBAL.ENV_VARIATIONS[0]*
-										(random.integer(2)*2-1)*random.number(),
+										(random.integer(2)*2-1)*random.normal(),
 										 this.GLOBAL.CHROMA,this.GLOBAL.LIGHTNESS);
 		if (this.GLOBAL.COLOR_FILL) {
 			c.graphics.beginFill(col.hex());

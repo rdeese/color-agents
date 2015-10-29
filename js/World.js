@@ -320,6 +320,8 @@ World.prototype = {
 			this.GLOBAL.AGENTS_DIRTY = false;
 		}
 
+		if (event.WILL_DRAW) { this.info.update(event); }
+
 		// add a tick to the update counter
 		this.GLOBAL.UPDATE_COUNTER++;
 

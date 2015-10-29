@@ -23,162 +23,21 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 																				  this.GLOBAL.LIGHTNESS).hex();
 	}
 
-	var tempText = new createjs.Text("M", "bold 30px "+this.GLOBAL.FONT, "#FFFFFF");
-	this.textLineHeight = tempText.getMeasuredLineHeight();
-
-	// PAUSE BUTTON
-	this.togglePause = new createjs.Container();
-	this.togglePause.x = 0;
-	this.togglePause.y = 0;
-	this.togglePause.width = 95;
-	this.togglePause.height = 50;
-
-	this.togglePauseBg = new createjs.Shape();
-	this.togglePauseBg.x = 0;
-	this.togglePauseBg.y = 0;
-	this.togglePause.addChild(this.togglePauseBg);
-
-	this.togglePauseLabel = new createjs.Text("", "bold 30px "+this.GLOBAL.FONT, this.textColor.hex());
-	this.togglePauseLabel.textAlign = "center";
-	this.togglePauseLabel.x = this.togglePause.width/2;
-	this.togglePauseLabel.y = this.togglePause.height/2-20;
-	this.togglePause.addChild(this.togglePauseLabel);
-
-	this.addChild(this.togglePause);
-	// END PAUSE BUTTON
-
-	// RESET BUTTON
-	this.resetButton = new createjs.Container();
-	this.resetButton.x = this.togglePause.width+this.GLOBAL.COMPONENT_MARGIN;
-	this.resetButton.y = 0;
-	this.resetButton.width = 95;
-	this.resetButton.height = 50;
-
-	this.resetButtonBg = new createjs.Shape();
-	this.resetButtonBg.x = 0;
-	this.resetButtonBg.y = 0;
-	this.resetButton.addChild(this.resetButtonBg);
-
-	this.resetButtonLabel = new createjs.Text("", "bold 30px "+this.GLOBAL.FONT, this.textColor.hex());
-	this.resetButtonLabel.textAlign = "center";
-	this.resetButtonLabel.x = this.resetButton.width/2;
-	this.resetButtonLabel.y = this.resetButton.height/2-20;
-	this.resetButton.addChild(this.resetButtonLabel);
-
-	this.addChild(this.resetButton);
-	// END RESET BUTTON
-
-	// MODE TOGGLE!
-	this.toggleMode = new createjs.Container();
-	this.toggleMode.x = this.resetButton.x+this.resetButton.width+this.GLOBAL.COMPONENT_MARGIN;
-	this.toggleMode.y = 0;
-	this.toggleMode.width = 300;
-	this.toggleMode.height = 50;
-
-	this.toggleModeBg = new createjs.Shape();
-	this.toggleModeBg.x = 0;
-	this.toggleModeBg.y = 0;
-	this.toggleMode.addChild(this.toggleModeBg);
-
-	/*
-	this.toggleModeArrow = new createjs.Text("\u25be", "bold 24px "+this.GLOBAL.FONT, this.textColor.hex());
-	this.toggleModeArrow.x = this.toggleMode.width - 30;
-	this.toggleModeArrow.y = this.toggleMode.height/2-this.textLineHeight/2;
-	this.toggleMode.addChild(this.toggleModeArrow);
-	*/
-
-	this.toggleModeLabel = new createjs.Text("", "bold 24px "+this.GLOBAL.FONT, this.textColor.hex());
-	this.toggleModeLabel.x = 20;
-	this.toggleModeLabel.y = this.toggleMode.height/2-this.textLineHeight/2;
-	this.toggleMode.addChild(this.toggleModeLabel);
-	
-	this.toggleModeTime = new createjs.Text("", "bold 24px "+this.GLOBAL.FONT, this.color.brighten(1).hex());
-	this.toggleModeTime.textAlign = "right";
-	this.toggleModeTime.x = this.toggleMode.width-20;
-	this.toggleModeTime.y = this.toggleMode.height/2-this.textLineHeight/2;
-	this.toggleMode.addChild(this.toggleModeTime);
-
-	//this.addChild(this.toggleMode);
-	// END MODE TOGGLE
-
-	// AGENT VIEWER
-	/*
-	this.detailViewer = new createjs.Container();
-	this.detailViewer.width = 150;
-	this.detailViewer.height = 50;
-	this.detailViewer.x = this.toggleMode.x + this.toggleMode.width + this.GLOBAL.COMPONENT_MARGIN;
-	this.detailViewer.y = 0;
-
-	this.bg = new createjs.Shape();
-	this.bg.x = 0;
-	this.bg.y = 0;
-	this.detailViewer.addChild(this.bg);
-
-	this.detailLabel = new createjs.Text("Last kill:", "bold 24px "+this.GLOBAL.FONT, this.textColor.hex());
-	this.detailLabel.textAlign = 'center';
-	this.detailLabel.x = this.detailViewer.width/2;
-	this.detailLabel.y = this.detailViewer.height/2-this.textLineHeight/2;
-	this.detailViewer.addChild(this.detailLabel);
-
-	this.phenotypeCircle = new createjs.Shape();
-	this.phenotypeCircle.x = this.detailViewer.width/2 +
-													 this.detailLabel.getMeasuredWidth()/2 +
-													 20;
-	this.phenotypeCircle.y = this.detailViewer.height/2;
-	this.detailViewer.addChild(this.phenotypeCircle);
-
-	//this.addChild(this.detailViewer);
-	*/
-	// END AGENT VIEWER
-
-	// INSTRUCTIONS
-	this.instructions = new createjs.Text("Click on a critter to get some info about it.",
-																				"bold 20px "+this.GLOBAL.FONT, this.fillColor.hex());
-	this.instructions.width = this.bounds.width -
-														this.togglePause.width -
-														this.resetButton.width -
-														//this.detailViewer.width -
-														2*this.GLOBAL.COMPONENT_MARGIN;
-	this.instructions.lineWidth = this.instructions.width;
-	this.instructions.height = 50;
-	this.instructions.x = this.togglePause.width +
-												this.GLOBAL.COMPONENT_MARGIN +
-												this.instructions.width/2;
-	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
-	this.instructions.textAlign = 'center';
-	//this.addChild(this.instructions);
-	// END INSTRUCTIONS
-
-	// BEGIN SLIDER
-	this.worldSpeedSlider = new Slider(this.GLOBAL, 1, 12, this.instructions.width, 50,
-																		 "World Speed", hue);
-	this.worldSpeedSlider.x = this.resetButton.x +
-														this.resetButton.width +
-														this.GLOBAL.COMPONENT_MARGIN;
-	this.worldSpeedSlider.y = 0;
-	this.addChild(this.worldSpeedSlider);
-	this.worldSpeedSlider.userVal = 10;
-	this.worldSpeedSlider.value = 10;
-	this.worldSpeedSlider.on('change', function () {
-		this.GLOBAL.WORLD_SPEED = this.worldSpeedSlider.value;
-		this.GLOBAL.DIRTY = true;
-	}, this);
-	// END SLIDER
-
 	// BEGIN OVERLAY LAYER
 	this.overlayContainer = new createjs.Container();
 	this.addChild(this.overlayContainer);
 	// END OVERLAY LAYER
 
+	// BEGIN PAUSE LAYER
+	this.pauseImage = new createjs.Shape();
+	this.drawPauseImage();
+	this.addChild(this.pauseImage);
+	this.pauseImage.alpha = this.GLOBAL.PAUSED ? 0.5 : 0;
+	// END PAUSE LAYER	
 
-	this.togglePause.on('click', function (e) {
-		this.GLOBAL.PAUSED = !this.GLOBAL.PAUSED;
-		this.GLOBAL.DIRTY = true;
-	}, this);
-
-	this.resetButton.on('click', function (e) {
-		var evt = new createjs.Event('reset', true);
-		this.dispatchEvent(evt);
+	this.pauseImage.on('click', function (e) {
+		this.pauseImage.alpha = 0;
+		this.GLOBAL.PAUSED = false;
 	}, this);
 
 	this.x = 0;
@@ -190,13 +49,9 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	this.numHits = 0;
 	this.numMisses = 0;
 	this.lifetimeScore = 0;
-	this.round = 1;
 	this.year = 1;
 
-	this.drawInfo();
-
 	this.setObserverMode();
-	this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.OBSERVER_PERIOD;
 
 	this.on('tick', function (e) {
 		this.update(e);
@@ -205,9 +60,18 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 
 var infoPrototype = createjs.extend(Info, createjs.Container);
 
-infoPrototype.sendPredator = function (target) {
-	this.predator.huntTarget(target);
+infoPrototype.drawPauseImage = function () {
+	var g = this.pauseImage.graphics;
+	g.clear();
+	g.beginFill(this.color.hex());
+	g.drawRoundRect(0,0,this.worldBounds.width, this.worldBounds.height,20);
+	g.endFill();
+	g.beginFill("rgba(255, 255, 255, 1)");
+	g.drawPolyStar(this.worldBounds.width/2, this.worldBounds.height/2,
+								 200, 3, 0, 0);
+	g.endFill();
 }
+													
 
 infoPrototype.handleWorldClick = function (event, didHit, agent) {
 	if (this.GLOBAL.MODE == 'predator' && !this.GLOBAL.PAUSED) {
@@ -223,7 +87,6 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 		} else {
 			this.numMisses++;
 			this.lifetimeMisses++;
-			this.modeEnd -= this.GLOBAL.MISS_TIME_PENALTY;
 		}
 
 		var text;
@@ -259,7 +122,6 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 
 infoPrototype.nextMode = function () {
 	if (this.GLOBAL.MODE == 'observer') {
-		this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.PREDATOR_PERIOD;
 		this.setPredatorMode();
 	} else if (this.GLOBAL.MODE == 'predator') {
 		// reset lifetime score if hits from last Pred round are below threshold
@@ -278,9 +140,7 @@ infoPrototype.nextMode = function () {
 			var evt = new createjs.Event('resetRound', true);
 			this.dispatchEvent(evt);
 		} else {
-			this.modeEnd = this.GLOBAL.TIME + this.GLOBAL.OBSERVER_PERIOD;
 			this.year += 1;
-			this.round += 1;
 			
 			var overlay = new createjs.Text("YEAR "+this.year,
 																			"bold 150px "+this.GLOBAL.FONT,
@@ -297,8 +157,6 @@ infoPrototype.nextMode = function () {
 		this.numHits = 0;
 		this.setObserverMode();
 	}
-	this.instructions.y = this.instructions.height/2-this.instructions.getMeasuredHeight()/2;
-	//this.drawToggleMode();
 }
 
 infoPrototype.setObserverMode = function () {
@@ -311,117 +169,20 @@ infoPrototype.setObserverMode = function () {
 								.call(function () {
 									this.overlayContainer.removeAllChildren();
 								}, [], this);
-	this.toggleModeTime.alpha = 1;
-	this.drawInfo();
 	this.GLOBAL.AGENTS_DIRTY = true;
 }
 
 infoPrototype.setPredatorMode = function () {
 	this.GLOBAL.MODE = 'predator';
 	this.GLOBAL.AGENTS_DIRTY = true;
-	this.toggleModeTime.text = "HUNT";
 	this.overlayContainer.alpha = 1;
 }
 
-infoPrototype.setAutoPredatorMode = function () {
-	this.GLOBAL.MODE = 'autopredator';
-	this.instructions.text = "There's a predator at work! She eats any critters " +
-													 "she can find.";
-	lastAutoKill = null;
-	createjs.Tween.get(this.worldSpeedSlider, {
-																							ignoreGlobalPause: true,
-																							override: true
-																						}) 
-								.to({ value: this.worldSpeedSlider.userVal }, this.GLOBAL.MODE_SWITCH_SPEED)
-	this.drawInfo();
-}
-
-infoPrototype.drawTogglePause = function () {
-	this.togglePauseBg.graphics.clear();
-	this.togglePauseBg.graphics.beginFill(this.fillColor.hex());
-	this.togglePauseBg.graphics.beginStroke(this.textColor.hex());
-	this.togglePauseBg.graphics.drawRoundRect(0,0,this.togglePause.width,
-																						this.togglePause.height,20);
-	this.GLOBAL.DIRTY = true;
-}
-
-infoPrototype.drawResetButton = function () {
-	this.resetButtonBg.graphics.clear();
-	this.resetButtonBg.graphics.beginFill(this.fillColor.hex());
-	this.resetButtonBg.graphics.beginStroke(this.textColor.hex());
-	this.resetButtonBg.graphics.drawRoundRect(0,0,this.resetButton.width,
-																						this.resetButton.height,20);
-	this.resetButtonLabel.text = "\u21bb";
-	this.GLOBAL.DIRTY = true;
-}
-
-infoPrototype.drawToggleMode = function () {
-	this.toggleModeBg.graphics.clear();
-	this.toggleModeBg.graphics.beginFill(this.fillColor.hex());
-	this.toggleModeBg.graphics.beginStroke(this.textColor.hex());
-	this.toggleModeBg.graphics.drawRoundRect(0,0,this.toggleMode.width,
-																						this.togglePause.height,20);
-	this.toggleModeLabel.text = "Year " + this.year;
-	/*
-	if (this.GLOBAL.MODE == 'observer') {
-		this.toggleModeLabel.text = "Observer";
-	} else if (this.GLOBAL.MODE == 'predator') {
-		this.toggleModeLabel.text = "Predator";
-	} else if (this.GLOBAL.MODE == 'autopredator') {
-		this.toggleModeLabel.text = "AUTO Predator";
-	}
-	*/
-	this.GLOBAL.DIRTY = true;
-}
-
-infoPrototype.drawDetailViewer = function () {
-	this.bg.graphics.clear();
-	this.bg.graphics.beginFill(this.fillColor.hex());
-	this.bg.graphics.beginStroke(this.textColor.hex());
-	this.bg.graphics.drawRoundRect(0,0,this.detailViewer.width,this.detailViewer.height,20);
-	if (false) { //this.GLOBAL.MODE == 'observer') {
-		this.phenotypeCircle.alpha = 0;
-	} else if (true) { //this.GLOBAL.MODE == 'predator') {
-		this.detailLabel.text = "Round " + this.round;
-		this.phenotypeCircle.alpha = 0;
-	} else if (this.GLOBAL.MODE == 'autopredator') {
-		if (lastAutoKill != null) {
-			this.detailLabel.text = "Last kill: ";
-			this.phenotypeCircle.alpha = 1;
-			var g = this.phenotypeCircle.graphics;
-			g.beginStroke(lastAutoKill.color.darken(0.5).hex());
-			g.beginFill(lastAutoKill.color.hex());
-			g.drawCircle(0,0,15);
-		} else {
-			this.detailLabel.text = "Waiting for a kill...";
-		}
-	}
-	this.GLOBAL.DIRTY = true;
-}
-
-infoPrototype.drawInfo = function () {
-	this.drawTogglePause();
-	this.drawResetButton();
-	//this.drawToggleMode();
-}
-
 infoPrototype.update = function (e) {
-	if (this.modeEnd < this.GLOBAL.TIME) { // || this.numHits >= this.GLOBAL.HIT_THRESHOLD) {
-		//this.nextMode();
-	}
-
-	if (this.GLOBAL.MODE == 'observer') {
-		var time = Math.ceil((this.modeEnd-this.GLOBAL.TIME)/1000);
-		var timeStr = ('0' + Math.floor((time%3600)/60)).slice(-1) + ":" +
-								 ('0' + Math.ceil(time%60)).slice(-2);
-		this.toggleModeTime.text = timeStr;
-	} 
-
-	// update the play/pause character
-	if (this.GLOBAL.PAUSED) {
-		this.togglePauseLabel.text = "\u25ba"
-	} else {
-		this.togglePauseLabel.text = "\u275a\u200a\u275a"
+	if (this.pauseImage.alpha == 0 && this.GLOBAL.PAUSED) {
+		console.log("setting alpha to 1");
+		this.pauseImage.alpha = 0.5;
+		this.GLOBAL.DIRTY = true;
 	}
 }
 	
