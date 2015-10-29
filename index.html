@@ -10,7 +10,8 @@
 		<script type="text/javascript" src="js/lib/QuadTree.js"></script>
 		<script type="text/javascript" src="js/lib/gl-matrix.js"></script>
 		<script type="text/javascript" src="js/lib/poisson-disk.js"></script>
-		<script type="text/javascript" src="js/lib/Slider.js"></script>
+		<script type="text/javascript" src="js/lib/closest.js"></script>
+
 		<script type="text/javascript" src="js/Environment.js"></script>
 		<script type="text/javascript" src="js/Plant.js"></script>
 		<script type="text/javascript" src="js/Agent.js"></script>
@@ -207,44 +208,6 @@
 			so the color of the critters doesn't change much over time.
 			</p>
 		</section>
-		<section class="centered vspace">
-			<h3 class="nobottommargin">In the wild, critters are hunted.</h3>
-			<p class="notopmargin">
-			Now you'll be a predator that eats critters. When critters sense that
-			they're being hunted, they hide by staying still, and closing their eyes.
-			Practice hunting critters in these two environments by clicking on them
-			with your mouse.
-			</p>
-		</section>
-		<div style="height:660px" class="widest centered vspace">
-			<div class="left">
-				<canvas id="critter-hunt-left"></canvas>
-				<p class="c-text caption notopmargin">
-				<b><span id="critter-hunt-left-hits">0</span></b> kills,
-				<b><span id="critter-hunt-left-misses">0</span></b> misses.
-				</p>
-			</div>
-			<div class="right">
-				<canvas id="critter-hunt-right"></canvas>
-				<p class="c-text caption notopmargin">
-				<b><span id="critter-hunt-right-hits">0</span></b> kills,
-				<b><span id="critter-hunt-right-misses">0</span></b> misses.
-				</p>
-			</div>
-		</div>
-		<section class="centered vspace">
-			<p class="notopmargin">
-			In these <b><span id="critter-hunt-left-env">???</span></b>
-			environments, are the <b><span id="critter-hunt-left-critter">???</span></b>
-			critters easy to hunt? What about the
-			<b><span id="critter-hunt-right-critter">???</span></b>
-			critters?
-			</p>
-			<p>
-				Critters that are the same color as their environment 
-				are harder to hunt, and more likely to keep living.
-			</p>
-		</section>
 		<section id="decade" class="centered vspace">
 			<h3 class="nobottommargin">A decade of critters.</h3>
 			<p class="notopmargin">
@@ -269,74 +232,74 @@
 				<span id="selection-hunt-progress"></span>
 			</p>
 		</div>
-    <section class="centered vspace">
-      <p class="notopmargin">
-        There's more to this story, but you have to finish hunting first!
+    <section id="post-hunt-progress-blocker" class="centered vspace signature">
+      <p class="notopmargin c-text">
+        There's more to this story, but you have to finish hunting first.
       </p>
     </section>
 		<div id="hidden-until-selection-game" style="display:none">
 			<div style="height:100px" class="widest centered vspace">
 				<div style="width:180px" class="left">
 					<p class="c-text notopmargin">
-					In year<br>
+					On day<br>
 					Most critters were
 					</p>
 				</div>
-				<div class="ten-across left">
+				<div class="ten-across left" style="display:none">
 					<p class="c-text notopmargin">
 						<b>1</b><br>
 						<b><span id="critter-decade-1">???</span></b>
 					</p>
 				</div>
-				<div class="ten-across left">
+				<div class="ten-across left" style="display:none">
 					<p class="c-text notopmargin">
 						<b>2</b><br>
 						<b><span id="critter-decade-2">???</span></b>
 					</p>
 				</div>
-				<div class="ten-across left">
+				<div class="ten-across left" style="display:none">
 					<p class="c-text notopmargin">
 						<b>3</b><br>
 						<b><span id="critter-decade-3">???</span></b>
 					</p>
 				</div>
-				<div class="ten-across left">
+				<div class="ten-across left" style="display:none">
 					<p class="c-text notopmargin">
 						<b>4</b><br>
 						<b><span id="critter-decade-4">???</span></b>
 					</p>
 				</div>
-				<div class="ten-across left">
+				<div class="ten-across left" style="display:none">
 					<p class="c-text notopmargin">
 						<b>5</b><br>
 						<b><span id="critter-decade-5">???</span></b>
 					</p>
 				</div>
-				<div class="ten-across left">
+				<div class="ten-across left" style="display:none">
 					<p class="c-text notopmargin">
 						<b>6</b><br>
 						<b><span id="critter-decade-6">???</span></b>
 					</p>
 				</div>
-				<div class="ten-across left">
+				<div class="ten-across left" style="display:none">
 					<p class="c-text notopmargin">
 						<b>7</b><br>
 						<b><span id="critter-decade-7">???</span></b>
 					</p>
 				</div>
-				<div class="ten-across left">
+				<div class="ten-across left" style="display:none">
 					<p class="c-text notopmargin">
 						<b>8</b><br>
 						<b><span id="critter-decade-8">???</span></b>
 					</p>
 				</div>
-				<div class="ten-across left">
+				<div class="ten-across left" style="display:none">
 					<p class="c-text notopmargin">
 						<b>9</b><br>
 						<b><span id="critter-decade-9">???</span></b>
 					</p>
 				</div>
-				<div class="ten-across left">
+				<div class="ten-across left" style="display:none">
 					<p class="c-text notopmargin">
 						<b>10</b><br>
 						<b><span id="critter-decade-10">???</span></b>
@@ -366,12 +329,12 @@
 			</section>
 			<div style="height: 431px" class="widest centered vspace">
 				<div style="width:524px; height:381px" class="left">
-					<p class="c-text caption notopmargin nobottommargin">Year <b>1</b></p>
+					<p class="c-text caption notopmargin nobottommargin">Day <b>1</b></p>
 					<canvas id="selection-before"></canvas>
 				</div>
 				<div style="width:524px; height:381px;" class="right">
 					<p class="c-text caption notopmargin nobottommargin">
-					Year <b><span id="last-year">???</span></b>
+					Day <b><span id="last-year">???</span></b>
 					</p>
 					<canvas id="selection-after"></canvas>
 				</div>
@@ -454,25 +417,25 @@
 										different colors.</a>
 				</p>
 			</section>
+			<div style="height:200px" class="widest centered vspace">
+				<canvas class="centered" id="confetti-bottom"></canvas>
+			</div>
+			<section class="centered vspace signature">
+				<h3>
+					Thank you for reading this post!
+				</h3>
+				<p>
+					I'm <a href="http://rupertdeese.com/">Rupert Deese</a>.
+					I wrote this post while working at <a href="http://www.cdglabs.org/">CDG Labs</a>
+					in 2015.
+				</p>
+				<p>
+					The "playable" format was inspired by Bret Victor's
+					<a href="http://worrydream.com/ExplorableExplanations/">Explorable
+						Explanations</a>, and Vi Hart and Nicky Case's
+					<a href="http://ncase.me/polygons/">Parable of the Polygons</a>.
+				</p>
+			</section>
 		</div>
-		<div style="height:200px" class="widest centered vspace">
-			<canvas class="centered" id="confetti-bottom"></canvas>
-		</div>
-		<section class="centered vspace signature">
-			<h3>
-				Thank you for reading this post!
-			</h3>
-			<p>
-				I'm <a href="http://rupertdeese.com/">Rupert Deese</a>.
-				I wrote this post while working at <a href="http://www.cdglabs.org/">CDG Labs</a>
-				in 2015.
-			</p>
-			<p>
-				The "playable" format was inspired by Bret Victor's
-				<a href="http://worrydream.com/ExplorableExplanations/">Explorable
-					Explanations</a>, and Vi Hart and Nicky Case's
-				<a href="http://ncase.me/polygons/">Parable of the Polygons</a>.
-			</p>
-		</section>
 	</body>
 </html>
