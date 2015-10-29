@@ -366,100 +366,6 @@ function main () {
 	world.start();
 	interactives.push(world);
 
-	// critter observation interactive
-	var hue = random.number()*360;
-	// LEFT ONE
-	canvas = document.querySelector("#critter-hunt-left");
-	canvas.width = 530;
-	canvas.height = 600;
-	global = globalClone();
-	global.OBSERVER_PERIOD = Infinity; // no time-based change
-	global.PREDATOR_PERIOD = Infinity; // no time-based change
-	global.NUM_AGENTS = 20;
-	global.WORLD_OFFSET_Y = 0; // no info bar
-	global.INITIAL_AGENT_OFFSETS[0] = 180; // v. obvious critters
-	global.MODE_SWITCH_SPEED = 200; // fast mode switch
-	// autoplay
-	global.AUTOPLAY = true;
-	global.PAUSED = false;
-	world = new World(global, canvas, [hue, GLOBAL.AGENT_RADIUS],
-																		['relative', 'relative']);
-	world.externalInit = function () {
-		//this.stage.removeChild(this.bg); // hide the background
-		this.stage.removeChild(this.info);
-		var envSpan = document.querySelector("#critter-hunt-left-env");
-		var envColor = this.bg.color;
-		envSpan.textContent = chromaColorToHueName(envColor);
-		envSpan.style.setProperty('color', envColor.hex());
-		var critterSpan = document.querySelector("#critter-hunt-left-critter");
-		var critterColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-		critterSpan.textContent = chromaColorToHueName(critterColor);
-		critterSpan.style.setProperty('color', critterColor.hex());
-	}.bind(world);
-	world.externalTick = function (e) {
-		if (e.WILL_DRAW) {
-			var hitSpan = document.querySelector("#critter-hunt-left-hits");
-			var missSpan = document.querySelector("#critter-hunt-left-misses");
-			hitSpan.textContent = this.info.lifetimeHits;
-			missSpan.textContent = this.info.lifetimeMisses;
-		}
-	}.bind(world);
-	world.init();
-	world.stage.enableMouseOver();
-	world.stage.on("rollover", function (e) {
-		this.info.setPredatorMode();
-	}, world);
-	world.stage.on("rollout", function (e) {
-		this.info.setObserverMode();
-	}, world);
-	world.start();
-	interactives.push(world);
-	// RIGHT ONE
-	canvas = document.querySelector("#critter-hunt-right");
-	canvas.width = 530;
-	canvas.height = 600;
-	global = globalClone();
-	global.OBSERVER_PERIOD = Infinity; // no time-based change
-	global.PREDATOR_PERIOD = Infinity; // no time-based change
-	global.NUM_AGENTS = 20;
-	global.WORLD_OFFSET_Y = 0; // no info bar
-	global.INITIAL_AGENT_OFFSETS[0] = 0; // v. hidden critters
-	global.MODE_SWITCH_SPEED = 200; // fast mode switch
-	// autoplay
-	global.AUTOPLAY = true;
-	global.PAUSED = false;
-	world = new World(global, canvas, [hue, GLOBAL.AGENT_RADIUS],
-																		['relative', 'relative']);
-	world.externalInit = function () {
-		this.stage.removeChild(this.info);
-		//var envSpan = document.querySelector("#critter-hunt-right-env");
-		//var envColor = this.bg.color;
-		//envSpan.textContent = chromaColorToHueName(envColor);
-		//envSpan.style.setProperty('color', envColor.hex());
-		var critterSpan = document.querySelector("#critter-hunt-right-critter");
-		var critterColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-		critterSpan.textContent = chromaColorToHueName(critterColor);
-		critterSpan.style.setProperty('color', critterColor.hex());
-	}.bind(world);
-	world.externalTick = function (e) {
-		if (e.WILL_DRAW) {
-			var hitSpan = document.querySelector("#critter-hunt-right-hits");
-			var missSpan = document.querySelector("#critter-hunt-right-misses");
-			hitSpan.textContent = this.info.lifetimeHits;
-			missSpan.textContent = this.info.lifetimeMisses;
-		}
-	}.bind(world);
-	world.init();
-	world.stage.enableMouseOver();
-	world.stage.on("rollover", function (e) {
-		this.info.setPredatorMode();
-	}, world);
-	world.stage.on("rollout", function (e) {
-		this.info.setObserverMode();
-	}, world);
-	world.start();
-	interactives.push(world);
-
 	// SELECTION
 	canvas = document.querySelector("#selection");
 	canvas.width = 1100;
@@ -479,6 +385,7 @@ function main () {
 				this.info.year == this.yearCounter) {
 			var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
 			var span = document.querySelector("#critter-decade-"+this.yearCounter);
+			span.closest(".ten-across").style.display = "block";
 			span.textContent = chromaColorToHueName(avgColor);
 			span.style.setProperty('color', avgColor.hex());
 			if (this.info.year > 1) {
@@ -491,15 +398,13 @@ function main () {
 					span.textContent = chromaColorToHueName(avgColor);
 					span.style.setProperty('color', avgColor.hex());
 				}
-				setTimeout(function () {
-					this.after = document.querySelector("#selection-after").getContext('2d');
-					this.after.canvas.width = this.bg.bounds.width/2.1;
-					this.after.canvas.height = this.bg.bounds.height/2.1;
-					this.after.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
-															 this.bg.bounds.width, this.bg.bounds.height,
-															 0, 0, this.bg.bounds.width/2.1,
-															 this.bg.bounds.height/2.1);
-				}.bind(this), 2500);
+				this.after = document.querySelector("#selection-after").getContext('2d');
+				this.after.canvas.width = this.bg.bounds.width/2.1;
+				this.after.canvas.height = this.bg.bounds.height/2.1;
+				this.after.drawImage(this.stage.canvas, 0, this.GLOBAL.WORLD_OFFSET_Y,
+														 this.bg.bounds.width, this.bg.bounds.height,
+														 0, 0, this.bg.bounds.width/2.1,
+														 this.bg.bounds.height/2.1);
 			}
 			this.yearCounter++;
 		}
@@ -514,17 +419,20 @@ function main () {
 		}
 		var restOfContent = document.querySelector("#hidden-until-selection-game")
 		var huntProgressSpan = document.querySelector("#selection-hunt-progress")
-		if (this.info.lifetimeHits > 200) {
+		var progressBlocker = document.querySelector("#post-hunt-progress-blocker");
+		var requiredHits = 0;
+		if (this.info.lifetimeHits >= requiredHits) {
       if (restOfContent.style.display == "none") {
         restOfContent.style.display = "block";
+				progressBlocker.style.display = "none";
       }
 			huntProgressSpan.innerHTML = "Way to go! You hunted <b>" +
                                    this.info.lifetimeHits +
-                                   "</b> critters!";
+                                   "</b> critters.";
 		} else {
 			huntProgressSpan.innerHTML = "Keep hunting! Only <b>" +
-																	 (200 - this.info.lifetimeHits) +
-																	 "</b> critters to go!";
+																	 (requiredHits - this.info.lifetimeHits) +
+																	 "</b> critters to go.";
 		}
 	}.bind(world);
 	world.externalInit = function () {
@@ -624,6 +532,7 @@ function main () {
 	world = new World(global, canvas, selectionWorldEnvGenome,
 																		selectionWorldCritterGenome);
 	world.externalInit = function () {
+		this.bg.sunAngle = Math.PI/2;
 		// this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
 
@@ -697,7 +606,7 @@ function main () {
 	world = new World(global, canvas, selectionWorldEnvGenome,
 																		selectionWorldCritterGenome);
 	world.externalInit = function () {
-		// this.stage.removeChild(this.bg); // hide the background
+		this.bg.sunAngle = Math.PI/2;
 		this.stage.removeChild(this.info); // hide the info bar
 
 		// get agents from mutation pane
@@ -749,7 +658,7 @@ function main () {
 	world = new World(global, canvas, selectionWorldEnvGenome,
 																		selectionWorldCritterGenome);
 	world.externalInit = function () {
-		// this.stage.removeChild(this.bg); // hide the background
+		this.bg.sunAngle = Math.PI/2;
 		this.stage.removeChild(this.info); // hide the info bar
 
 		// get agents from mutation pane
@@ -899,7 +808,6 @@ function main () {
 			var isVisible = w.stage.canvas.offsetTop<scrollY+innerHeight &&
 											w.stage.canvas.offsetTop+w.stage.canvas.height>scrollY;
 			if (isVisible && w.GLOBAL.PAUSED && w.GLOBAL.AUTOPLAY) {
-				console.log("unpausing", i);
 				w.GLOBAL.PAUSED = false;
 			} else {
 				w.GLOBAL.PAUSED = true;

@@ -93,8 +93,6 @@ World.prototype = {
 
 		// create the predator and predator container
 		this.predator = new Predator(this.GLOBAL, worldBounds, 60);
-		this.predator.pos[0] = -150;
-		this.predator.pos[1] = -150;
 		this.bg.predatorContainer.addChild(this.predator);
 
 		// send world clicks to the info obj

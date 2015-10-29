@@ -92,10 +92,7 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 		var text;
 		var color;
 		if (didHit) {
-			text = this.numHits.toString();
-			if (this.numHits == this.GLOBAL.HIT_THRESHOLD) {
-				text += "!";
-			}
+			text = this.lifetimeHits.toString();
 			color = this.overlayHitColorHex;
 		} else {
 			text = "MISS!";

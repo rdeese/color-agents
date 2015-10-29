@@ -15,11 +15,16 @@ predatorPrototype.init = function () {
 	this.worldDiagonal = vec2.dist(vec2.fromValues(0,0),
 																 vec2.fromValues(this.worldBounds.width,
 																	 							 this.worldBounds.height));
-	this.pos = vec2.create();
-	this.x = this.pos[0];
-	this.y = this.pos[1];
 
 	this.color = chroma.hcl(0, 0, this.GLOBAL.LIGHTNESS/2);
+	
+	this.startPosition = vec2.create();
+	this.startPosition[0] = this.worldBounds.width/2;
+	this.startPosition[1] = -2*this.radius;
+
+	this.pos = vec2.clone(this.startPosition);
+	this.x = this.pos[0];
+	this.y = this.pos[1];
 
 	this.eyeOffset = this.radius*0.4;
 	this.height = this.width = this.radius * 2;
@@ -70,15 +75,13 @@ predatorPrototype.randomEdgePos = function () {
 }
 
 predatorPrototype.getInPosition = function () {
-	this.pos[0] = this.worldBounds.width/2;
-	this.pos[1] = -2*this.radius;
+	vec2.copy(this.pos, this.startPosition);
 	this.finalDest = vec2.create();
 	this.finalDest[0] = this.worldBounds.width/2+this.radius*(random.number()-0.5);
 	this.finalDest[1] = 0;
 	this.tempX = this.pos[0];
 	this.tempY = this.pos[1];
 	this.isTweening = true;
-	console.log("dest", this.pos[0], this.pos[1]);
 	createjs.Tween.get(this, { onChange: function () {
 									this.heading = 180/Math.PI*Math.atan2(this.tempY-this.pos[1],
 																												this.tempX-this.pos[0]);
@@ -239,6 +242,9 @@ predatorPrototype.drawPredator = function () {
 predatorPrototype.huntNothing = function (e) {
 	var startPos = vec2.clone(this.pos);
 	var dir = 180/Math.PI*Math.atan2(e.stageY-this.pos[1], e.stageX-this.pos[0]);
+	if (!this.isOutsideBounds()) {
+		vec2.copy(startPos, this.startPosition);
+	}
 	this.heading = dir;
 	this.tempX = this.pos[0];
 	this.tempY = this.pos[1];
