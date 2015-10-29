@@ -30,7 +30,7 @@ function main () {
 		BLINK_PROB: 1/15000, // chance per millisecond
 
 		AUTOPRED_INTERVAL: 8000, // milliseconds
-		
+
 		OBSERVER_PERIOD: 240000, // milliseconds
 		PREDATOR_PERIOD: 240000, // milliseconds
 		MODE_SWITCH_SPEED: 500,
@@ -84,7 +84,7 @@ function main () {
 		}
 		return colorName;
 	};
-	
+
 	var intermediateChromaColor = function (c1, c2) {
 		var h1 = c1.hcl()[0];
 		var h2 = c2.hcl()[0];
@@ -155,7 +155,7 @@ function main () {
 		this.bg.removeChild(this.bg.bg);
 		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
-		
+
 		this.bg.agentContainer.removeAllChildren();
 		this.agents = [];
 		var sample = poissonDiscSampler(canvas.width, canvas.height,
@@ -463,16 +463,16 @@ function main () {
 	// SELECTION
 	canvas = document.querySelector("#selection");
 	canvas.width = 1100;
-	canvas.height = 750;
+	canvas.height = 600;
 	global = globalClone();
 	global.WORLD_SPEED = 12;
 	global.INIT_AGENTS_VARIATIONS[0] = 40;
-	
+
 	world = new World(global, canvas,
 										[GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)],
 										 GLOBAL.AGENT_RADIUS],
 										['split', 'relative']);
-									
+
 	world.yearCounter = 1;
 	world.externalTick = function () {
 		if (this.info.year <= 10 && this.bg.sunAngle > Math.PI/2 &&
@@ -514,11 +514,13 @@ function main () {
 		}
 		var restOfContent = document.querySelector("#hidden-until-selection-game")
 		var huntProgressSpan = document.querySelector("#selection-hunt-progress")
-		if (this.info.lifetimeHits > 200 && restOfContent.style.display == "none") {
-			restOfContent.style.display = "block";
-			huntProgressSpan.textContent = "Way to go! You hunted <b>" +
-																		 this.info.lifetimeHits +
-																		 "</b> critters!";
+		if (this.info.lifetimeHits > 200) {
+      if (restOfContent.style.display == "none") {
+        restOfContent.style.display = "block";
+      }
+			huntProgressSpan.innerHTML = "Way to go! You hunted <b>" +
+                                   this.info.lifetimeHits +
+                                   "</b> critters!";
 		} else {
 			huntProgressSpan.innerHTML = "Keep hunting! Only <b>" +
 																	 (200 - this.info.lifetimeHits) +
@@ -624,7 +626,7 @@ function main () {
 	world.externalInit = function () {
 		// this.stage.removeChild(this.bg); // hide the background
 		this.stage.removeChild(this.info); // hide the info bar
-		
+
 		// create agents and replace old ones!
 		this.bg.agentContainer.removeAllChildren();
 		this.agents = [];
@@ -814,7 +816,7 @@ function main () {
 		this.bg.removeChild(this.bg.bg);
 		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
-		
+
 		// create agents and replace old ones!
 		this.bg.agentContainer.removeAllChildren();
 		this.agents = [];
