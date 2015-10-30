@@ -132,7 +132,9 @@ envPrototype.update = function (e) {
 	// update day vs night
 	if (this.isDaytime && Math.sin(this.sunAngle) < 0) {
 		this.isDaytime = false;
-		this.agentContainer.shadow.color = "rgba("+this.shadowColor.join(",")+", 0)";
+		if (e.WILL_DRAW) {
+			this.agentContainer.shadow.color = "rgba("+this.shadowColor.join(",")+", 0)";
+		}
 		var evt = new createjs.Event('nighttime', true);
 		this.dispatchEvent(evt);
 	}
@@ -143,8 +145,10 @@ envPrototype.update = function (e) {
 		this.dispatchEvent(evt);
 	}
 
-	this.agentContainer.shadow.offsetX = -Math.cos(this.sunAngle)*15;
-	this.agentContainer.shadow.offsetY = Math.sin(this.sunAngle)*2;
+	if (e.WILL_DRAW) {
+		this.agentContainer.shadow.offsetX = -Math.cos(this.sunAngle)*15;
+		this.agentContainer.shadow.offsetY = Math.sin(this.sunAngle)*2;
+	}
 
 	var currentCritters = this.agentContainer.children.length;
 	if (this.isDaytime) { 
@@ -155,14 +159,18 @@ envPrototype.update = function (e) {
 		this.agentContainer.shadow.color = "rgba("+this.shadowColor.join(",")+","+
 																			 0.2*Math.sin(this.sunAngle)+
 																			 ")";
-		this.darkness.alpha = 0.3*(1-Math.pow(Math.sin(this.sunAngle), 1/2));
+		if (e.WILL_DRAW) {
+			this.darkness.alpha = 0.3*(1-Math.pow(Math.sin(this.sunAngle), 1/2));
+		}
 
 		this.sunAngle += rateDilation*baseRate*this.GLOBAL.DELTA;
 	} else {
 		var rateDilation = (maxCritters-currentCritters)/rateScale;
 		if (rateDilation < 0) { rateDilation = 0; }
 		rateDilation = -Math.sin(this.sunAngle)*rateDilation+(1+Math.sin(this.sunAngle))*1;
-		this.darkness.alpha = 0.3+0.5*Math.pow(-Math.sin(this.sunAngle), 1/2);
+		if (e.WILL_DRAW) {
+			this.darkness.alpha = 0.3+0.5*Math.pow(-Math.sin(this.sunAngle), 1/2);
+		}
 
 		this.sunAngle += 4*rateDilation*baseRate*this.GLOBAL.DELTA;
 	}

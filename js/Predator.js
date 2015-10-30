@@ -316,10 +316,10 @@ predatorPrototype.huntTarget = function (target) {
 predatorPrototype.update = function (e) {
 	// redraw if we are on a draw update and other conditions
 	// require it
-	this.x = this.pos[0];
-	this.y = this.pos[1];
-	this.rotation = this.heading;
 	if (e.WILL_DRAW) {
+		this.x = this.pos[0];
+		this.y = this.pos[1];
+		this.rotation = this.heading;
 		this.drawPredator();
 	}
 }
