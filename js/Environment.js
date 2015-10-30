@@ -46,7 +46,7 @@ function Environment (GLOBAL,bounds,envGenome) {
 var envPrototype = createjs.extend(Environment, createjs.Container);
 
 envPrototype.drawBorder = function () {
-	this.border.graphics.beginFill("#FFFFFF")
+	this.border.graphics.beginFill(this.GLOBAL.PAGE_COLOR)
 											.drawRect(0, 0,
 																this.bounds.width,
 																this.bounds.height+this.GLOBAL.WORLD_OFFSET_Y)

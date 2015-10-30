@@ -146,6 +146,9 @@ function main () {
 	global.INITIAL_AGENT_OFFSETS[0] = 0;
 	global.MOTHER_MUTATION_PROBS[0] = 0.15;
 	global.FATHER_MUTATION_PROBS[0] = 0.15;
+	global.MOVEMENT_PROB = 0;
+	global.ACC_DAMPING = 0;
+	global.VEL_DAMPING = 0;
 	global.PREGNANT_SCALE = 1;
 	global.PAUSED = true;
 
@@ -187,6 +190,7 @@ function main () {
 	canvas.width = 600;
 	canvas.height = 200;
 	global = globalClone();
+	global.PAGE_COLOR = canvas.closest("block").style.backgroundColor;
 	global.NUM_AGENTS = 1; // just one critter
 	global.DEATH_THRESHHOLD = 150; // lower death threshhold so things happen faster
 	global.OBSERVER_PERIOD = Infinity; // no predator period
@@ -211,7 +215,7 @@ function main () {
 	world.externalTick = function () {
 		if (!createjs.Tween.hasActiveTweens(this.GLOBAL) && this.agents.length == 0) {
 			createjs.Tween.get(this.GLOBAL)
-										.to({ WORLD_SPEED: 0 }, 1000)
+										.to({ WORLD_SPEED: 1 }, 1000)
 										.call(function () {
 											this.stage.removeAllChildren();
 										}, [], this)
@@ -227,6 +231,7 @@ function main () {
 	canvas.width = 300;
 	canvas.height = 200;
 	global = globalClone();
+	global.PAGE_COLOR = canvas.closest("block").style.backgroundColor;
 	global.NUM_AGENTS = 2; // two critters!
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
@@ -268,7 +273,7 @@ function main () {
 				(this.agents.filter(function (x) { return x.scaleX > 0.7 && x.scaleX < 0.8}).length >= 1 ||
 				this.agents.length < 2)) {
 			createjs.Tween.get(this.GLOBAL)
-										.to({ WORLD_SPEED: 0 }, 1000)
+										.to({ WORLD_SPEED: 1 }, 1000)
 										.wait(1000)
 										.call(function () {
 											this.stage.removeAllChildren();
@@ -285,6 +290,7 @@ function main () {
 	canvas.width = 300;
 	canvas.height = 200;
 	global = globalClone();
+	global.PAGE_COLOR = canvas.closest("block").style.backgroundColor;
 	global.NUM_AGENTS = 2; // two critters!
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
@@ -322,12 +328,12 @@ function main () {
 				(this.agents.filter(function (x) { return x.scaleX > 0.7 && x.scaleX < 0.8}).length >= 1 ||
 				this.agents.length < 2)) {
 			createjs.Tween.get(this.GLOBAL)
-										.to({ WORLD_SPEED: 0 }, 1000)
+										.to({ WORLD_SPEED: 1 }, 1000)
 										.wait(1000)
 										.call(function () {
 											this.stage.removeAllChildren();
 										}, [], this)
-										.wait(2000)
+										.wait(500)
 										.call(function () {
 											this.init();
 										}, [], this);
@@ -341,6 +347,7 @@ function main () {
 	//canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
 	//canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
 	global = globalClone();
+	global.PAGE_COLOR = canvas.closest("block").style.backgroundColor;
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.NUM_AGENTS = 4;
 	global.INITIAL_AGENT_OFFSETS[0] = 100;
@@ -371,6 +378,7 @@ function main () {
 	canvas.width = 1100;
 	canvas.height = 600;
 	global = globalClone();
+	global.PAGE_COLOR = canvas.closest("block").style.backgroundColor;
 	global.WORLD_SPEED = 12;
 	global.INIT_AGENTS_VARIATIONS[0] = 40;
 
@@ -420,7 +428,7 @@ function main () {
 		var restOfContent = document.querySelector("#hidden-until-selection-game")
 		var huntProgressSpan = document.querySelector("#selection-hunt-progress")
 		var progressBlocker = document.querySelector("#post-hunt-progress-blocker");
-		var requiredHits = 0;
+		var requiredHits = 150;
 		if (this.info.lifetimeHits >= requiredHits) {
       if (restOfContent.style.display == "none") {
         restOfContent.style.display = "block";
@@ -509,6 +517,18 @@ function main () {
 	world.start();
 	interactives.push(world);
 
+	// set background color of page to desaturated color of this env
+	var blocks = document.querySelectorAll("block");
+	var bgColor = chroma.hcl(world.envGenome[0],
+													 GLOBAL.CHROMA/15,
+													 GLOBAL.LIGHTNESS).brighten(1.5).hex();
+	for (var i = 0; i < blocks.length; i++) {
+		if (i % 2 == 0) {
+			blocks[i].style.backgroundColor = bgColor;
+		}
+	}
+
+
 	// TRIPTYCH OF MUTATION, SELECTION, INHERITANCE
 	// MUTATION
 	canvas = document.querySelector("#triptych-mutation");
@@ -525,6 +545,9 @@ function main () {
 	global.MOTHER_MUTATION_PROBS[0] = 0.15;
 	global.FATHER_MUTATION_PROBS[0] = 0.15;
 	global.PREGNANT_SCALE = 1;
+	global.MOVEMENT_PROB = 0;
+	global.ACC_DAMPING = 0;
+	global.VEL_DAMPING = 0;
 	global.PAUSED = true;
 
 	var selectionWorldEnvGenome = world.envGenome;
@@ -599,6 +622,9 @@ function main () {
 	global.INIT_AGENTS_VARIATIONS[0] = 0;
 	global.INITIAL_AGENT_OFFSETS[0] = 0;
 	global.PREGNANT_SCALE = 1;
+	global.MOVEMENT_PROB = 0;
+	global.ACC_DAMPING = 0;
+	global.VEL_DAMPING = 0;
 	global.PAUSED = true;
 
 	var mutationWorldAgentsEncoding = world.encodedAgents;
@@ -651,6 +677,9 @@ function main () {
 	global.INIT_AGENTS_VARIATIONS[0] = 0;
 	global.INITIAL_AGENT_OFFSETS[0] = 0;
 	global.PREGNANT_SCALE = 1;
+	global.MOVEMENT_PROB = 0;
+	global.ACC_DAMPING = 0;
+	global.VEL_DAMPING = 0;
 	global.PAUSED = true;
 
 	var mutationWorldAgentsEncoding = world.encodedAgents;
@@ -717,6 +746,9 @@ function main () {
 	global.INIT_AGENTS_VARIATIONS[0] = 0;
 	global.INITIAL_AGENT_OFFSETS[0] = 0;
 	global.PREGNANT_SCALE = 1;
+	global.MOVEMENT_PROB = 0;
+	global.ACC_DAMPING = 0;
+	global.VEL_DAMPING = 0;
 	global.PAUSED = true;
 
 	world = new World(global, canvas, selectionWorldEnvGenome,
