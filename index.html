@@ -143,11 +143,11 @@
 		</style>
 	</head>
 	<body>
-		<h1 class="nobottommargin">Who Chose the Critters' Color?</h1>
-		<p class="notopmargin c-text">A playable post on the relationship between life and its environment.</p>
-		<div style="height:200px" class="widest centered vspace">
+		<div style="height:200px; display:none" class="widest centered vspace">
 			<canvas class="centered" id="confetti-top"></canvas>
 		</div>
+		<h1 class="notopmargin nobottommargin">Who Chose the Critters' Color?</h1>
+		<p class="notopmargin c-text">A playable post on the relationship between life and its environment.</p>
 		<block>
 		<section class="centered vspace">
 			<h3 class="nobottommargin">This is a story about critters.</h3>
@@ -200,30 +200,6 @@
 		</div>
 		</block>
 		<block>
-		<section class="centered vspace">
-			<h3 class="nobottommargin">Watch some critters in the wild.</h3>
-			<p class="notopmargin">
-			Let's put some critters in their natural environment. What
-			will happen to their color over time? Press play, and use the speed slider
-			to control how fast time goes.
-			</p>
-		</section>
-		<div class="centered vspace">
-			<canvas class="centered" id="critter-observe"></canvas>
-		</div>
-		<section class="centered vspace">
-			<p class="notopmargin">
-			The first critters were
-			<b><span id="critter-observe-start">???</span></b>,
-			and the living critters now are mostly
-			<b><span id="critter-observe-end">???</span></b>.
-			Even though some critters with different colors are born,
-			most critters get their color from their parents,
-			so the color of the critters doesn't change much over time.
-			</p>
-		</section>
-		</block>
-		<block>
 		<section id="decade" class="centered vspace">
 			<h3 class="nobottommargin">A decade of critters.</h3>
 			<p class="notopmargin">
@@ -254,8 +230,8 @@
         There's more to this story, but you have to finish hunting first.
       </p>
     </section>
-		<block>
 		<div id="hidden-until-selection-game" style="display:none">
+		<block>
 			<div style="height:100px" class="widest centered vspace">
 				<div style="width:180px" class="left">
 					<p class="c-text notopmargin">

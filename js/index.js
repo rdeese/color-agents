@@ -340,39 +340,6 @@ function main () {
 		}
 	}.bind(world);
 
-	// critter observation interactive
-	canvas = document.querySelector("#critter-observe");
-	canvas.width = 800;
-	canvas.height = 400;
-	//canvas.width = Math.min(1400, Math.max(window.innerWidth - 20, 1000));
-	//canvas.height = Math.min(900, Math.max(window.innerHeight - 20, 600));
-	global = globalClone();
-	global.PAGE_COLOR = canvas.closest("block").style.backgroundColor;
-	global.OBSERVER_PERIOD = Infinity; // no predator period
-	global.NUM_AGENTS = 4;
-	global.INITIAL_AGENT_OFFSETS[0] = 100;
-	world = new World(global, canvas, [null, GLOBAL.AGENT_RADIUS],
-																		['relative', 'relative']);
-	world.externalInit = function () {
-		this.info.removeChild(this.info.toggleMode);
-		this.info.removeChild(this.info.detailViewer);
-		var startSpan = document.querySelector("#critter-observe-start");
-		var startColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-		startSpan.textContent = chromaColorToHueName(startColor);
-		startSpan.style.setProperty('color', startColor.hex());
-	}.bind(world);
-	world.externalTick = function (e) {
-		if (e.WILL_DRAW) {
-			var endSpan = document.querySelector("#critter-observe-end");
-			var endColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
-			endSpan.textContent = chromaColorToHueName(endColor);
-			endSpan.style.setProperty('color', endColor.hex());
-		}
-	}.bind(world);
-	world.init();
-	world.start();
-	interactives.push(world);
-
 	// SELECTION
 	canvas = document.querySelector("#selection");
 	canvas.width = 1100;
@@ -521,7 +488,7 @@ function main () {
 	var blocks = document.querySelectorAll("block");
 	var bgColor = chroma.hcl(world.envGenome[0],
 													 GLOBAL.CHROMA/15,
-													 GLOBAL.LIGHTNESS).brighten(1.5).hex();
+													 GLOBAL.LIGHTNESS).brighten(1).hex();
 	for (var i = 0; i < blocks.length; i++) {
 		if (i % 2 == 0) {
 			blocks[i].style.backgroundColor = bgColor;
