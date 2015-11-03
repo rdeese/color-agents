@@ -155,6 +155,7 @@ function main () {
 	world = new World(global, canvas, [null, GLOBAL.AGENT_RADIUS],
 																		[null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
+		this.bg.sunAngle = Math.PI/2;
 		this.bg.removeChild(this.bg.bg);
 		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
@@ -201,6 +202,7 @@ function main () {
 	global.PAUSED = false;
 	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
+		this.bg.sunAngle = Math.PI/2;
 		this.bg.removeChild(this.bg.bg);
 		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
@@ -245,6 +247,7 @@ function main () {
 	global.PAUSED = false;
 	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
+		this.bg.sunAngle = Math.PI/2;
 		this.GLOBAL.MATING_PROB = 1;
 		this.bg.removeChild(this.bg.bg);
 		this.bg.removeChild(this.bg.darkness);
@@ -304,6 +307,7 @@ function main () {
 	global.PAUSED = false;
 	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
+		this.bg.sunAngle = Math.PI/2;
 		this.bg.removeChild(this.bg.bg);
 		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
@@ -721,6 +725,7 @@ function main () {
 	world = new World(global, canvas, selectionWorldEnvGenome,
 																		['relative', 'relative']);
 	world.externalInit = function () {
+		this.bg.sunAngle = Math.PI/2;
 		this.bg.removeChild(this.bg.bg);
 		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar

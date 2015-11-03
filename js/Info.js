@@ -63,6 +63,9 @@ var infoPrototype = createjs.extend(Info, createjs.Container);
 infoPrototype.drawPauseImage = function () {
 	var g = this.pauseImage.graphics;
 	g.clear();
+	g.beginFill(this.color.hex());
+	g.drawCircle(this.worldBounds.width/2, this.worldBounds.height/2, this.worldBounds.height/4);
+	g.endFill();
 	g.beginFill("rgba("+this.color.rgb().join(",")+",0.5)");
 	g.drawRoundRect(0,0,this.worldBounds.width, this.worldBounds.height,20);
 	g.endFill();
