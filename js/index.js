@@ -465,7 +465,7 @@ function main () {
 			span.textContent = chromaColorToHueName(avgColor);
 			span.style.setProperty('color', avgColor.hex());
 			if (this.info.year > 1) {
-				var spans = document.querySelector("#last-year");
+				var spans = document.querySelectorAll("#last-year");
 				for (var i = 0; i < spans.length; i++) {
 					var span = spans[i];
           span.textContent = this.yearCounter.toString();
@@ -499,7 +499,7 @@ function main () {
 		var restOfContent = document.querySelector("#hidden-until-selection-game")
 		var huntProgressSpan = document.querySelector("#selection-hunt-progress")
 		var progressBlocker = document.querySelector("#post-hunt-progress-blocker");
-		var requiredHits = 150;
+		var requiredHits = 50;
 		if (this.info.lifetimeHits >= requiredHits) {
       if (restOfContent.style.display == "none") {
         restOfContent.style.display = "block";
