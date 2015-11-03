@@ -82,30 +82,32 @@ predatorPrototype.getInPosition = function () {
 	this.tempX = this.pos[0];
 	this.tempY = this.pos[1];
 	this.isTweening = true;
-	createjs.Tween.get(this, { onChange: function () {
-									this.heading = 180/Math.PI*Math.atan2(this.tempY-this.pos[1],
-																												this.tempX-this.pos[0]);
-									this.pos[0] = this.tempX;
-									this.pos[1] = this.tempY;
-								}.bind(this)})
-								.to({ tempX: this.finalDest[0],
-											tempY: this.finalDest[1],
-										}, 6000)
-								.call(function () {
-									this.isTweening = false;
-								});
+	var t = createjs.Tween.get(this, { onChange: function () {
+													this.heading = 180/Math.PI*Math.atan2(this.tempY-this.pos[1],
+																																this.tempX-this.pos[0]);
+													this.pos[0] = this.tempX;
+													this.pos[1] = this.tempY;
+												}.bind(this)})
+												.to({ tempX: this.finalDest[0],
+															tempY: this.finalDest[1],
+														}, 6000)
+												.call(function () {
+													this.isTweening = false;
+												});
+	this.GLOBAL.TIMELINE.push(t);
 }
 
 predatorPrototype.blink = function (e) {
 	if (this.isHiding || this.isTweening) { return; }
 	this.isTweening = true;
-	createjs.Tween.get(this.eyes)
-								.to({ scaleX: 0 }, 100)
-								.wait(100)
-								.to({ scaleX: 1}, 100)
-								.call(function () {
-									this.isTweening = false;
-								}, [], this);
+	var t = createjs.Tween.get(this.eyes)
+												.to({ scaleX: 0 }, 100)
+												.wait(100)
+												.to({ scaleX: 1}, 100)
+												.call(function () {
+													this.isTweening = false;
+												}, [], this);
+	this.GLOBAL.TIMELINE.push(t);
 }
 
 predatorPrototype.selectCacheIfExists = function () {
@@ -249,24 +251,25 @@ predatorPrototype.huntNothing = function (e) {
 	this.tempX = this.pos[0];
 	this.tempY = this.pos[1];
 	this.isTweening = true;
-	createjs.Tween.get(this, { onChange: function () {
-									if (this.pos[0] != this.tempX || this.pos[1] != this.tempY) {
-										this.heading = 180/Math.PI*Math.atan2(this.tempY-this.pos[1],
-																													this.tempX-this.pos[0]);
-									}
-									this.pos[0] = this.tempX;
-									this.pos[1] = this.tempY;
-								}.bind(this) })
-								.to({ tempX: e.stageX,
-											tempY: e.stageY-this.GLOBAL.WORLD_OFFSET_Y },
-											2000, createjs.Ease.sineOut)
-								.to({ heading: dir+180 }, 1000, createjs.Ease.sineOut)
-								.to({ tempX: startPos[0],
-											tempY: startPos[1] },
-											2000, createjs.Ease.sineIn)
-								.call(function () {
-									this.isTweening = false;
-								});
+	var t = createjs.Tween.get(this, { onChange: function () {
+													if (this.pos[0] != this.tempX || this.pos[1] != this.tempY) {
+														this.heading = 180/Math.PI*Math.atan2(this.tempY-this.pos[1],
+																																	this.tempX-this.pos[0]);
+													}
+													this.pos[0] = this.tempX;
+													this.pos[1] = this.tempY;
+												}.bind(this) })
+												.to({ tempX: e.stageX,
+															tempY: e.stageY-this.GLOBAL.WORLD_OFFSET_Y },
+															2000, createjs.Ease.sineOut)
+												.to({ heading: dir+180 }, 1000, createjs.Ease.sineOut)
+												.to({ tempX: startPos[0],
+															tempY: startPos[1] },
+															2000, createjs.Ease.sineIn)
+												.call(function () {
+													this.isTweening = false;
+												});
+	this.GLOBAL.TIMELINE.push(t);
 }
 
 predatorPrototype.huntTarget = function (target) {
@@ -287,28 +290,29 @@ predatorPrototype.huntTarget = function (target) {
 	this.tempY = this.pos[1];
 	this.isTweening = true;
 
-	createjs.Tween.get(this, { onChange: function () {
-									this.heading = 180/Math.PI*Math.atan2(this.tempY-this.pos[1],
-																												this.tempX-this.pos[0]);
-									this.pos[0] = this.tempX;
-									this.pos[1] = this.tempY;
-									if (vec2.distance(this.target.pos, this.pos) < 1.2*this.radius) {
-										this.hasTarget = true;
-										this.target.getEaten();
-									}
-									if (this.hasTarget && this.isOutsideBounds()) {
-										createjs.Tween.removeTweens(this);
-										this.isTweening = false;
-										this.hasTarget = false;
-									}
-								}.bind(this)})
-								.to({ tempX: this.finalDest[0],
-											tempY: this.finalDest[1],
-										}, 6000)
-								.call(function () {
-									this.isTweening = false;
-									this.hasTarget = false;
-								});
+	var t = createjs.Tween.get(this, { onChange: function () {
+													this.heading = 180/Math.PI*Math.atan2(this.tempY-this.pos[1],
+																																this.tempX-this.pos[0]);
+													this.pos[0] = this.tempX;
+													this.pos[1] = this.tempY;
+													if (vec2.distance(this.target.pos, this.pos) < 1.2*this.radius) {
+														this.hasTarget = true;
+														this.target.getEaten();
+													}
+													if (this.hasTarget && this.isOutsideBounds()) {
+														createjs.Tween.removeTweens(this);
+														this.isTweening = false;
+														this.hasTarget = false;
+													}
+												}.bind(this)})
+												.to({ tempX: this.finalDest[0],
+															tempY: this.finalDest[1],
+														}, 6000)
+												.call(function () {
+													this.isTweening = false;
+													this.hasTarget = false;
+												});
+	this.GLOBAL.TIMELINE.push(t);
 }
 
 

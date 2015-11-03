@@ -10,6 +10,7 @@ World.prototype = {
 		this.GLOBAL.TIME = 0;
 		this.GLOBAL.UPDATE_COUNTER = 0;
 		this.GLOBAL.WORLD_SPEED = 10;
+		this.GLOBAL.TIMELINE = [];
 		this.stage.enableDOMEvents(false);
 		this.stage = new createjs.Stage(this.stage.canvas);
 
@@ -218,11 +219,22 @@ World.prototype = {
 												0 :
 												event.delta * this.GLOBAL.WORLD_SPEED;
 		this.GLOBAL.TIME += this.GLOBAL.DELTA;
-		createjs.Tween.tick(this.GLOBAL.DELTA, this.GLOBAL.PAUSED);
 
 		// if we're not paused, we have to deal with 
 		// collisions
 		if (!this.GLOBAL.PAUSED) {
+			var i = 0;
+			var tween;
+			while (i < this.GLOBAL.TIMELINE.length) {
+				tween = this.GLOBAL.TIMELINE[i];
+				if (tween.position >= tween.duration) {
+					this.GLOBAL.TIMELINE.splice(i, 1);
+				} else {
+					tween.tick(this.GLOBAL.DELTA);
+					i++;
+				}
+			}
+
 			// autopredator vars
 			var max = 0;
 			var target = null;

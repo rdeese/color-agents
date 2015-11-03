@@ -107,12 +107,13 @@ infoPrototype.handleWorldClick = function (event, didHit, agent) {
 		overlay.x = event.stageX;
 		overlay.y = event.stageY-60;
 		this.overlayContainer.addChild(overlay);
-		createjs.Tween.get(overlay)
-									.wait(1000)
-									.to({ alpha: 0 }, 3000)
-									.call(function () {
-										this.removeChild(overlay)
-									}, [], this);
+		var t = createjs.Tween.get(overlay)
+													.wait(1000)
+													.to({ alpha: 0 }, 3000)
+													.call(function () {
+														this.removeChild(overlay)
+													}, [], this);
+		this.GLOBAL.TIMELINE.push(t);
 	} else if (this.GLOBAL.MODE == 'observer') {
 		if (didHit && !this.GLOBAL.PAUSED) {
 			agent.blink();
@@ -163,14 +164,15 @@ infoPrototype.nextMode = function () {
 
 infoPrototype.setObserverMode = function () {
 	this.GLOBAL.MODE = 'observer';
-	createjs.Tween.get(this.overlayContainer, {
-																							ignoreGlobalPause: true,
-																							override: true
-																						})
-								.to({ alpha: 0 }, 2000)
-								.call(function () {
-									this.overlayContainer.removeAllChildren();
-								}, [], this);
+	var t = createjs.Tween.get(this.overlayContainer, {
+																											ignoreGlobalPause: true,
+																											override: true
+																										})
+												.to({ alpha: 0 }, 2000)
+												.call(function () {
+													this.overlayContainer.removeAllChildren();
+												}, [], this);
+	this.GLOBAL.TIMELINE.push(t);
 	this.GLOBAL.AGENTS_DIRTY = true;
 }
 

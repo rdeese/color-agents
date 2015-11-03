@@ -181,13 +181,14 @@ agentPrototype.killSpeed = function () {
 agentPrototype.blink = function (e) {
 	if (this.isHiding || this.isTweening) { return; }
 	this.isTweening = true;
-	createjs.Tween.get(this.eyes)
-								.to({ scaleX: 0 }, 100)
-								.wait(100)
-								.to({ scaleX: 1}, 100)
-								.call(function () {
-									this.isTweening = false;
-								}, [], this);
+	var t = createjs.Tween.get(this.eyes)
+												.to({ scaleX: 0 }, 1000)
+												.wait(1000)
+												.to({ scaleX: 1}, 1000)
+												.call(function () {
+													this.isTweening = false;
+												}, [], this);
+	this.GLOBAL.TIMELINE.push(t);
 }
 
 
@@ -288,8 +289,9 @@ agentPrototype.motherChild = function (matingTime, otherGenome) {
 																 					this.GLOBAL.MIN_AGENT_RADIUS),
 																 this.GLOBAL.MAX_AGENT_RADIUS);
 
-	createjs.Tween.get(this, { override: true })
-								.to({ scaleX: this.GLOBAL.PREGNANT_SCALE, scaleY: this.GLOBAL.PREGNANT_SCALE }, this.GLOBAL.GESTATION_PD/3);
+	var t = createjs.Tween.get(this, { override: true })
+												.to({ scaleX: this.GLOBAL.PREGNANT_SCALE, scaleY: this.GLOBAL.PREGNANT_SCALE }, this.GLOBAL.GESTATION_PD/3);
+	this.GLOBAL.TIMELINE.push(t);
 }
 
 agentPrototype.selectCacheIfExists = function () {
@@ -328,22 +330,24 @@ agentPrototype.updateHiding = function () {
 	if (this.GLOBAL.MODE == 'predator' && !this.isHiding) {
 		this.isHiding = true;
 		this.isTweening = true;
-		createjs.Tween.get(this.eyes, { override: true })
-									.to({ scaleX: 1 }, 1000)
-									.wait(random.number()*5000)
-									.to({ scaleX: 0 }, 1000)
-									.call(function () {
-										this.isTweening = false;
-									}, [], this);
+		var t = createjs.Tween.get(this.eyes, { override: true })
+													.to({ scaleX: 1 }, 1000)
+													.wait(random.number()*5000)
+													.to({ scaleX: 0 }, 1000)
+													.call(function () {
+														this.isTweening = false;
+													}, [], this);
+		this.GLOBAL.TIMELINE.push(t);
 	} else if (this.GLOBAL.MODE != 'predator' && this.isHiding) {
 		this.isHiding = false;
 		this.isTweening = true;
-		createjs.Tween.get(this.eyes, { override: true })
-									.wait(random.number()*5000)
-									.to({ scaleX: 1 }, 1000)
-									.call(function () {
-										this.isTweening = false;
-									}, [], this);
+		var t = createjs.Tween.get(this.eyes, { override: true })
+													.wait(random.number()*5000)
+													.to({ scaleX: 1 }, 1000)
+													.call(function () {
+														this.isTweening = false;
+													}, [], this);
+		this.GLOBAL.TIMELINE.push(t);
 	}
 }
 
@@ -549,8 +553,9 @@ agentPrototype.update = function (e) {
 
 		result.push(new Agent(this.GLOBAL, this.bounds,
 													newPos, newVel, this.childGenome));
-		createjs.Tween.get(this, { override: true })
-									.to({ scaleX: 1, scaleY: 1 }, this.GLOBAL.GESTATION_PD/3);
+		var t = createjs.Tween.get(this, { override: true })
+													.to({ scaleX: 1, scaleY: 1 }, this.GLOBAL.GESTATION_PD/3);
+		this.GLOBAL.TIMELINE.push(t);
 
 		this.isPregnant = false;
 		this.childGenome = null;

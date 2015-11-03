@@ -199,9 +199,9 @@ function main () {
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	// autoplay
 	global.AUTOPLAY = true;
-	global.PAUSED = false;
 	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
+		this.stage.alpha = 0;
 		this.bg.sunAngle = Math.PI/2;
 		this.bg.removeChild(this.bg.bg);
 		this.bg.removeChild(this.bg.darkness);
@@ -210,21 +210,28 @@ function main () {
 		var color = this.agents[0].color;
 		span.textContent = chromaColorToHueName(color);
 		span.style.setProperty('color', color.hex());
+
+		var t = new createjs.Tween.get(this.stage)
+															.to({ alpha: 1 }, 5000);
+		this.GLOBAL.TIMELINE.push(t);
 	}.bind(world);
 	world.init();
 	world.start();
 	interactives.push(world);
 	world.externalTick = function () {
-		if (!createjs.Tween.hasActiveTweens(this.GLOBAL) && this.agents.length == 0) {
-			createjs.Tween.get(this.GLOBAL)
-										.to({ WORLD_SPEED: 1 }, 1000)
-										.call(function () {
-											this.stage.removeAllChildren();
-										}, [], this)
-										.wait(500)
-										.call(function () {
-											this.init();
-										}, [], this);
+		if (!this.foobar && this.agents.length == 0) {
+			this.foobar = true;
+			var t = createjs.Tween.get(this.GLOBAL)
+														.to({ WORLD_SPEED: 1 }, 1000)
+														.call(function () {
+															this.stage.removeAllChildren();
+														}, [], this)
+														.wait(500)
+														.call(function () {
+															this.init();
+															this.foobar = false;
+														}, [], this);
+			this.GLOBAL.TIMELINE.push(t);	
 		}
 	}.bind(world);
 
@@ -238,15 +245,15 @@ function main () {
 	global.OBSERVER_PERIOD = Infinity; // no predator period
 	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
 	global.DEATH_THRESHHOLD = Infinity; // can't die!
-	global.INIT_AGENTS_VARIATIONS[0] = 160;
+	global.INIT_AGENTS_VARIATIONS[0] = 90;
 	global.FATHER_MUTATION_PROBS[0] = 0;
 	global.MOTHER_MUTATION_PROBS[0] = 0;
 	global.MATING_PROB = 1;
 	// autoplay
 	global.AUTOPLAY = true;
-	global.PAUSED = false;
 	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
+		this.stage.alpha = 0;
 		this.bg.sunAngle = Math.PI/2;
 		this.GLOBAL.MATING_PROB = 1;
 		this.bg.removeChild(this.bg.bg);
@@ -264,6 +271,10 @@ function main () {
 		var childColor = intermediateChromaColor(motherColor, fatherColor);
 		childSpan.textContent = chromaColorToHueName(childColor);
 		childSpan.style.setProperty('color', childColor.hex());
+
+		var t = new createjs.Tween.get(this.stage)
+															.to({ alpha: 1 }, 5000);
+		this.GLOBAL.TIMELINE.push(t);
 	}.bind(world);
 	world.init();
 	world.start();
@@ -272,19 +283,23 @@ function main () {
 		if (this.agents.length > 2) {
 			this.GLOBAL.MATING_PROB = 0;
 		}
-		if (!createjs.Tween.hasActiveTweens(this.GLOBAL) &&
+		if (!this.foobar &&
 				(this.agents.filter(function (x) { return x.scaleX > 0.7 && x.scaleX < 0.8}).length >= 1 ||
 				this.agents.length < 2)) {
-			createjs.Tween.get(this.GLOBAL)
-										.to({ WORLD_SPEED: 1 }, 1000)
-										.wait(1000)
-										.call(function () {
-											this.stage.removeAllChildren();
-										}, [], this)
-										.wait(500)
-										.call(function () {
-											this.init();
-										}, [], this);
+			this.foobar = true;
+			var t = createjs.Tween.get(this.GLOBAL)
+														.to({ WORLD_SPEED: 1 }, 10000)
+														.call(function () {
+															var t = new createjs.Tween.get(this.stage)
+																												.to({ alpha: 0 }, 500)
+																												.wait(500)
+																												.call(function () {
+																													this.init();
+																													this.foobar = false;
+																												}, [], this);
+															this.GLOBAL.TIMELINE.push(t);
+														}, [], this);
+			this.GLOBAL.TIMELINE.push(t);	
 		}
 	}.bind(world);
 
@@ -302,15 +317,17 @@ function main () {
 	global.FATHER_MUTATION_PROBS[0] = 1;
 	global.MOTHER_MUTATION_PROBS[0] = 0;
 	global.MUTATION_RATES[0] = 120;
+	global.MATING_PROB = 1;
 	// autoplay
 	global.AUTOPLAY = true;
-	global.PAUSED = false;
 	world = new World(global, canvas, [null, null], [null, GLOBAL.AGENT_RADIUS]);
 	world.externalInit = function () {
+		this.stage.alpha = 0;
 		this.bg.sunAngle = Math.PI/2;
 		this.bg.removeChild(this.bg.bg);
 		this.bg.removeChild(this.bg.darkness);
 		this.stage.removeChild(this.info); // hide the info bar
+		this.GLOBAL.MATING_PROB = 1;
 		var fatherSpan = document.querySelector("#critter-m-family-father");
 		//var motherSpan = document.querySelector("#critter-m-family-mother");
 		var childSpan = document.querySelector("#critter-m-family-child");
@@ -323,24 +340,35 @@ function main () {
 		var childColor = intermediateChromaColor(motherColor, fatherColor);
 		childSpan.textContent = chromaColorToHueName(childColor);
 		childSpan.style.setProperty('color', childColor.hex());
+
+		var t = new createjs.Tween.get(this.stage)
+															.to({ alpha: 1 }, 5000);
+		this.GLOBAL.TIMELINE.push(t);
 	}.bind(world);
 	world.init();
 	world.start();
 	interactives.push(world);
 	world.externalTick = function () {
-		if (!createjs.Tween.hasActiveTweens(this.GLOBAL) &&
+		if (this.agents.length > 2) {
+			this.GLOBAL.MATING_PROB = 0;
+		}
+		if (!this.foobar &&
 				(this.agents.filter(function (x) { return x.scaleX > 0.7 && x.scaleX < 0.8}).length >= 1 ||
 				this.agents.length < 2)) {
-			createjs.Tween.get(this.GLOBAL)
-										.to({ WORLD_SPEED: 1 }, 1000)
-										.wait(1000)
-										.call(function () {
-											this.stage.removeAllChildren();
-										}, [], this)
-										.wait(500)
-										.call(function () {
-											this.init();
-										}, [], this);
+			this.foobar = true;
+			var t = createjs.Tween.get(this.GLOBAL)
+														.to({ WORLD_SPEED: 1 }, 10000)
+														.call(function () {
+															var t = new createjs.Tween.get(this.stage)
+																												.to({ alpha: 0 }, 500)
+																												.wait(500)
+																												.call(function () {
+																													this.init();
+																													this.foobar = false;
+																												}, [], this);
+															this.GLOBAL.TIMELINE.push(t);
+														}, [], this);
+			this.GLOBAL.TIMELINE.push(t);	
 		}
 	}.bind(world);
 
@@ -811,7 +839,7 @@ function main () {
 			var w = interactives[i];
 			var isVisible = w.stage.canvas.offsetTop<scrollY+innerHeight &&
 											w.stage.canvas.offsetTop+w.stage.canvas.height>scrollY;
-			if (isVisible && w.GLOBAL.PAUSED && w.GLOBAL.AUTOPLAY) {
+			if (isVisible && w.GLOBAL.AUTOPLAY) {
 				w.GLOBAL.PAUSED = false;
 			} else {
 				w.GLOBAL.PAUSED = true;
