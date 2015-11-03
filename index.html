@@ -94,7 +94,7 @@
 				overflow: auto;
 				display: block;
 				padding-top: 20px;
-				padding-bottom: 20px;
+				padding-bottom: 40px;
 			}
 			.widest {
 				width: 1100px;
@@ -154,9 +154,7 @@
 			<p class="notopmargin">
 				Critters are cute, colorful, and friendly!
 				They have short lives compared to you and me,
-				which they spend wandering around.
-				All critters are the same in every way, 
-				except for their colors. Here's a critter that's
+				which they spend wandering around. Here's a critter that's
 				<b><span id="single-critter-color">color</span></b>.
 			</p>
 		</section>
@@ -166,11 +164,10 @@
 		</block>
 		<block>
 		<section class="centered vspace">
-			<h3 class="nobottommargin">A critter gets its color from its parents...</h3>
+			<h3 class="nobottommargin">A critter gets its color from its parents.</h3>
 			<p class="notopmargin">
-				When two critters get together, one of them will give
-				birth to a baby critter! The baby critter's color is in between
-				its parents' colors. This 
+				After two critters bump together, one of them will give
+				birth to a baby critter. This 
 				<b><span id="critter-family-father">color</span></b>
 				critter and this
 				<b><span id="critter-family-mother">color</span></b>
@@ -185,14 +182,11 @@
 		</block>
 		<block>
 		<section class="centered vspace">
-			<h3 class="nobottommargin">...but sometimes new critters have a surprising color!</h3>
+			<h3 class="nobottommargin">Sometimes baby critters have a surprising color.</h3>
 			<p class="notopmargin">
-				These two
-				<b><span id="critter-m-family-father">color</span></b>
-				critters have a baby that's a different color than they
-				are! Can you see the difference from the 
-				<b><span id="critter-m-family-child">color</span></b> 
-				child that we were expecting?
+				These critters are both
+				<b><span id="critter-m-family-father">color</span></b>,
+				but their child might not be. What color is it?
 			</p>
 		</section>
 		<div class="centered">
@@ -201,19 +195,18 @@
 		</block>
 		<block>
 		<section id="decade" class="centered vspace">
-			<h3 class="nobottommargin">A decade of critters.</h3>
+			<h3 class="nobottommargin">In the wild, a predator hunts critters.</h3>
 			<p class="notopmargin">
-			For these critters, hunting season comes at the
-			end of each year. What will happen to their
-			color over a long time? Will it stay about the same,
-			like you saw before?
+				Critters are cute, but they are also tasty! Out in the wild, this
+				beastie hunts critters to feed itself and its own children.
 			</p>
+		</section>
+		<div class="centered">
+			<canvas class="centered" id='predator'></canvas>
+		</div>
+		<section class="centered vspace">
 			<p>
-			When the critters go
-			into hiding, hunt <b>30</b> of them
-			<i>without missing</i> to get to the next year.
-			Try to make it to the 10th year! Don't worry
-			if you can't, just keep reading.
+				It comes out at night, when the critters are sleeping...
 			</p>
 		</section>
 		<div style="height:600px" class="centered vspace">
@@ -348,11 +341,10 @@
 			</section>
 			<div style="height:1060px" class="widest centered vspace">
 				<div class="left three-across">
-					<p class="c-text caption three-across notopmargin">
-						<b>1. Mutation</b>
+					<p class="c-text caption three-across notopmargin nobottommargin">
+						<b>Mutation</b>
 					</p>
-					<canvas class="centered" id="triptych-mutation"></canvas>
-					<p class="c-text centered three-across-text">
+					<p class="c-text centered three-across-text notopmargin">
 						Some of the
 						<b><span id="critter-decade-start-critter">???</span></b>
 						critters' children were surprisingly
@@ -360,14 +352,13 @@
 						or
 						<b><span id="critter-decade-closer-m-critter">???</span></b>.
 					</p>
+					<canvas class="centered" id="triptych-mutation"></canvas>
 				</div>
 				<div class="left three-across">
-					<div style="height:100px"></div>
-					<p class="c-text caption three-across notopmargin">
-						<b>2. Elimination</b>
+					<p class="c-text caption three-across notopmargin nobottommargin">
+						<b>Elimination</b>
 					</p>
-					<canvas class="centered" id="triptych-selection"></canvas>
-					<p class="c-text centered three-across-text">
+					<p class="c-text centered three-across-text notopmargin">
 						The <b><span id="critter-decade-env">???</span></b>
 						environment made
 						<b><span id="critter-decade-closer-m-critter">???</span></b>
@@ -377,20 +368,20 @@
 						<b><span id="critter-decade-further-m-critter">???</span></b>
 						critters.
 					</p>
+					<canvas class="centered" id="triptych-selection"></canvas>
 				</div>
 				<div class="left three-across">
-					<div style="height:200px"></div>
-					<p class="c-text caption three-across notopmargin">
-						<b>3. Inheritance</b>
+					<p class="c-text caption three-across notopmargin nobottommargin">
+						<b>Inheritance</b>
 					</p>
-					<canvas class="centered" id="triptych-inheritance"></canvas>
-					<p class="c-text centered three-across-text">
+					<p class="c-text centered three-across-text notopmargin">
 						The
 						<b><span id="critter-decade-closer-m-critter">???</span></b>
 						critters that you didn't hunt passed that
 						<b><span id="critter-decade-closer-m-critter">???</span></b>
 						color to their children. 
 					</p>
+					<canvas class="centered" id="triptych-inheritance"></canvas>
 				</div>
 			</div>
 			

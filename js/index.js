@@ -316,7 +316,7 @@ function main () {
 	global.INIT_AGENTS_VARIATIONS[0] = 0;
 	global.FATHER_MUTATION_PROBS[0] = 1;
 	global.MOTHER_MUTATION_PROBS[0] = 0;
-	global.MUTATION_RATES[0] = 120;
+	global.MUTATION_RATES[0] = 100;
 	global.MATING_PROB = 1;
 	// autoplay
 	global.AUTOPLAY = true;
@@ -330,16 +330,16 @@ function main () {
 		this.GLOBAL.MATING_PROB = 1;
 		var fatherSpan = document.querySelector("#critter-m-family-father");
 		//var motherSpan = document.querySelector("#critter-m-family-mother");
-		var childSpan = document.querySelector("#critter-m-family-child");
+		//var childSpan = document.querySelector("#critter-m-family-child");
 		var fatherColor = this.agents[0].color;
 		fatherSpan.textContent = chromaColorToHueName(fatherColor);
 		fatherSpan.style.setProperty('color', fatherColor.hex());
 		var motherColor = this.agents[1].color;
 		//motherSpan.textContent = chromaColorToHueName(motherColor);
 		//motherSpan.style.setProperty('color', motherColor.hex());
-		var childColor = intermediateChromaColor(motherColor, fatherColor);
-		childSpan.textContent = chromaColorToHueName(childColor);
-		childSpan.style.setProperty('color', childColor.hex());
+		//var childColor = intermediateChromaColor(motherColor, fatherColor);
+		//childSpan.textContent = chromaColorToHueName(childColor);
+		//childSpan.style.setProperty('color', childColor.hex());
 
 		var t = new createjs.Tween.get(this.stage)
 															.to({ alpha: 1 }, 5000);
@@ -371,6 +371,75 @@ function main () {
 			this.GLOBAL.TIMELINE.push(t);	
 		}
 	}.bind(world);
+
+	// PREDATOR
+	canvas = document.querySelector("#predator");
+	canvas.width = 600;
+	canvas.height = 300;
+	global = globalClone();
+	global.NUM_AGENTS = 20; // doesn't matter
+	global.WORLD_SPEED = 0;
+	global.OBSERVER_PERIOD = Infinity; // no predator period
+	global.WORLD_OFFSET_Y = 0; // no info bar, so take up the whole canvas
+	global.DEATH_THRESHHOLD = Infinity; // doesn't matter
+	global.INIT_AGENTS_VARIATIONS[0] = 360;
+	global.INITIAL_AGENT_OFFSETS[0] = 0;
+	global.MOTHER_MUTATION_PROBS[0] = 0.15;
+	global.FATHER_MUTATION_PROBS[0] = 0.15;
+	global.MOVEMENT_PROB = 0;
+	global.ACC_DAMPING = 0;
+	global.VEL_DAMPING = 0;
+	global.PREGNANT_SCALE = 1;
+	global.PAUSED = true;
+
+	world = new World(global, canvas, [null, GLOBAL.AGENT_RADIUS],
+																		[null, GLOBAL.AGENT_RADIUS]);
+	world.externalInit = function () {
+		this.bg.sunAngle = Math.PI/2;
+		this.bg.removeChild(this.bg.bg);
+		this.bg.removeChild(this.bg.darkness);
+		this.stage.removeChild(this.info); // hide the info bar
+		this.predator.pos[0] = canvas.width/2;
+		this.predator.pos[1] = canvas.height/2-80;
+		this.predator.heading = 90+(random.number()-0.5)*20;
+		// kill and pile up agents
+		var a;
+		var angle;
+		var radius;
+		for (var i = 0; i < this.agents.length; i++) {
+			a = this.agents[i];
+			a.isDying = true;
+			angle = random.number()*2*Math.PI;
+			radius = Math.sqrt(random.number())*this.predator.radius/2.5;
+			a.pos = vec2.fromValues(this.predator.pos[0]+Math.cos(angle)*radius,
+															this.predator.pos[1]+2*this.predator.radius+
+															Math.sin(angle)*radius);
+		}
+		// left side
+		for (var i = 0; i < 3; i++) {
+			var p = new Predator(this.GLOBAL, this.predator.worldBounds,
+													 20+(random.number()-0.5)*5);
+			angle = Math.PI/180*(220-30*i+10*(random.number()-0.5));
+			radius = this.predator.radius*2;
+			p.x = this.predator.pos[0]+Math.cos(angle)*radius;
+			p.y = this.predator.pos[1]+2*this.predator.radius+Math.sin(angle)*radius;
+			p.rotation = angle*180/Math.PI-180+(random.number()-0.5)*15;
+			this.bg.predatorContainer.addChild(p);
+		}
+		for (var i = 0; i < 3; i++) {
+			var p = new Predator(this.GLOBAL, this.predator.worldBounds,
+													 20+(random.number()-0.5)*5);
+			angle = Math.PI/180*(320+30*i+10*(random.number()-0.5));
+			radius = this.predator.radius*2;
+			p.x = this.predator.pos[0]+Math.cos(angle)*radius;
+			p.y = this.predator.pos[1]+2*this.predator.radius+Math.sin(angle)*radius;
+			p.rotation = angle*180/Math.PI-180+(random.number()-0.5)*15;
+			this.bg.predatorContainer.addChild(p);
+		}
+	}.bind(world);
+	world.init();
+	world.start();
+	interactives.push(world);
 
 	// SELECTION
 	canvas = document.querySelector("#selection");
@@ -427,7 +496,7 @@ function main () {
 		var restOfContent = document.querySelector("#hidden-until-selection-game")
 		var huntProgressSpan = document.querySelector("#selection-hunt-progress")
 		var progressBlocker = document.querySelector("#post-hunt-progress-blocker");
-		var requiredHits = 150;
+		var requiredHits = 0;
 		if (this.info.lifetimeHits >= requiredHits) {
       if (restOfContent.style.display == "none") {
         restOfContent.style.display = "block";
@@ -519,8 +588,8 @@ function main () {
 	// set background color of page to desaturated color of this env
 	var blocks = document.querySelectorAll("block");
 	var bgColor = chroma.hcl(world.envGenome[0],
-													 GLOBAL.CHROMA/15,
-													 GLOBAL.LIGHTNESS).brighten(1).hex();
+													 GLOBAL.CHROMA/5,
+													 GLOBAL.LIGHTNESS).brighten(1.5).hex();
 	for (var i = 0; i < blocks.length; i++) {
 		if (i % 2 == 0) {
 			blocks[i].style.backgroundColor = bgColor;

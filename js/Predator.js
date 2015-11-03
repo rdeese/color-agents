@@ -29,7 +29,7 @@ predatorPrototype.init = function () {
 	this.eyeOffset = this.radius*0.4;
 	this.height = this.width = this.radius * 2;
 	this.shadowGen = new createjs.Shape();
-	this.shadowGen.shadow = new createjs.Shadow("rgba(0, 0, 0, 0.5)", 0, 50, 10);
+	this.shadowGen.shadow = new createjs.Shadow("rgba(0, 0, 0, 0.5)", 0, 10, 10);
 	this.addChild(this.shadowGen);
   this.victimContainer = new createjs.Container();
 	this.victimContainer.x = this.radius;
@@ -143,8 +143,6 @@ predatorPrototype.selectCacheIfExists = function () {
 }
 
 // draw the graphical representation of the predator
-// TODO confirm that adding the "!this.isHiding" conditional fixes
-// the weird eyes still showing, teleporting, and MISS-ing issue.
 predatorPrototype.drawPredator = function () {
 	var g = this.shadowGen.graphics;
 	g.clear();

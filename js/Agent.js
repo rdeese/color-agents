@@ -167,10 +167,13 @@ agentPrototype.shiftXYToCenter = function () {
 
 agentPrototype.wander = function (e) {
 	vec2.scale(this.acc, this.acc, Math.pow(this.GLOBAL.ACC_DAMPING, this.GLOBAL.DELTA));
-	// randomly change the acceleration
-	if (random.number() < this.GLOBAL.MOVEMENT_PROB*this.GLOBAL.DELTA) {
-		vec2.add(this.acc, this.acc, vec2.fromValues(this.GLOBAL.MAX_ACC*(random.number()-0.5),
-																 								 this.GLOBAL.MAX_ACC*(random.number()-0.5)));
+	if (!this.isDying) {
+		// randomly change the acceleration
+		if (random.number() < this.GLOBAL.MOVEMENT_PROB*this.GLOBAL.DELTA) {
+			vec2.add(this.acc, this.acc,
+							 vec2.fromValues(this.GLOBAL.MAX_ACC*(random.number()-0.5),
+															 this.GLOBAL.MAX_ACC*(random.number()-0.5)));
+		}
 	}
 }
 
