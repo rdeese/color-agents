@@ -499,17 +499,17 @@ function main () {
 		var restOfContent = document.querySelector("#hidden-until-selection-game")
 		var huntProgressSpan = document.querySelector("#selection-hunt-progress")
 		var progressBlocker = document.querySelector("#post-hunt-progress-blocker");
-		var requiredHits = 50;
+		var requiredHits = 150;
 		if (this.info.lifetimeHits >= requiredHits) {
       if (restOfContent.style.display == "none") {
         restOfContent.style.display = "block";
 				progressBlocker.style.display = "none";
       }
-			huntProgressSpan.innerHTML = "Way to go! You hunted <b>" +
+			huntProgressSpan.innerHTML = "Way to go! You found <b>" +
                                    this.info.lifetimeHits +
                                    "</b> critters.";
 		} else {
-			huntProgressSpan.innerHTML = "Keep hunting! Only <b>" +
+			huntProgressSpan.innerHTML = "Keep going! Only <b>" +
 																	 (requiredHits - this.info.lifetimeHits) +
 																	 "</b> critters to go.";
 		}
