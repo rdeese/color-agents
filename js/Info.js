@@ -29,11 +29,11 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 	// END OVERLAY LAYER
 
 	// BEGIN PAUSE LAYER
-	this.pauseImage = new createjs.Shape();
+	this.pauseImage = new createjs.Container();
 	this.drawPauseImage();
 	this.addChild(this.pauseImage);
 	this.pauseImage.alpha = this.GLOBAL.PAUSED ? 1 : 0;
-	// END PAUSE LAYER	
+	// END PAUSE LAYER
 
 	this.pauseImage.on('click', function (e) {
 		this.pauseImage.alpha = 0;
@@ -61,20 +61,31 @@ function Info (GLOBAL, worldBounds, infoBounds, hue) {
 var infoPrototype = createjs.extend(Info, createjs.Container);
 
 infoPrototype.drawPauseImage = function () {
-	var g = this.pauseImage.graphics;
+  this.pauseImageBg = new createjs.Shape();
+  this.pauseImage.addChild(this.pauseImageBg);
+	var g = this.pauseImageBg.graphics;
 	g.clear();
-	g.beginFill(this.color.hex());
-	g.drawCircle(this.worldBounds.width/2, this.worldBounds.height/2, this.worldBounds.height/4);
-	g.endFill();
 	g.beginFill("rgba("+this.color.rgb().join(",")+",0.5)");
 	g.drawRoundRect(0,0,this.worldBounds.width, this.worldBounds.height,20);
+	g.endFill();
+
+  this.pauseImageText = new createjs.Text("Click anywhere to begin", "bold 50px "+this.GLOBAL.FONT, this.overlayHitColorHex);
+  this.pauseImageText.textAlign = "center";
+  this.pauseImageText.textBaseline = "middle";
+  this.pauseImageText.x = this.worldBounds.width/2;
+  this.pauseImageText.y = this.worldBounds.height/2;
+  this.pauseImage.addChild(this.pauseImageText);
+  /*
+	g.beginFill(this.color.hex());
+	g.drawCircle(this.worldBounds.width/2, this.worldBounds.height/2, this.worldBounds.height/4);
 	g.endFill();
 	g.beginFill(this.color.brighten(1).hex());
 	g.drawPolyStar(this.worldBounds.width/2, this.worldBounds.height/2,
 								 this.worldBounds.height/5, 3, 0, 0);
 	g.endFill();
+  */
 }
-													
+
 
 infoPrototype.handleWorldClick = function (event, didHit, agent) {
 	if (this.GLOBAL.MODE == 'predator' && !this.GLOBAL.PAUSED) {
@@ -129,7 +140,7 @@ infoPrototype.nextMode = function () {
 		/*
 		if (this.numHits < this.GLOBAL.HIT_THRESHOLD) {
 			this.lifetimeScore = 0;
-			
+
 			var overlay = new createjs.Text("TRY AGAIN",
 																			"bold 150px "+this.GLOBAL.FONT,
 																			this.overlayHitColorHex);
@@ -142,7 +153,7 @@ infoPrototype.nextMode = function () {
 			var evt = new createjs.Event('resetRound', true);
 			this.dispatchEvent(evt);
 		} else {
-			
+
 			var overlay = new createjs.Text("YEAR "+this.year,
 																			"bold 150px "+this.GLOBAL.FONT,
 																			this.overlayHitColorHex);
@@ -184,9 +195,12 @@ infoPrototype.setPredatorMode = function () {
 
 infoPrototype.update = function (e) {
 	if (this.pauseImage.alpha == 0 && this.GLOBAL.PAUSED) {
+    this.pauseImageText.text = this.GLOBAL.TIME == 0 ?
+                               "Click anywhere to begin" :
+                               "Click anywhere to continue";
 		this.pauseImage.alpha = 1;
 		this.GLOBAL.DIRTY = true;
 	}
 }
-	
+
 window.Info = createjs.promote(Info, "Container");

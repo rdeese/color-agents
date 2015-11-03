@@ -94,7 +94,7 @@
 				overflow: auto;
 				display: block;
 				padding-top: 20px;
-				padding-bottom: 40px;
+				padding-bottom: 20px;
 			}
 			.widest {
 				width: 1100px;
@@ -151,21 +151,21 @@
 		<block>
 		<section class="centered vspace">
 			<h3 class="nobottommargin">This is a story about critters.</h3>
-			<p class="notopmargin">
+			<p class="">
 				Critters are cute, colorful, and friendly!
 				They have short lives compared to you and me,
 				which they spend wandering around. Here's a critter that's
 				<b><span id="single-critter-color">color</span></b>.
 			</p>
 		</section>
-		<div class="centered">
+		<div class="centered vspace">
 			<canvas class="centered" id=single-critter></canvas>
 		</div>
 		</block>
 		<block>
 		<section class="centered vspace">
 			<h3 class="nobottommargin">A critter gets its color from its parents.</h3>
-			<p class="notopmargin">
+			<p class="">
 				After two critters bump together, one of them will give
 				birth to a baby critter. This 
 				<b><span id="critter-family-father">color</span></b>
@@ -176,39 +176,55 @@
 				child.
 			</p>
 		</section>
-		<div class="centered">
+		<div class="centered vspace">
 			<canvas class="centered" id=critter-family></canvas>
 		</div>
 		</block>
 		<block>
 		<section class="centered vspace">
 			<h3 class="nobottommargin">Sometimes baby critters have a surprising color.</h3>
-			<p class="notopmargin">
+			<p class="">
 				These critters are both
 				<b><span id="critter-m-family-father">color</span></b>,
 				but their child might not be. What color is it?
 			</p>
 		</section>
-		<div class="centered">
+		<div class="centered vspace">
 			<canvas class="centered" id=critter-m-family></canvas>
 		</div>
 		</block>
 		<block>
-		<section id="decade" class="centered vspace">
+		<section class="centered vspace">
 			<h3 class="nobottommargin">In the wild, a predator hunts critters.</h3>
-			<p class="notopmargin">
-				Critters are cute, but they are also tasty! Out in the wild, this
-				beastie hunts critters to feed itself and its own children.
+			<p class="">
+				Critters are cute, but they are also tasty. This
+				beastie brings home critters to feed itself and its children.
 			</p>
 		</section>
-		<div class="centered">
+		<div class="centered vspace">
 			<canvas class="centered" id='predator'></canvas>
 		</div>
-		<section class="centered vspace">
-			<p>
-				It comes out at night, when the critters are sleeping...
+    </block>
+    <block>
+		<section id="decade" class="centered vspace">
+			<h3 class="nobottommargin">Help the hungry beastie gather 150 critters!</h3>
+			<p class="">
+        In this
+        <b><span id="critter-decade-env">???</span></b>
+        environment, the critters are
+        <b><span id="critter-decade-start-critter">???</span></b>.
+        At night when they are sleeping, the beastie comes out to hunt.
+        Her children are hungry, and she needs to find <b>150 critters</b>
+        as fast as possible.
+      </p>
+      <p><b>When it gets dark</b>, the beastie will come out. Once
+        you see her, find critters for her by <b>clicking on them
+        with your mouse</b> until the night is over. Then wait until
+        the next night to keep going!
 			</p>
 		</section>
+    </block>
+    <block>
 		<div style="height:600px" class="centered vspace">
 			<canvas class="centered" id=selection></canvas>
 		</div>
@@ -225,6 +241,19 @@
     </section>
 		<div id="hidden-until-selection-game" style="display:none">
 		<block>
+			<section class="centered vspace">
+				<h3 class="nobottommargin">
+          The critters aren't the same color anymore.
+				</h3>
+				<p class="">
+					The critters changed color!
+					<b><span id="last-year">???</span></b>
+          days ago they were
+					<b><span id="critter-decade-start-critter">???</span></b>,
+          but now they're 
+					<b><span id="critter-decade-end-critter">???</span></b>.
+				</p>
+      </section>
 			<div style="height:100px" class="widest centered vspace">
 				<div style="width:180px" class="left">
 					<p class="c-text notopmargin">
@@ -297,23 +326,16 @@
 			<block>
 			<section class="centered vspace">
 				<h3 class="nobottommargin">
-					The critters changed color to match the environment.
+					The critters' new color matches the environment.
 				</h3>
-				<p class="notopmargin">
-					The critters changed color!
-					They started out
-					<b><span id="critter-decade-start-critter">???</span></b>,
-					and now they are
-					<b><span id="critter-decade-end-critter">???</span></b>.
-					That's a bigger change than we saw before, without hunting.
-				</p>
 				<p>
-					Strangely, these
+          The critters didn't change to any old color.
+					These
 					<b><span id="critter-decade-end-critter">???</span></b>
 					critters are almost the same color as the
 					<b><span id="critter-decade-env">???</span></b>
-					environment. Did you notice that they got harder to
-					hunt every year?
+					environment they live in. Did you notice that they got harder to
+					find every year?
 				</p>
 			</section>
 			<div style="height: 431px" class="widest centered vspace">
@@ -334,12 +356,13 @@
 				<h3 class="nobottommargin">
 					How did the critters change color?
 				</h3>
-				<p class="notopmargin">
-					While you were watching and hunting them, three things
+				<p class="">
+					Over the <b><span id="last-year">???</span></b> days that
+          you helped the beastie hunt, three things
 					were happening.
 				</p>
 			</section>
-			<div style="height:1060px" class="widest centered vspace">
+			<div style="height:840px" class="widest centered vspace">
 				<div class="left three-across">
 					<p class="c-text caption three-across notopmargin nobottommargin">
 						<b>Mutation</b>
@@ -362,11 +385,11 @@
 						The <b><span id="critter-decade-env">???</span></b>
 						environment made
 						<b><span id="critter-decade-closer-m-critter">???</span></b>
-						critters hard to see, so you hunted
+						critters hard to see, so you found mostly
 						<b><span id="critter-decade-start-critter">???</span></b>
 						and
 						<b><span id="critter-decade-further-m-critter">???</span></b>
-						critters.
+						critters for the beastie.
 					</p>
 					<canvas class="centered" id="triptych-selection"></canvas>
 				</div>
@@ -377,7 +400,7 @@
 					<p class="c-text centered three-across-text notopmargin">
 						The
 						<b><span id="critter-decade-closer-m-critter">???</span></b>
-						critters that you didn't hunt passed that
+						critters that you didn't find passed that
 						<b><span id="critter-decade-closer-m-critter">???</span></b>
 						color to their children. 
 					</p>
@@ -396,10 +419,10 @@
 			<block>
 			<section class="centered vspace">
 				<h3 class="nobottommargin">
-					Will natural selection do this every time?
+					Natural selection will do this every time.
 				</h3>
-				<p class="notopmargin">
-					Yes! No matter what color the environment is, or what
+				<p class="">
+					No matter what color the environment is, or what
 					color the critters start out with, they will become
 					the same color as the environment if you hunt them.
 					<a href="javascript:
@@ -409,6 +432,23 @@
 				</p>
 			</section>
 			</block>
+      <block>
+      <section class="centered vspace">
+        <h3 class= "nobottommargin">
+          So, who chose the critters' color? Nobody.
+        </h3>
+        <p>
+          It might seem strange, but it turns out that nobody chose the critters'
+          color. Because of natural selection, their color changed on its own.
+        </p>
+        <p>
+          But here's the cool part: because we know how natural selection works,
+          we can notice when it has happened, and what it has done. Even
+          though we don't get to choose the critters' color, we can understand why
+          it changed.
+        </p>
+      </section>
+      </block>
 			<div style="height:200px" class="widest centered vspace">
 				<canvas class="centered" id="confetti-bottom"></canvas>
 			</div>

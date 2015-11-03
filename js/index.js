@@ -231,7 +231,7 @@ function main () {
 															this.init();
 															this.foobar = false;
 														}, [], this);
-			this.GLOBAL.TIMELINE.push(t);	
+			this.GLOBAL.TIMELINE.push(t);
 		}
 	}.bind(world);
 
@@ -299,7 +299,7 @@ function main () {
 																												}, [], this);
 															this.GLOBAL.TIMELINE.push(t);
 														}, [], this);
-			this.GLOBAL.TIMELINE.push(t);	
+			this.GLOBAL.TIMELINE.push(t);
 		}
 	}.bind(world);
 
@@ -368,7 +368,7 @@ function main () {
 																												}, [], this);
 															this.GLOBAL.TIMELINE.push(t);
 														}, [], this);
-			this.GLOBAL.TIMELINE.push(t);	
+			this.GLOBAL.TIMELINE.push(t);
 		}
 	}.bind(world);
 
@@ -465,9 +465,12 @@ function main () {
 			span.textContent = chromaColorToHueName(avgColor);
 			span.style.setProperty('color', avgColor.hex());
 			if (this.info.year > 1) {
-				span = document.querySelector("#last-year");
-				span.textContent = this.yearCounter.toString();
-				var spans = document.querySelectorAll("#critter-decade-end-critter");
+				var spans = document.querySelector("#last-year");
+				for (var i = 0; i < spans.length; i++) {
+					var span = spans[i];
+          span.textContent = this.yearCounter.toString();
+        }
+				spans = document.querySelectorAll("#critter-decade-end-critter");
 				for (var i = 0; i < spans.length; i++) {
 					var span = spans[i];
 					var avgColor = averageChromaColor(this.agents.map(function (x) { return x.color; }));
@@ -496,7 +499,7 @@ function main () {
 		var restOfContent = document.querySelector("#hidden-until-selection-game")
 		var huntProgressSpan = document.querySelector("#selection-hunt-progress")
 		var progressBlocker = document.querySelector("#post-hunt-progress-blocker");
-		var requiredHits = 0;
+		var requiredHits = 150;
 		if (this.info.lifetimeHits >= requiredHits) {
       if (restOfContent.style.display == "none") {
         restOfContent.style.display = "block";
@@ -589,7 +592,7 @@ function main () {
 	var blocks = document.querySelectorAll("block");
 	var bgColor = chroma.hcl(world.envGenome[0],
 													 GLOBAL.CHROMA/5,
-													 GLOBAL.LIGHTNESS).brighten(1.5).hex();
+													 GLOBAL.LIGHTNESS).brighten(1).hex();
 	for (var i = 0; i < blocks.length; i++) {
 		if (i % 2 == 0) {
 			blocks[i].style.backgroundColor = bgColor;
