@@ -2,7 +2,7 @@ function main () {
 	var GLOBAL = {
 		WORLD_OFFSET_Y: 0, // pixels
 		COMPONENT_MARGIN: 8, // pixels
-		NUM_AGENTS: 40,
+		NUM_AGENTS: 50,
 		INIT_AGENTS_VARIATIONS: [20, 0],
 		NUM_PLANTS: 500,
 		DEATH_THRESHHOLD: 800,
@@ -449,6 +449,7 @@ function main () {
 	global.PAGE_COLOR = canvas.closest("block").style.backgroundColor;
 	global.WORLD_SPEED = 12;
 	global.INIT_AGENTS_VARIATIONS[0] = 40;
+	global.REQUIRED_HITS = 150;
 
 	world = new World(global, canvas,
 										[GLOBAL.BOUNDS[random.integer(GLOBAL.BOUNDS.length)],
@@ -499,8 +500,7 @@ function main () {
 		var restOfContent = document.querySelector("#hidden-until-selection-game")
 		var huntProgressSpan = document.querySelector("#selection-hunt-progress")
 		var progressBlocker = document.querySelector("#post-hunt-progress-blocker");
-		var requiredHits = 150;
-		if (this.info.lifetimeHits >= requiredHits) {
+		if (this.info.lifetimeHits >= this.GLOBAL.REQUIRED_HITS) {
       if (restOfContent.style.display == "none") {
         restOfContent.style.display = "block";
 				progressBlocker.style.display = "none";
@@ -510,11 +510,12 @@ function main () {
                                    "</b> critters.";
 		} else {
 			huntProgressSpan.innerHTML = "Keep going! Only <b>" +
-																	 (requiredHits - this.info.lifetimeHits) +
+																	 (this.GLOBAL.REQUIRED_HITS - this.info.lifetimeHits) +
 																	 "</b> critters to go.";
 		}
 	}.bind(world);
 	world.externalInit = function () {
+		this.bg.sunAngle = Math.PI/2;
 		this.yearCounter = 1;
 		for (var i = 1; i <= 10; i++) {
 			var span = document.querySelector("#critter-decade-"+i);

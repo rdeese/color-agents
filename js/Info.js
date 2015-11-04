@@ -175,22 +175,12 @@ infoPrototype.nextMode = function () {
 
 infoPrototype.setObserverMode = function () {
 	this.GLOBAL.MODE = 'observer';
-	var t = createjs.Tween.get(this.overlayContainer, {
-																											ignoreGlobalPause: true,
-																											override: true
-																										})
-												.to({ alpha: 0 }, 2000)
-												.call(function () {
-													this.overlayContainer.removeAllChildren();
-												}, [], this);
-	this.GLOBAL.TIMELINE.push(t);
 	this.GLOBAL.AGENTS_DIRTY = true;
 }
 
 infoPrototype.setPredatorMode = function () {
 	this.GLOBAL.MODE = 'predator';
 	this.GLOBAL.AGENTS_DIRTY = true;
-	this.overlayContainer.alpha = 1;
 }
 
 infoPrototype.update = function (e) {
@@ -200,6 +190,25 @@ infoPrototype.update = function (e) {
                                "Click anywhere to continue";
 		this.pauseImage.alpha = 1;
 		this.GLOBAL.DIRTY = true;
+	}
+	if (this.lifetimeHits >= this.GLOBAL.REQUIRED_HITS && !this.goodJob) {
+		var overlay = new createjs.Text("GOOD JOB!",
+																		"bold 150px "+this.GLOBAL.FONT,
+																		this.overlayHitColorHex);
+		overlay.alpha = 0.7;
+		overlay.textAlign = "center";
+		overlay.textBaseline = "middle";
+		overlay.x = this.bounds.width/2;
+		overlay.y = this.worldBounds.height/2;
+		this.overlayContainer.addChild(overlay);
+		var t = createjs.Tween.get(overlay)
+													.wait(8000)
+													.to({ alpha: 0 }, 8000)
+													.call(function () {
+														this.removeChild(overlay)
+													}, [], this);
+		this.GLOBAL.TIMELINE.push(t);
+		this.goodJob = true;
 	}
 }
 
